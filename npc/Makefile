@@ -7,7 +7,6 @@ sim:obj_dir
 
 obj_dir:csrc/sim_main.cpp vsrc/top.v
 	verilator --cc --exe --build -j 0 -Wall csrc/sim_main.cpp vsrc/top.v --trace
-	obj_dir/Vtop
 
 wave:
 	obj_dir/Vtop
