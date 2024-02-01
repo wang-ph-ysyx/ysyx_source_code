@@ -6,7 +6,7 @@ sim:csrc/sim_main.cpp vsrc/top.v
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 
-wave:
+wave:sim
 	obj_dir/Vtop
 	
 .PHONY: clean
