@@ -11,5 +11,6 @@ int main() {
 
 	while(true) {
 		nvboard_update();
+		dut.eval();
 	}
 }
