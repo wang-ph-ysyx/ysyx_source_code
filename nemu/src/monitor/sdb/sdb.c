@@ -23,6 +23,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+uint8_t* guest_to_host(paddr_t paddr);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -72,6 +73,19 @@ static int cmd_info(char *args) {
 	return 0;
 }
 
+static int cmd_x(char *args) {
+	int num = 1;
+	uint8_t* haddr = NULL;
+	paddr_t paddr = 0;
+	sscanf(args, "%d %x", &num, &paddr);
+	haddr = guest_to_host(paddr);
+	for (; num > 0; --num) {
+		printf("%x %x %x %x\n", *haddr, *(haddr+1), *(haddr+2), *(haddr+3));
+		haddr += 4;
+	}
+	return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -81,7 +95,8 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 	{ "si", "execute the program for several steps", cmd_si },
-	{ "info", "print the status of the program", cmd_info }
+	{ "info", "print the status of the program", cmd_info },
+	{ "x", "print the memory", cmd_x}
 	
   /* TODO: Add more commands */
 
