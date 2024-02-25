@@ -59,6 +59,7 @@ static int cmd_si(char *args) {
 	int steps = 1;
 	if (args != NULL) 
 		steps = sscanf(args, "%d", &steps);
+	printf("%d", steps);
 	cpu_exec(steps);
 	return 0;
 }
