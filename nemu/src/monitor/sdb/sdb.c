@@ -80,7 +80,7 @@ static int cmd_x(char *args) {
 	sscanf(args, "%d %x", &num, &paddr);
 	haddr = guest_to_host(paddr);
 	for (; num > 0; --num) {
-		printf("%x:  %x %x %x %x\n", paddr, *haddr, *(haddr+1), *(haddr+2), *(haddr+3));
+		printf("0x%x:  %x %x %x %x\n", paddr, *haddr, *(haddr+1), *(haddr+2), *(haddr+3));
 		haddr += 4;
 	}
 	return 0;
