@@ -31,8 +31,50 @@ static char *code_format =
 "  return 0; "
 "}";
 
+static char *buf_start = NULL;
+static char *buf_end = buf + sizeof(buf)/sizeof(buf[0]);
+
+static uint32_t choose(uint32_t n) {
+	return rand() % n;
+}
+
+static void gen_num() {
+	uint32_t num = choose(INT8_MAX);
+	uint32_t words = snprintf(buf_start, buf_end-buf_start, "%d", num);
+	buf_start += words;
+}
+
+static void gen(char ch) {
+	uint32_t words = snprintf(buf_start, buf_end-buf_start, "%c", ch);
+	buf_start += words;
+}
+
+static void gen_rand_op() {
+	uint32_t op = choose(4);
+	switch (op) {
+		case 0: gen('+'); break;
+		case 1: gen('-'); break;
+		case 2: gen('*'); break;
+		case 3: gen('/'); break;
+	}
+}
+
+static void gen_rand_space() {
+	uint32_t space = choose(2);
+	if (space) {
+		gen(' ');
+		gen_rand_space();
+	}
+}
+
 static void gen_rand_expr() {
-  buf[0] = '\0';
+	gen_rand_space();
+	switch (choose(3)) {
+		case 1: gen_num(); break;
+		case 2: gen('('); gen_rand_expr(); gen(')'); break;
+		default: gen_rand_expr(); gen_rand_op(); gen_rand_expr();
+	}
+	gen_rand_space();
 }
 
 int main(int argc, char *argv[]) {
@@ -44,6 +86,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+		buf_start = buf;
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);
