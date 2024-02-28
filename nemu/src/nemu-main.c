@@ -42,7 +42,7 @@ void test_expr() {
 	if (fp == NULL) perror("test error");
 
 	word_t correct;
-	char e[65536];
+	char e[131072];
 	bool success = true;
 
 	while (true) {
