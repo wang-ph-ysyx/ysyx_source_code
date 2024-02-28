@@ -46,7 +46,7 @@ void test_expr() {
 	bool success = true;
 
 	while (true) {
-		if (fscanf(fp, "%u %s", &correct, e) == -1) break;
+		if (fscanf(fp, "%u %[^\n]", &correct, e) == -1) break;
 
 		word_t res = expr(e, &success);
 
