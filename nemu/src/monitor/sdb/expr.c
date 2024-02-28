@@ -42,8 +42,8 @@ static struct rule {
 	{"-", '-'},						// minus
 	{"\\*", '*'},					// multiply
 	{"/", '/'},						// devide
-	{"(", '('},						// left bracket
-	{")", ')'},						// right bracket
+	{"\\(", '('},						// left bracket
+	{"\\)", ')'},						// right bracket
 	{"\\d+", TK_NUM}			// number
 };
 
