@@ -42,8 +42,8 @@ static struct rule {
 	{"-", '-'},						// minus
 	{"\\*", '*'},					// multiply
 	{"/", '/'},						// devide
-	{"\\(", '('},						// left bracket
-	{"\\)", ')'},						// right bracket
+	{"\\(", '('},					// left bracket
+	{"\\)", ')'},					// right bracket
 	{"\\d+", TK_NUM}			// number
 };
 
@@ -95,17 +95,17 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-				tokens[nr_token].type = rules[i].token_type;
-				if (rules[i].token_type == TK_NUM) {
-					memcpy(tokens[nr_token].str, substr_start, substr_len);
-				}
         /* TODO: Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+					case TK_NUM: 
+						memcpy(tokens[nr_token].str, substr_start, substr_len);
+						tokens[nr_token].str[substr_len] = '\0';
+          default:
+						tokens[nr_token].type = rules[i].token_type;
         }
 
 				++nr_token;
@@ -123,15 +123,82 @@ static bool make_token(char *e) {
   return true;
 }
 
+word_t eval(int p, int q, bool *success);
+bool check_parentheses(int p, int q);
+int pos_of_maincomp(int p, int q, bool *success);
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
+	return eval(0, nr_token-1, success);
+}
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+word_t eval(int p, int q, bool *success) {
+	if (p > q) {
+		*success = false;
+		assert(0);
+		return 0;
+	}
+	else if (p == q) {
+		return atoi(tokens[p].str);
+	}
+	else if (check_parentheses(p, q)) {
+		return eval(p + 1, q - 1, success); 
+	}
+	else {
+		int op = pos_of_maincomp(p, q, success);
+		word_t val1 = eval(p, op-1, success);
+		word_t val2 = eval(op+1, q, success);
+		int op_type = tokens[op].type;
 
-  return 0;
+		switch (op_type) {
+			case '+': return val1 + val2;
+			case '-': return val1 - val2;
+			case '*': return val1 * val2;
+			case '/': return val1 / val2;
+			default: assert(0);
+		}
+	}
+}
+
+bool check_parentheses(int p, int q) {
+	if(tokens[p].type != '(' || tokens[q].type != ')')
+		return false;
+	int num = 0;
+	int i = p + 1;
+	for (; i < q; ++i) {
+		if (tokens[i].type == '(')
+			++num;
+		else if (tokens[i].type == ')')
+			--num;
+		if (num < 0) return false;
+	}
+	if (num > 0) return false;
+	return true;
+}
+
+int pos_of_maincomp(int p, int q, bool *success) {
+	int bracket = 0;
+	int i = p;
+	int pos = p;
+	bool is_plus = false;
+	for (; i <= q; ++i) {
+		if (tokens[i].type == '(')
+			++bracket;
+		else if (tokens[i].type == ')')
+			--bracket;
+		if (bracket < 0) *success = false;
+		if (bracket > 0) continue;
+		if (tokens[i].type == '+' || tokens[i].type == '-') {
+			pos = i;
+			is_plus = true;
+		}
+		else if (tokens[i].type == '*' || tokens[i].type == '/') {
+			if (!is_plus) pos = i;
+		}
+	}
+	return pos;
 }
