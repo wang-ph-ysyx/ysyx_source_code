@@ -59,22 +59,22 @@ static void gen_rand_op() {
 	}
 }
 
-static void gen_rand_space() {
+/*static void gen_rand_space() {
 	uint32_t space = choose(2);
 	if (space) {
 		gen(' ');
 		gen_rand_space();
 	}
-}
+}*/
 
 static void gen_rand_expr() {
-	gen_rand_space();
+	//gen_rand_space();
 	switch (choose(3)) {
 		case 1: gen_num(); break;
 		case 2: gen('('); gen_rand_expr(); gen(')'); break;
 		default: gen_rand_expr(); gen_rand_op(); gen_rand_expr();
 	}
-	gen_rand_space();
+	//gen_rand_space();
 }
 
 int main(int argc, char *argv[]) {

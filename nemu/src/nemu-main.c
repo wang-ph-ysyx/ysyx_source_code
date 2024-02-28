@@ -19,6 +19,8 @@ void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+void test_expr();
+word_t expr(char *e, bool *success);
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
@@ -28,8 +30,29 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
+	test_expr();
   /* Start engine. */
   engine_start();
 
   return is_exit_status_bad();
+}
+
+void test_expr() {
+	FILE *fp = fopen("tools/gen-expr/input", "r");
+	if (fp == NULL) perror("test error");
+
+	word_t correct;
+	char e[65536];
+	bool success = true;
+
+	while (true) {
+		if (fscanf(fp, "%u %s", &correct, e) == -1) break;
+
+		word_t res = expr(e, &success);
+
+		if (res != correct) {
+			printf("%s\n expected:%u got:%u", e, correct, res);
+			assert(0);
+		}
+	}
 }
