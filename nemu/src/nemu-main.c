@@ -52,7 +52,7 @@ void test_expr() {
 
 		if (res != correct) {
 			printf("%u\n%u\n", correct, res);
-			printf("%s\nexpected:%ugot:%u", e, correct, res);
+			printf("a%s\nexpected:%ugot:%u", e, correct, res);
 			assert(0);
 		}
 	}
