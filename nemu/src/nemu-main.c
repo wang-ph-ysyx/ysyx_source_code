@@ -51,7 +51,7 @@ void test_expr() {
 		word_t res = expr(e, &success);
 
 		if (res != correct) {
-			printf("%u\n%d\n", correct, res);
+			printf("%u\n%u\n", correct, res);
 			printf("%s\nexpected:%ugot:%u", e, correct, res);
 			assert(0);
 		}
