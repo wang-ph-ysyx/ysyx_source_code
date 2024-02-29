@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF, TK_HEXNUM, TK_REG
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF, TK_HEXNUM, TK_REG, TK_UNEQ, TK_AND
 
   /* TODO: Add more token types */
 
@@ -38,7 +38,6 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
-  {"==", TK_EQ},        // equal
 	{"-", '-'},						// minus
 	{"\\*", '*'},					// multiply
 	{"/", '/'},						// devide
@@ -46,7 +45,10 @@ static struct rule {
 	{"\\)", ')'},					// right bracket
 	{"0[xX][0-9]+", TK_HEXNUM},// hex number
 	{"[0-9]+", TK_NUM},		// number
-	{"$[a-z0-9]{2}", TK_REG}					// reg
+	{"$[a-z0-9]{2}", TK_REG},	// reg
+  {"==", TK_EQ},        // equal
+	{"!=", TK_UNEQ},			// unequal
+	{"&&", TK_AND},				// and
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -200,6 +202,9 @@ word_t eval(int p, int q, bool *success) {
 					return 0;
 				}				
 				return (sword_t)val1 / (sword_t)val2;
+			case TK_EQ: return val1 == val2;
+			case TK_UNEQ: return val1 != val2;
+			case TK_AND: return val1 && val2;
 			default: assert(0);
 		}
 	}
@@ -226,7 +231,8 @@ int pos_of_maincomp(int p, int q, bool *success) {
 	int bracket = 0;
 	int i = p;
 	int pos = p;
-	bool is_plus = false;
+	enum {MULTI, PLUS, EQ, AND};
+	int priority = MULTI;
 	for (; i <= q; ++i) {
 		if (tokens[i].type == '(')
 			++bracket;
@@ -234,12 +240,27 @@ int pos_of_maincomp(int p, int q, bool *success) {
 			--bracket;
 		if (bracket < 0) *success = false;
 		if (bracket > 0) continue;
-		if (tokens[i].type == '+' || tokens[i].type == '-') {
-			pos = i;
-			is_plus = true;
+		else if (tokens[i].type == TK_AND) {
+				pos = i;
+				priority = AND;
+		}
+		else if (tokens[i].type == TK_EQ || tokens[i].type == TK_UNEQ) {
+			if (priority <= EQ) { 
+				pos = i;
+				priority = EQ;
+			}
+		}
+		else if (tokens[i].type == '+' || tokens[i].type == '-') {
+			if (priority <= PLUS) { 
+				pos = i;
+				priority = PLUS;
+			}
 		}
 		else if (tokens[i].type == '*' || tokens[i].type == '/') {
-			if (!is_plus) pos = i;
+			if (priority <= MULTI) { 
+				pos = i;
+				priority = MULTI;
+			}
 		}
 	}
 	return pos;
