@@ -167,9 +167,9 @@ word_t eval(int p, int q, bool *success) {
 		return argtonum(p);
 	}
 	else if (p == q - 1) {
-		if (tokens[p].type == TK_NEG) return 0-argtonum(p);
+		if (tokens[p].type == TK_NEG) return 0-argtonum(q);
 		else if (tokens[p].type == TK_DEREF) {
-			paddr_t paddr = argtonum(p);
+			paddr_t paddr = argtonum(q);
 			uint8_t* haddr = guest_to_host(paddr);
 			return *haddr;
 		}
