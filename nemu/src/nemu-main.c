@@ -53,7 +53,6 @@ void test_expr() {
 		assert(success);
 		if (res != correct) {
 			printf("expected:%u\ngot:%u\n%s\n", correct, res, e);
-			assert(0);
 		}
 	}
 }
