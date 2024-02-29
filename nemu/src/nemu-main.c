@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 }
 
 void test_expr() {
-	FILE *fp = fopen("tools/gen-expr/input", "r");
+	FILE *fp = fopen("tools/gen-expr/input1", "r");
 	if (fp == NULL) perror("test error");
 
 	word_t correct;
