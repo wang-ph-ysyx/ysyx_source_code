@@ -179,7 +179,7 @@ word_t eval(int p, int q, bool *success) {
 		if (tokens[p].type == TK_NEG) return 0-argtonum(q);
 		else if (tokens[p].type == TK_DEREF) {
 			paddr_t paddr = argtonum(q);
-			uint8_t* haddr = guest_to_host(paddr);
+			uint32_t* haddr = (uint32_t*) guest_to_host(paddr);
 			return *haddr;
 		}
 	}
