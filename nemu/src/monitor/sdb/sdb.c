@@ -80,9 +80,10 @@ static int cmd_x(char *args) {
 	if (args == NULL) return 0;
 	sscanf(args, "%d %x", &num, &paddr);
 	haddr = guest_to_host(paddr);
+	uint32_t* addr = (uint32_t*) haddr;
 	for (; num > 0; --num) {
-		printf("0x%x:  %x %x %x %x\n", paddr, *haddr, *(haddr+1), *(haddr+2), *(haddr+3));
-		haddr += 4;
+		printf("0x%x: %x\n", paddr, *addr);
+		addr += 1;
 		paddr += 4;
 	}
 	return 0;
