@@ -135,7 +135,7 @@ word_t expr(char *e, bool *success) {
   }
 	int i = 0;
 	for (; i < nr_token; ++i) {
-		Log("%c %s", tokens[i].type, tokens[i].str);
+		Log("%d %s", tokens[i].type, tokens[i].str);
 	}
 	return eval(0, nr_token-1, success);
 }
