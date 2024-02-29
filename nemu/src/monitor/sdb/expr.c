@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF
 
   /* TODO: Add more token types */
 
@@ -44,7 +44,7 @@ static struct rule {
 	{"/", '/'},						// devide
 	{"\\(", '('},					// left bracket
 	{"\\)", ')'},					// right bracket
-	{"[0-9]+", TK_NUM}			// number
+	{"[0-9]+", TK_NUM},			// number
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -133,10 +133,18 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
+
+	for (int i = 0; i < nr_token; ++i) {
+		if (tokens[i].type == '*' && (i == 0 || (tokens[i-1].type != TK_NUM && tokens[i-1].type != ')'))) tokens[i].type = TK_DEREF;
+		if (tokens[i].type == '-' && (i == 0 || (tokens[i-1].type != TK_NUM && tokens[i-1].type != ')'))) tokens[i].type = TK_NEG;
+	}
+
 	return eval(0, nr_token-1, success);
 }
 
   /* TODO: Insert codes to evaluate the expression. */
+uint8_t* guest_to_host(paddr_t paddr);
+
 word_t eval(int p, int q, bool *success) {
 	if (p > q) {
 		*success = false;
@@ -145,6 +153,14 @@ word_t eval(int p, int q, bool *success) {
 	}
 	else if (p == q) {
 		return atoi(tokens[p].str);
+	}
+	else if (p == q - 1) {
+		if (tokens[p].type == TK_NEG) return 0-atoi(tokens[q].str);
+		else if (tokens[p].type == TK_DEREF) {
+			paddr_t paddr = atoi(tokens[q].str);
+			uint8_t* haddr = guest_to_host(paddr);
+			return *haddr;
+		}
 	}
 	else if (check_parentheses(p, q)) {
 		return eval(p + 1, q - 1, success); 
@@ -168,6 +184,7 @@ word_t eval(int p, int q, bool *success) {
 			default: assert(0);
 		}
 	}
+	return 0;
 }
 
 bool check_parentheses(int p, int q) {
