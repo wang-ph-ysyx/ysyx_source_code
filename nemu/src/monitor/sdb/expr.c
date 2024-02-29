@@ -168,16 +168,16 @@ word_t eval(int p, int q, bool *success) {
 bool check_parentheses(int p, int q) {
 	if(tokens[p].type != '(' || tokens[q].type != ')')
 		return false;
-	int num = 0;
+	int bracket = 0;
 	int i = p + 1;
 	for (; i < q; ++i) {
 		if (tokens[i].type == '(')
-			++num;
+			++bracket;
 		else if (tokens[i].type == ')')
-			--num;
-		if (num < 0) return false;
+			--bracket;
+		if (bracket < 0) return false;
 	}
-	if (num > 0) return false;
+	if (bracket > 0) return false;
 	return true;
 }
 
