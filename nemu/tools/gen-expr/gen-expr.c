@@ -105,6 +105,7 @@ int main(int argc, char *argv[]) {
     uint32_t result = 0;
     ret = fscanf(fp, "%u", &result);
     pclose(fp);
+		if (fp != 0) continue;
 
     printf("%u %s\n", result, buf);
   }
