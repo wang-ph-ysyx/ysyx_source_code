@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF, TK_HEXNUM
 
   /* TODO: Add more token types */
 
@@ -44,6 +44,7 @@ static struct rule {
 	{"/", '/'},						// devide
 	{"\\(", '('},					// left bracket
 	{"\\)", ')'},					// right bracket
+	{"0[xX][0-9]+", TK_HEXNUM},// hex number
 	{"[0-9]+", TK_NUM},			// number
 };
 
@@ -103,7 +104,7 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
 					case TK_NOTYPE:
 						break;
-					case TK_NUM: 
+					case TK_NUM: case TK_HEXNUM:
 						memcpy(tokens[nr_token].str, substr_start, substr_len);
 						tokens[nr_token].str[substr_len] = '\0';
           default:
@@ -145,6 +146,17 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
 uint8_t* guest_to_host(paddr_t paddr);
 
+word_t argtonum(int pos) {
+	word_t ans = 0;
+	if (tokens[pos].type == TK_NUM) {
+		sscanf(tokens[pos].str, "%d", &ans);
+	}
+	else if (tokens[pos].type == TK_HEXNUM) {
+		sscanf(tokens[pos].str, "%x", &ans);
+	}
+	return ans;
+}
+
 word_t eval(int p, int q, bool *success) {
 	if (p > q) {
 		*success = false;
@@ -152,12 +164,12 @@ word_t eval(int p, int q, bool *success) {
 		return 0;
 	}
 	else if (p == q) {
-		return atoi(tokens[p].str);
+		return argtonum(p);
 	}
 	else if (p == q - 1) {
-		if (tokens[p].type == TK_NEG) return 0-atoi(tokens[q].str);
+		if (tokens[p].type == TK_NEG) return 0-argtonum(p);
 		else if (tokens[p].type == TK_DEREF) {
-			paddr_t paddr = atoi(tokens[q].str);
+			paddr_t paddr = argtonum(p);
 			uint8_t* haddr = guest_to_host(paddr);
 			return *haddr;
 		}
