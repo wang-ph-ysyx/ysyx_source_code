@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF, TK_HEXNUM
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_NEG, TK_DEREF, TK_HEXNUM, TK_REG
 
   /* TODO: Add more token types */
 
@@ -45,7 +45,8 @@ static struct rule {
 	{"\\(", '('},					// left bracket
 	{"\\)", ')'},					// right bracket
 	{"0[xX][0-9]+", TK_HEXNUM},// hex number
-	{"[0-9]+", TK_NUM},			// number
+	{"[0-9]+", TK_NUM},		// number
+	{"$[a-z0-9]{2}", TK_REG}					// reg
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -100,17 +101,21 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
+				if (rules[i].token_type == TK_NOTYPE) break;
 
         switch (rules[i].token_type) {
-					case TK_NOTYPE:
-						break;
 					case TK_NUM: case TK_HEXNUM:
 						memcpy(tokens[nr_token].str, substr_start, substr_len);
 						tokens[nr_token].str[substr_len] = '\0';
-          default:
-						tokens[nr_token].type = rules[i].token_type;
-						++nr_token;
+						break;
+					case TK_REG:
+						memcpy(tokens[nr_token].str, substr_start+1, substr_len-1);
+						tokens[nr_token].str[substr_len - 1] = '\0';
+						break;
         }
+
+				tokens[nr_token].type = rules[i].token_type;
+				++nr_token;
 
         break;
       }
@@ -164,6 +169,8 @@ word_t eval(int p, int q, bool *success) {
 		return 0;
 	}
 	else if (p == q) {
+		if (tokens[p].type == TK_REG)
+			return isa_reg_str2val(tokens[p].str, success);
 		return argtonum(p);
 	}
 	else if (p == q - 1) {
