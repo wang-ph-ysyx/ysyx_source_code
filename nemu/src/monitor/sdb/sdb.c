@@ -64,12 +64,18 @@ static int cmd_si(char *args) {
 	return 0;
 }
 
+void wp_display();
+
 static int cmd_info(char *args) {
 	char ch = 'r';
 	if (args != NULL)
 		ch = *args;
 	if (ch == 'r') 
 		isa_reg_display();
+	else if (ch == 'w') {
+		wp_display();
+	}
+	else printf("Usage: info r, info w");
 	return 0;
 }
 
@@ -88,11 +94,22 @@ static int cmd_x(char *args) {
 	return 0;
 }
 
+void watch_wp(char *expr, word_t res);
+
 static int cmd_p(char *args) {
 	bool success = true;
 	word_t res = expr(args, &success);
 	if (!success) printf("bad expression\n");
 	else printf("val:  %u\n", res);
+
+	return 0;
+}
+
+static int cmd_w(char *args) {
+	bool success = true;
+	word_t res = expr(args, &success);
+	if (!success) printf("bad expresion\n");
+	else watch_wp(args, res);
 
 	return 0;
 }
@@ -108,7 +125,8 @@ static struct {
 	{ "si", "execute the program for several steps", cmd_si },
 	{ "info", "print the status of the program", cmd_info },
 	{ "x", "scan the memory", cmd_x},
-	{ "p", "calculate the value", cmd_p}
+	{ "p", "calculate the value", cmd_p},
+	{ "w", "set watchpoint", cmd_w}
 	
   /* TODO: Add more commands */
 
