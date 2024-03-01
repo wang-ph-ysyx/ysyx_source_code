@@ -43,7 +43,7 @@ static struct rule {
 	{"/", '/'},						// devide
 	{"\\(", '('},					// left bracket
 	{"\\)", ')'},					// right bracket
-	{"0[xX][0-9]+", TK_HEXNUM},// hex number
+	{"0[xX][0-9a-f]+", TK_HEXNUM},// hex number
 	{"[0-9]+", TK_NUM},		// number
 	{"$[a-z0-9]{2}", TK_REG},	// reg
   {"==", TK_EQ},        // equal
