@@ -21,7 +21,7 @@ typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 	struct watchpoint *pre;
-	char* e;
+	char e[65536];
 	word_t old;
 
   /* TODO: Add more members if necessary */
@@ -53,7 +53,7 @@ void wp_display() {
 	printf("Num     what\n");
 	WP* h = head;
 	while (h) {
-		printf("%-8d%-8s", h->NO, h->e);
+		printf("%-8d%-8s\n", h->NO, h->e);
 		h = h->next;
 	}
 }
@@ -80,7 +80,7 @@ void free_wp(WP* wp) {
 
 void watch_wp(char *expr, word_t res) {
 	WP* wp = new_wp();
-	wp->e = expr;
+	strcpy(wp->e, expr);
 	wp->old = res;
 	printf("Watchpoint: %d, %s\n", wp->NO, wp->e);
 }
