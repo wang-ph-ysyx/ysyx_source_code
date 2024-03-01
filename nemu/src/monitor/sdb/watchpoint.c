@@ -47,10 +47,10 @@ void init_wp_pool() {
 
 void wp_display() {
 	if (head == NULL) {
-		printf("NO watchpoint");
+		printf("NO watchpoint\n");
 		return;
 	}
-	printf("Num     what");
+	printf("Num     what\n");
 	WP* h = head;
 	while (h) {
 		printf("%-8d%-8s", h->NO, h->e);
