@@ -84,3 +84,9 @@ void watch_wp(char *expr, word_t res) {
 	wp->old = res;
 	printf("Watchpoint: %d, %s\n", wp->NO, wp->e);
 }
+
+void delete_wp(int NO) {
+	assert(NO < NR_WP);
+	free_wp(&wp_pool[NO]);
+	printf("Delete Watchpoint: %d, %s\n", wp_pool[NO].NO, wp_pool[NO].e);
+}

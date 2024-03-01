@@ -94,8 +94,6 @@ static int cmd_x(char *args) {
 	return 0;
 }
 
-void watch_wp(char *expr, word_t res);
-
 static int cmd_p(char *args) {
 	bool success = true;
 	word_t res = expr(args, &success);
@@ -105,11 +103,24 @@ static int cmd_p(char *args) {
 	return 0;
 }
 
+void watch_wp(char *expr, word_t res);
+	
 static int cmd_w(char *args) {
 	bool success = true;
 	word_t res = expr(args, &success);
 	if (!success) printf("bad expresion\n");
 	else watch_wp(args, res);
+
+	return 0;
+}
+
+void delete_wp(int NO);
+
+static int cmd_d(char *args) {
+	int num = 0;
+	if (args == NULL) printf("Usage: d [Number]");
+	sscanf(args, "%d", &num);
+	delete_wp(num);
 
 	return 0;
 }
@@ -126,7 +137,8 @@ static struct {
 	{ "info", "print the status of the program", cmd_info },
 	{ "x", "scan the memory", cmd_x},
 	{ "p", "calculate the value", cmd_p},
-	{ "w", "set watchpoint", cmd_w}
+	{ "w", "set watchpoint", cmd_w},
+	{ "d", "delete watchpoint", cmd_d},
 	
   /* TODO: Add more commands */
 
