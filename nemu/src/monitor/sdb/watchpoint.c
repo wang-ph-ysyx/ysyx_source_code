@@ -102,5 +102,6 @@ void difftest_wp() {
 			h->old = res;
 			printf("trigger watchpoint %d: %s", h->NO, h->e);
 		}
+		h = h->next;
 	}
 }
