@@ -64,7 +64,7 @@ static int cmd_si(char *args) {
 	return 0;
 }
 
-void wp_display();
+void display_wp();
 
 static int cmd_info(char *args) {
 	char ch = 'r';
@@ -73,7 +73,7 @@ static int cmd_info(char *args) {
 	if (ch == 'r') 
 		isa_reg_display();
 	else if (ch == 'w') {
-		wp_display();
+		display_wp();
 	}
 	else printf("Usage: info r, info w");
 	return 0;
@@ -86,9 +86,10 @@ static int cmd_x(char *args) {
 	if (args == NULL) return 0;
 	sscanf(args, "%d %x", &num, &paddr);
 	haddr = guest_to_host(paddr);
+	uint32_t* addr = (uint32_t*)haddr;
 	for (; num > 0; --num) {
-		printf("0x%x:  %x %x %x %x\n", paddr, *haddr, *(haddr+1), *(haddr+2), *(haddr+3));
-		haddr += 4;
+		printf("%0#8x:  %02x", paddr, *addr);
+		addr += 1;
 		paddr += 4;
 	}
 	return 0;

@@ -45,7 +45,7 @@ void init_wp_pool() {
 
 /* TODO: Implement the functionality of watchpoint */
 
-void wp_display() {
+void display_wp() {
 	if (head == NULL) {
 		printf("NO watchpoint\n");
 		return;
@@ -99,8 +99,9 @@ void difftest_wp() {
 		assert(success);
 		if (res != h->old) {
 			nemu_state.state = NEMU_STOP;
-			h->old = res;
 			printf("trigger watchpoint %d: %s\n", h->NO, h->e);
+			printf("old value: %d, new value: %d", h->old, res);
+			h->old = res;
 		}
 		h = h->next;
 	}
