@@ -41,8 +41,6 @@ void test_expr() {
 	FILE *fp = fopen("tools/gen-expr/input", "r");
 	if (fp == NULL) perror("test error");
 
-	int* p = NULL;
-
 	word_t correct;
 	char e[65536];
 	bool success = true;
@@ -56,7 +54,5 @@ void test_expr() {
 		if (res != correct) {
 			printf("expected:%u\ngot:%u\n%s\n", correct, res, e);
 		}
-
-		*p = 1;
 	}
 }
