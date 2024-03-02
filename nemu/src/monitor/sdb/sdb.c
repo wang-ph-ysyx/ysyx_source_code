@@ -88,7 +88,7 @@ static int cmd_x(char *args) {
 	haddr = guest_to_host(paddr);
 	uint32_t* addr = (uint32_t*)haddr;
 	for (; num > 0; --num) {
-		printf("%0#8x:  %02x", paddr, *addr);
+		printf("%0#8x:  %02x\n", paddr, *addr);
 		addr += 1;
 		paddr += 4;
 	}
