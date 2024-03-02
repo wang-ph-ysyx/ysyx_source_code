@@ -90,3 +90,17 @@ void delete_wp(int NO) {
 	free_wp(&wp_pool[NO]);
 	printf("Delete Watchpoint: %d, %s\n", wp_pool[NO].NO, wp_pool[NO].e);
 }
+
+void difftest_wp() {
+	WP* h = head;
+	while (h) {
+		bool success = true;
+		word_t res = expr(h->e, &success);
+		assert(success);
+		if (res != h->old) {
+			nemu_state.state = NEMU_STOP;
+			h->old = res;
+			printf("trigger watchpoint %d: %s", h->NO, h->e);
+		}
+	}
+}
