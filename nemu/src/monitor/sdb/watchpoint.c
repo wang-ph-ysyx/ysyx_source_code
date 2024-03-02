@@ -93,6 +93,7 @@ void delete_wp(int NO) {
 }
 
 void difftest_wp() {
+	if (nemu_state.state != NEMU_RUNNING) return;
 	WP* h = head;
 	while (h) {
 		bool success = true;
