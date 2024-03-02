@@ -100,7 +100,7 @@ void difftest_wp() {
 		if (res != h->old) {
 			nemu_state.state = NEMU_STOP;
 			printf("trigger watchpoint %d: %s\n", h->NO, h->e);
-			printf("old value: %d, new value: %d", h->old, res);
+			printf("old value: %d, new value: %d\n", h->old, res);
 			h->old = res;
 		}
 		h = h->next;
