@@ -23,6 +23,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+uint8_t* guest_to_host(paddr_t paddr);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -49,10 +50,81 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+	nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args) {
+	int steps = 1;
+	if (args != NULL) 
+		sscanf(args, "%d", &steps);
+	cpu_exec(steps);
+	return 0;
+}
+
+void display_wp();
+
+static int cmd_info(char *args) {
+	char ch = 'r';
+	if (args != NULL)
+		ch = *args;
+	if (ch == 'r') 
+		isa_reg_display();
+	else if (ch == 'w') {
+		display_wp();
+	}
+	else printf("Usage: info r, info w");
+	return 0;
+}
+
+static int cmd_x(char *args) {
+	int num = 1;
+	uint8_t* haddr = NULL;
+	paddr_t paddr = 0;
+	if (args == NULL) return 0;
+	sscanf(args, "%d %x", &num, &paddr);
+	haddr = guest_to_host(paddr);
+	uint32_t* addr = (uint32_t*)haddr;
+	for (; num > 0; --num) {
+		printf("%0#8x:  %08x\n", paddr, *addr);
+		addr += 1;
+		paddr += 4;
+	}
+	return 0;
+}
+
+static int cmd_p(char *args) {
+	bool success = true;
+	word_t res = expr(args, &success);
+	if (!success) printf("bad expression\n");
+	else printf("val:  %u\n", res);
+
+	return 0;
+}
+
+void watch_wp(char *expr, word_t res);
+	
+static int cmd_w(char *args) {
+	bool success = true;
+	word_t res = expr(args, &success);
+	if (!success) printf("bad expresion\n");
+	else watch_wp(args, res);
+
+	return 0;
+}
+
+void delete_wp(int NO);
+
+static int cmd_d(char *args) {
+	int num = 0;
+	if (args == NULL) printf("Usage: d [Number]");
+	sscanf(args, "%d", &num);
+	delete_wp(num);
+
+	return 0;
+}
 
 static struct {
   const char *name;
@@ -62,7 +134,13 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+	{ "si", "execute the program for several steps", cmd_si },
+	{ "info", "print the status of the program", cmd_info },
+	{ "x", "scan the memory", cmd_x},
+	{ "p", "calculate the value", cmd_p},
+	{ "w", "set watchpoint", cmd_w},
+	{ "d", "delete watchpoint", cmd_d},
+	
   /* TODO: Add more commands */
 
 };
