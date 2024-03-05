@@ -72,6 +72,7 @@ WP* new_wp() {
 void free_wp(WP* wp) {
 	if (wp->next) wp->next->pre = wp->pre;
 	if (wp->pre) wp->pre->next = wp->next;
+	else head = head->next;
 	wp->next = free_;
 	wp->pre = NULL;
 	if (free_) free_->pre = wp;
@@ -92,6 +93,7 @@ void delete_wp(int NO) {
 }
 
 void difftest_wp() {
+	if (nemu_state.state != NEMU_RUNNING) return;
 	WP* h = head;
 	while (h) {
 		bool success = true;
