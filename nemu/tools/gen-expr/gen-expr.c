@@ -26,55 +26,13 @@ static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
-"  unsigned result = (unsigned)%s; "
+"  unsigned result = %s; "
 "  printf(\"%%u\", result); "
 "  return 0; "
 "}";
 
-static char *buf_start = NULL;
-static char *buf_end = buf + sizeof(buf)/sizeof(buf[0]);
-
-static uint32_t choose(uint32_t n) {
-	return rand() % n;
-}
-
-static void gen_num() {
-	uint32_t num = choose(INT8_MAX);
-	uint32_t words = snprintf(buf_start, buf_end-buf_start, "%d", num);
-	buf_start += words;
-}
-
-static void gen(char ch) {
-	uint32_t words = snprintf(buf_start, buf_end-buf_start, "%c", ch);
-	buf_start += words;
-}
-
-static void gen_rand_op() {
-	uint32_t op = choose(4);
-	switch (op) {
-		case 0: gen('+'); break;
-		case 1: gen('-'); break;
-		case 2: gen('*'); break;
-		case 3: gen('/'); break;
-	}
-}
-
-static void gen_rand_space() {
-	uint32_t space = choose(2);
-	if (space) {
-		gen(' ');
-		gen_rand_space();
-	}
-}
-
 static void gen_rand_expr() {
-	gen_rand_space();
-	switch (choose(3)) {
-		case 1: gen_num(); break;
-		case 2: gen('('); gen_rand_expr(); gen(')'); break;
-		default: gen_rand_expr(); gen_rand_op(); gen_rand_expr();
-	}
-	gen_rand_space();
+  buf[0] = '\0';
 }
 
 int main(int argc, char *argv[]) {
@@ -86,7 +44,6 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-		buf_start = buf;
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);
@@ -96,14 +53,14 @@ int main(int argc, char *argv[]) {
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -Wall -Werror=div-by-zero -o /tmp/.expr");
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
     assert(fp != NULL);
 
-    uint32_t result = 0;
-    ret = fscanf(fp, "%u", &result);
+    int result;
+    ret = fscanf(fp, "%d", &result);
     pclose(fp);
 
     printf("%u %s\n", result, buf);
