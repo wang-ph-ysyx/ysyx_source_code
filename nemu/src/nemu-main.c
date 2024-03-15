@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 	//to test expresion
-	test_expr();
+	//test_expr();
 
   /* Start engine. */
   engine_start();
