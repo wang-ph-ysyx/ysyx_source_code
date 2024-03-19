@@ -1,4 +1,4 @@
-STUID = ysyx_do not have one
+STUID = ysyx_23060236
 STUNAME = 王子卿
 
 # DO NOT modify the following code!!!
