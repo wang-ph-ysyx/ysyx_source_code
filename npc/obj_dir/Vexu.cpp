@@ -13,6 +13,10 @@ Vexu::Vexu(VerilatedContext* _vcontextp__, const char* _vcname__)
     , clk{vlSymsp->TOP.clk}
     , reset{vlSymsp->TOP.reset}
     , inst{vlSymsp->TOP.inst}
+    , pc{vlSymsp->TOP.pc}
+    , imm{vlSymsp->TOP.imm}
+    , src1{vlSymsp->TOP.src1}
+    , val{vlSymsp->TOP.val}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context
