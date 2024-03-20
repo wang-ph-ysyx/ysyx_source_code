@@ -24,6 +24,11 @@ module top(
 	wire [31:0] next_pc;
 	assign next_pc = pc + 4;
 
+	always @(posedge clk) begin
+		if (inst == 32'b00000000000100000000000001110011)
+			$display("finished");
+	end
+
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
