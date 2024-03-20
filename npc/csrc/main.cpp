@@ -23,10 +23,10 @@ int main(int argc, char **argv) {
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
 	Vtop* top = new Vtop{contextp};
-	pmem_write(0x80000000, 0x00000093);
-	pmem_write(0x80000004, 0x00108093);
-	pmem_write(0x80000008, 0x00208093);
-	pmem_write(0x8000000c, 0x00308093);
+	pmem_write(0x80000000, 0x00100093);
+	pmem_write(0x80000004, 0x00108113);
+	pmem_write(0x80000008, 0x00210093);
+	pmem_write(0x8000000c, 0x00310113);
 	pmem_write(0x80000010, 0x00408093);
 	top->reset = 1;
 	one_cycle(top);
