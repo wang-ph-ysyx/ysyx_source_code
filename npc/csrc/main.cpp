@@ -31,12 +31,9 @@ int main(int argc, char **argv) {
 	top->reset = 1;
 	one_cycle(top);
 	top->reset = 0;
-	int i = 0;
 	while(!top->finished) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
-		i++;
-		if (i > 20) break;
 	}
 	delete top;
 	delete contextp;
