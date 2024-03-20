@@ -65,13 +65,6 @@ module top(
 		.wen(reg_wen)
 	);
 
-	MuxKeyInternal #(1, 3, 1, 1) choose_reg_wen(
-		.out(reg_wen),
-		.key(Type),
-		.default_out(1'b0),
-		.lut({
-			TYPE_I, 1'b1
-		})
-	);
+	assign reg_wen = (Type == TYPE_I);
 
 endmodule
