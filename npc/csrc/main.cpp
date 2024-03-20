@@ -15,7 +15,6 @@ unsigned pmem_read(unsigned addr) {
 
 void one_cycle(Vtop* top) {
 	top->clk = 0; top->eval();
-	printf("src1:%d, R[rd]:%d, imm:%d\n", top->src1, top->val, top->imm);
 	top->clk = 1; top->eval();
 }
 

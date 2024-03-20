@@ -2,10 +2,7 @@ module top(
 	input clk,
 	input reset,
 	input [31:0] inst,
-	output [31:0] pc,
-	output [31:0] imm,
-	output [31:0] src1,
-	output [31:0] val
+	output [31:0] pc
 );
 
 	wire [31:0] next_pc;
@@ -15,6 +12,9 @@ module top(
 	wire [4:0] rd;
 	wire [2:0] funct3;
 	wire [6:0] funct7;
+	wire [31:0] imm;
+	wire [31:0] src1;
+	wire [31:0] val;
 	wire [31:0] src2;
 	wire [2:0] Type;
 	wire reg_wen;
