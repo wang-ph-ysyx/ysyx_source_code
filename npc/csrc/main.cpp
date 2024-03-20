@@ -20,9 +20,9 @@ void one_cycle(Vtop* top) {
 
 int finish = 0;
 
-/*void ebreak() {
+void ebreak() {
 	finish = 1;
-}*/
+}
 
 int main(int argc, char **argv) {
 	VerilatedContext* contextp = new VerilatedContext;
