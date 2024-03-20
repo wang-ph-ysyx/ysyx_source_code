@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	while(!contextp->gotFinish()) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
-		printf("src1:%d, R[rd]:%d, imm:%d", top->src1, top->val, top->imm);
+		printf("src1:%d, R[rd]:%d, imm:%d\n", top->src1, top->val, top->imm);
 		++i;
 		if (i > 2) break;
 	}
