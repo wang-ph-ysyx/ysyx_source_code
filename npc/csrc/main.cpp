@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
 	pmem_write(0x80000000, 0x00000093);
 	pmem_write(0x80000004, 0x00108093);
 	pmem_write(0x80000008, 0x00108093);
+	pmem_write(0x8000000c, 0x00108093);
+	pmem_write(0x80000010, 0x00108093);
 	top->reset = 1;
 	one_cycle(top);
 	top->reset = 0;
