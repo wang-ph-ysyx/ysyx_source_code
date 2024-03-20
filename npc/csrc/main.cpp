@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 		one_cycle(top);
 		printf("src1:%d, R[rd]:%d, imm:%d\n", top->src1, top->val, top->imm);
 		++i;
-		if (i > 2) break;
+		if (i > 4) break;
 	}
 	delete top;
 	delete contextp;
