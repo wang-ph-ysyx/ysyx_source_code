@@ -2,7 +2,8 @@ module top(
 	input clk,
 	input reset,
 	input [31:0] inst,
-	output [31:0] pc
+	output [31:0] pc,
+	output finished
 );
 
 	wire [31:0] next_pc;
@@ -23,11 +24,6 @@ module top(
 
 	wire [31:0] next_pc;
 	assign next_pc = pc + 4;
-
-	always @(posedge clk) begin
-		if (inst == 32'b00000000000100000000000001110011)
-			$display("finished");
-	end
 
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
@@ -70,6 +66,7 @@ module top(
 		.wen(reg_wen)
 	);
 
+	assign finished = (inst == 32'h00100073);
 	assign reg_wen = (Type == TYPE_I);
 
 endmodule

@@ -18,12 +18,6 @@ void one_cycle(Vtop* top) {
 	top->clk = 1; top->eval();
 }
 
-int finish = 0;
-
-void ebreak() {
-	finish = 1;
-}
-
 int main(int argc, char **argv) {
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
@@ -38,7 +32,7 @@ int main(int argc, char **argv) {
 	one_cycle(top);
 	top->reset = 0;
 	int i = 0;
-	while(!finish) {
+	while(!top->finished) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
 		i++;
