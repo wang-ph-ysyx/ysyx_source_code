@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
 	while(!finish) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
-		++i;
-		if (i > 6) break;
+		i++;
+		if (i > 20) break;
 	}
 	delete top;
 	delete contextp;
