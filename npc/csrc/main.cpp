@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
 	pmem_write(0x80000008, 0x00210093);
 	pmem_write(0x8000000c, 0x00310113);
 	pmem_write(0x80000010, 0x00408093);
+	pmem_write(0x80000014, 0x00100073);
 	top->reset = 1;
 	one_cycle(top);
 	top->reset = 0;
@@ -41,7 +42,7 @@ int main(int argc, char **argv) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
 		++i;
-		if (i > 4) break;
+		if (i > 6) break;
 	}
 	delete top;
 	delete contextp;
