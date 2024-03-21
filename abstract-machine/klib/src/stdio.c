@@ -30,6 +30,7 @@ int sprintf(char *out, const char *fmt, ...) {
 					data /= 10;
 					++len;
 				}
+				--len;
 				for (; len >= 0; --len, ++count) {
 					out[count] = str[len];
 				}
