@@ -4,12 +4,12 @@
 
 typedef struct ringbuf_node{
 	vaddr_t pc, snpc;
-	uint8_t *inst;
+	uint32_t inst;
 } ringbuf_node;
 ringbuf_node ringbuf[RINGBUF_SIZE];
 int start = 0, end = 0;
 
-void record_ringbuf(vaddr_t pc, vaddr_t snpc, uint8_t *inst) {
+void record_ringbuf(vaddr_t pc, vaddr_t snpc, uint32_t inst) {
 	end = (end + 1) % RINGBUF_SIZE;
 	if (start == end) 
 		start = (start + 1) % RINGBUF_SIZE;
@@ -26,7 +26,7 @@ void display_ringbuf(){
 		else printf("    ");
 		vaddr_t pc = ringbuf[start].pc;
 		vaddr_t snpc = ringbuf[start].snpc;
-		uint8_t *inst = ringbuf[start].inst;
+		uint8_t *inst = (uint8_t *)&ringbuf[start].inst;
 		char buf[128] = {'\0'};
 		char *p = buf;
 		p += snprintf(p, sizeof(buf), FMT_WORD ":", pc);
