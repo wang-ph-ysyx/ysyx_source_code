@@ -23,9 +23,10 @@ void display_ringbuf(){
 		start = (start + 1) % RINGBUF_SIZE;
 		if (start == end) 
 			printf("--> ");
-		vaddr_t pc = ringbuf[end].pc;
-		vaddr_t snpc = ringbuf[end].snpc;
-		uint8_t *inst = ringbuf[end].inst;
+		else printf("    ");
+		vaddr_t pc = ringbuf[start].pc;
+		vaddr_t snpc = ringbuf[start].snpc;
+		uint8_t *inst = ringbuf[start].inst;
 		char buf[128] = {'\0'};
 		char *p = buf;
 		p += snprintf(p, sizeof(buf), FMT_WORD ":", pc);
@@ -42,6 +43,6 @@ void display_ringbuf(){
 		void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 		disassemble(p, buf + sizeof(buf) - p,
 			MUXDEF(CONFIG_ISA_x86, snpc, pc), inst, ilen);
-		printf("    %s\n", buf);
+		printf("%s\n", buf);
 	}
 }
