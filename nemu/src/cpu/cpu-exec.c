@@ -96,6 +96,8 @@ static void statistic() {
 
 void assert_fail_msg() {
   isa_reg_display();
+	void display_ringbuf();
+	display_ringbuf();
   statistic();
 }
 

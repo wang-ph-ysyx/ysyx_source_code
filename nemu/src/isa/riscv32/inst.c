@@ -120,5 +120,7 @@ static int decode_exec(Decode *s) {
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
+	void record_ringbuf(vaddr_t pc, vaddr_t snpc, uint8_t *inst);
+	record_ringbuf(s->pc, s->snpc, (uint8_t *)&s->isa.inst.val);
   return decode_exec(s);
 }
