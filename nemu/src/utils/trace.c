@@ -73,7 +73,7 @@ void record_mtrace(paddr_t addr, int len, word_t data, int type) {
 void display_mtrace() {
 	for (int i = 0; i < tail; ++i) {
 		if (mtrace[i].type == MEM_READ)
-			printf("read");
+			printf("read ");
 		else printf("write");
 		printf(" addr: %#x, len: %d, data: %x\n", mtrace[i].addr, mtrace[i].len, mtrace[i].data);
 	}
