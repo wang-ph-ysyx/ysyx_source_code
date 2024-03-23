@@ -50,7 +50,7 @@ void display_ringbuf(){
 
 //code of mtrace
 
-#define MTRACE_SIZE 1024
+#define MTRACE_SIZE 4096
 
 typedef struct {
 	paddr_t addr;
