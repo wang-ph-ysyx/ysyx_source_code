@@ -51,6 +51,8 @@ void display_ringbuf(){
 //code of mtrace
 
 #define MTRACE_SIZE 4096
+#define MTRACE_ADDR_START 0x80000010
+#define MTRACE_ADDR_END 0x87ffffff
 
 typedef struct {
 	paddr_t addr;
@@ -63,6 +65,8 @@ int tail = 0;
 
 void record_mtrace(paddr_t addr, int len, word_t data, int type) {
 	Assert(tail < MTRACE_SIZE, "mtrace overflow");
+	if (addr < MTRACE_ADDR_START || addr > MTRACE_ADDR_END)
+		return;
 	mtrace[tail].addr = addr;
 	mtrace[tail].len = len;
 	mtrace[tail].data = data;
