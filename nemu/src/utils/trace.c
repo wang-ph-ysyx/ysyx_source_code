@@ -50,35 +50,17 @@ void display_ringbuf(){
 
 //code of mtrace
 
-#define MTRACE_SIZE 65536
 #define MTRACE_ADDR_START 0x80000000
 #define MTRACE_ADDR_END 0x87ffffff
 
-typedef struct {
-	paddr_t addr;
-	int len;
-	int type;
-	word_t data;
-} mtrace_node;
-mtrace_node mtrace[MTRACE_SIZE];
-int tail = 0;
-
-void record_mtrace(paddr_t addr, int len, word_t data, int type) {
-	Assert(tail < MTRACE_SIZE, "mtrace overflow");
+void mtrace_read(paddr_t addr, int len) {
 	if (addr < MTRACE_ADDR_START || addr > MTRACE_ADDR_END)
 		return;
-	mtrace[tail].addr = addr;
-	mtrace[tail].len = len;
-	mtrace[tail].data = data;
-	mtrace[tail].type = type;
-	tail ++;
+	printf("read  addr: %#x, len: %d", addr, len);
 }
 
-void display_mtrace() {
-	for (int i = 0; i < tail; ++i) {
-		if (mtrace[i].type == MEM_READ)
-			printf("read ");
-		else printf("write");
-		printf(" addr: %#x, len: %d, data: %0#10x\n", mtrace[i].addr, mtrace[i].len, mtrace[i].data);
-	}
+void mtrace_write(paddr_t addr, int len, word_t data) {
+	if (addr < MTRACE_ADDR_START || addr > MTRACE_ADDR_END)
+		return;
+	printf("write addr: %#x, len: %d, data %0#10x\n", addr, len, data);
 }
