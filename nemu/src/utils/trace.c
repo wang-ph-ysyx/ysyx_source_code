@@ -62,7 +62,7 @@ mtrace_node mtrace[MTRACE_SIZE];
 int tail = 0;
 
 void record_mtrace(paddr_t addr, int len, word_t data, int type) {
-	Assert(tail >= MTRACE_SIZE, "mtrace overflow");
+	Assert(tail < MTRACE_SIZE, "mtrace overflow");
 	mtrace[tail].addr = addr;
 	mtrace[tail].len = len;
 	mtrace[tail].data = data;
