@@ -56,7 +56,7 @@ void display_ringbuf(){
 void mtrace_read(paddr_t addr, int len) {
 	if (addr < MTRACE_ADDR_START || addr > MTRACE_ADDR_END)
 		return;
-	printf("read  addr: %#x, len: %d", addr, len);
+	printf("read  addr: %#x, len: %d\n", addr, len);
 }
 
 void mtrace_write(paddr_t addr, int len, word_t data) {
