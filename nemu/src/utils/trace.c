@@ -1,5 +1,6 @@
 #include <common.h>
 
+//code of iringbuf
 #define RINGBUF_SIZE 10
 
 typedef struct ringbuf_node{
@@ -44,5 +45,36 @@ void display_ringbuf(){
 		disassemble(p, buf + sizeof(buf) - p,
 			MUXDEF(CONFIG_ISA_x86, snpc, pc), inst, ilen);
 		printf("%s\n", buf);
+	}
+}
+
+//code of mtrace
+
+#define MTRACE_SIZE 1024
+
+typedef struct {
+	paddr_t addr;
+	int len;
+	int type;
+	word_t data;
+} mtrace_node;
+mtrace_node mtrace[MTRACE_SIZE];
+int tail = 0;
+
+void record_mtrace(paddr_t addr, int len, word_t data, int type) {
+	Assert(tail >= MTRACE_SIZE, "mtrace overflow");
+	mtrace[tail].addr = addr;
+	mtrace[tail].len = len;
+	mtrace[tail].data = data;
+	mtrace[tail].type = type;
+	tail ++;
+}
+
+void display_mtrace() {
+	for (int i = 0; i < tail; ++i) {
+		if (mtrace[i].type == MEM_READ)
+			printf("read");
+		else printf("write");
+		printf(" addr: %#x, len: %d, data: %x\n", mtrace[i].addr, mtrace[i].len, mtrace[i].data);
 	}
 }
