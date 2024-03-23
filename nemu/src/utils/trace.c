@@ -75,6 +75,6 @@ void display_mtrace() {
 		if (mtrace[i].type == MEM_READ)
 			printf("read ");
 		else printf("write");
-		printf(" addr: %#x, len: %d, data: %#x\n", mtrace[i].addr, mtrace[i].len, mtrace[i].data);
+		printf(" addr: %#x, len: %d, data: %#8x\n", mtrace[i].addr, mtrace[i].len, mtrace[i].data);
 	}
 }
