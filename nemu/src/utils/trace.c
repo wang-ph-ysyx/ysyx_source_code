@@ -51,7 +51,7 @@ void display_ringbuf(){
 //code of mtrace
 
 #define MTRACE_SIZE 4096
-#define MTRACE_ADDR_START 0x80000008
+#define MTRACE_ADDR_START 0x80000000
 #define MTRACE_ADDR_END 0x87ffffff
 
 typedef struct {
