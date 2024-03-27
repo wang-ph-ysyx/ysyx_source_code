@@ -81,14 +81,13 @@ void init_ftrace(char *elf_file) {
 	int fd = open(elf_file, O_RDONLY);
 	assert(fd >= 0);
 	
-	Elf *elf = NULL;
-	Elf* success1 = elf_begin(fd, ELF_C_READ, elf);
-	assert(success1 != NULL);
+	Elf* elf = elf_begin(fd, ELF_C_READ, NULL);
+	assert(elf != NULL);
 	
 	assert(elf_kind(elf) != ELF_K_ELF);
 	size_t shstrndx;
-	int success2 = elf_getshdrstrndx(elf, &shstrndx);
-	assert(success2 == 0);
+	int success = elf_getshdrstrndx(elf, &shstrndx);
+	assert(success == 0);
 
 	Elf_Scn *scn = NULL;
 	while ((scn = elf_nextscn(elf, scn)) != NULL) {
