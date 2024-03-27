@@ -64,3 +64,49 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 		return;
 	printf("write addr: %#x, len: %d, data %0#10x\n", addr, len, data);
 }
+
+//code of ftrace
+#include <stdlib.h>  
+#include <gelf.h>  
+#include <fcntl.h>  
+#include <unistd.h>  
+#include <libelf.h>  
+
+#define SYMFUNC_SIZE 64
+
+static GElf_Sym symtab[SYMFUNC_SIZE];
+static int tail = 0;
+
+void init_ftrace(char *elf_file) {
+	int fd = open(elf_file, O_RDONLY);
+	assert(fd >= 0);
+	
+	Elf *elf = NULL;
+	Elf* success1 = elf_begin(fd, ELF_C_READ, elf);
+	assert(success1);
+	
+	assert(elf_kind(elf) != ELF_K_ELF);
+	size_t shstrndx;
+	int success2 = elf_getshdrstrndx(elf, &shstrndx);
+	assert(success2 == 0);
+
+	Elf_Scn *scn = NULL;
+	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+		GElf_Shdr shdr;
+		gelf_getshdr(scn, &shdr);
+
+		if (shdr.sh_type == SHT_SYMTAB) {
+			Elf_Data *data = elf_getdata(scn, NULL);
+			assert(data);
+			GElf_Sym sym;
+			for (size_t i = 0; gelf_getsym(data, i, &sym) != NULL; ++i) {
+				if (GELF_ST_TYPE(sym.st_info) == STT_FUNC) {
+					symtab[tail] = sym;
+					++tail;
+				}
+			}
+		}
+	}
+	elf_end(elf);
+	close(fd);
+}
