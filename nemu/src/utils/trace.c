@@ -7,8 +7,8 @@ typedef struct ringbuf_node{
 	vaddr_t pc, snpc;
 	uint32_t inst;
 } ringbuf_node;
-ringbuf_node ringbuf[RINGBUF_SIZE];
-int start = 0, end = 0;
+static ringbuf_node ringbuf[RINGBUF_SIZE];
+static int start = 0, end = 0;
 
 void record_ringbuf(vaddr_t pc, vaddr_t snpc, uint32_t inst) {
 	end = (end + 1) % RINGBUF_SIZE;
