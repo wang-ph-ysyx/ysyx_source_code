@@ -83,7 +83,7 @@ void init_ftrace(char *elf_file) {
 	
 	Elf *elf = NULL;
 	Elf* success1 = elf_begin(fd, ELF_C_READ, elf);
-	assert(success1);
+	assert(success1 != NULL);
 	
 	assert(elf_kind(elf) != ELF_K_ELF);
 	size_t shstrndx;
