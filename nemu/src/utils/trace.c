@@ -82,6 +82,11 @@ void init_ftrace(char *elf_file) {
 	assert(fd >= 0);
 	
 	Elf* elf = elf_begin(fd, ELF_C_READ, NULL);
+	if (elf == NULL) {
+    fprintf(stderr, "elf_begin failed: %s\n", elf_errmsg(-1));
+    // 这里可以根据需要添加错误处理代码，例如清理资源、退出程序等
+    exit(EXIT_FAILURE);
+	}  
 	assert(elf != NULL);
 	
 	assert(elf_kind(elf) != ELF_K_ELF);
