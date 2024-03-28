@@ -94,8 +94,12 @@ static void statistic() {
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
+void display_ringbuf();
+void display_mtrace();
+
 void assert_fail_msg() {
   isa_reg_display();
+	IFDEF(CONFIG_ITRACE, display_ringbuf());
   statistic();
 }
 
