@@ -119,3 +119,29 @@ void init_ftrace(char *elf_file) {
 	elf_end(elf);
 	close(fd);
 }
+
+static int nest = 0;
+
+void ftrace_call(vaddr_t addr) {
+	for (int i = 0; i < tail; ++i) {
+		if (addr >= symtab[i].st_value && addr < symtab[i].st_value - symtab[i].st_size) {
+			for (int j = 0; j < nest; ++j)
+				printf(" ");
+			++nest;
+			printf("call [%s@%#lx]\n", names[i], symtab[i].st_value);
+			break;
+		}
+	}
+}
+
+void ftrace_ret(vaddr_t addr) {
+	for (int i = 0; i < tail; ++i) {
+		if (addr >= symtab[i].st_value && addr < symtab[i].st_value - symtab[i].st_size) {
+			for (int j = 0; j < nest; ++j)
+				printf(" ");
+			--nest;
+			printf("ret [%s]\n", names[i]);
+			break;
+		}
+	}
+}

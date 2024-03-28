@@ -35,6 +35,9 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1); } while(0)
 #define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1); } while(0)
 
+void ftrace_call(vaddr_t addr);
+void ftrace_ret(vaddr_t addr);
+
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
@@ -82,8 +85,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = (src1 >> imm));
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = ((sword_t)src1 >> imm));
 
-  INSTPAT("? ?????????? ? ???????? ????? 11011 11", jal    , J, s->dnpc = s->pc + imm; R(rd) = s->snpc);
-  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, s->dnpc = (src1 + imm) & ~(word_t)1; R(rd) = s->snpc);
+  INSTPAT("? ?????????? ? ???????? ????? 11011 11", jal    , J, s->dnpc = s->pc + imm; R(rd) = s->snpc; ftrace_call(s->dnpc););
+  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, s->dnpc = (src1 + imm) & ~(word_t)1; R(rd) = s->snpc; if (imm == 0 && rd == 0 && src1 == 1) ftrace_ret(s->dnpc); else ftrace_call(s->dnpc););
 
   INSTPAT("0000000 ????? ????? 000 ????? 01100 11", add    , R, R(rd) = src1 + src2);
   INSTPAT("0000000 ????? ????? 010 ????? 01100 11", slt    , R, R(rd) = (sword_t)src1 < (sword_t)src2);
