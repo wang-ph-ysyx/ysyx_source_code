@@ -134,7 +134,7 @@ void ftrace_call(vaddr_t addr) {
 		}
 		printf("%#lx\n", symtab[i].st_value);
 	}
-	printf("%#x\n", addr);
+	printf("%#x\n\n", addr);
 }
 
 void ftrace_ret(vaddr_t addr) {
