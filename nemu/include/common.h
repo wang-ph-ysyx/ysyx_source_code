@@ -47,7 +47,3 @@ typedef uint16_t ioaddr_t;
 #include <debug.h>
 
 #endif
-
-//use for mtrace in utils/trace.c
-#define MEM_READ 0
-#define MEM_WRITE 1
