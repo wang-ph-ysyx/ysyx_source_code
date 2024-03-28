@@ -132,6 +132,7 @@ void ftrace_call(vaddr_t addr) {
 			break;
 		}
 	}
+	printf("test\n");
 }
 
 void ftrace_ret(vaddr_t addr) {

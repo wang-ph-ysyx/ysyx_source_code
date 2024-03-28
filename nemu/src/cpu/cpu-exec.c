@@ -83,8 +83,6 @@ static void execute(uint64_t n) {
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
-	void ftrace_call(vaddr_t addr);
-	ftrace_call(0x80000000);
 }
 
 static void statistic() {
