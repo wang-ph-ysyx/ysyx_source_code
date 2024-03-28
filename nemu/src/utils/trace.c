@@ -76,6 +76,7 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 
 static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
+static char *names[SYMFUNC_SIZE];
 
 void init_ftrace(char *elf_file) {
 	elf_version(EV_CURRENT);
@@ -86,11 +87,9 @@ void init_ftrace(char *elf_file) {
 	assert(elf != NULL);
 	
 	assert(elf_kind(elf) == ELF_K_ELF);
-	size_t shstrndx;
-	int success = elf_getshdrstrndx(elf, &shstrndx);
-	assert(success == 0);
 
 	Elf_Scn *scn = NULL;
+	size_t scndx = SHN_UNDEF;
 	while ((scn = elf_nextscn(elf, scn)) != NULL) {
 		GElf_Shdr shdr;
 		gelf_getshdr(scn, &shdr);
@@ -106,7 +105,17 @@ void init_ftrace(char *elf_file) {
 				}
 			}
 		}
+		else if (shdr.sh_type == SHT_STRTAB) {
+			scndx = elf_ndxscn(scn);
+			break;
+		}
 	}
+
+	for (int i = 0; i < tail; ++i) {
+		names[i] = elf_strptr(elf, scndx, symtab[i].st_name);
+		assert(names[i]);
+	}
+
 	elf_end(elf);
 	close(fd);
 }
