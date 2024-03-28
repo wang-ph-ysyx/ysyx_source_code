@@ -78,18 +78,14 @@ static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
 
 void init_ftrace(char *elf_file) {
+	elf_version(EV_CURRENT);
 	int fd = open(elf_file, O_RDONLY);
 	assert(fd >= 0);
 	
 	Elf* elf = elf_begin(fd, ELF_C_READ, NULL);
-	if (elf == NULL) {
-    fprintf(stderr, "elf_begin failed: %s\n", elf_errmsg(-1));
-    // 这里可以根据需要添加错误处理代码，例如清理资源、退出程序等
-    exit(EXIT_FAILURE);
-	}  
 	assert(elf != NULL);
 	
-	assert(elf_kind(elf) != ELF_K_ELF);
+	assert(elf_kind(elf) == ELF_K_ELF);
 	size_t shstrndx;
 	int success = elf_getshdrstrndx(elf, &shstrndx);
 	assert(success == 0);
