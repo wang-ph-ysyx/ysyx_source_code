@@ -114,6 +114,7 @@ void init_ftrace(char *elf_file) {
 	for (int i = 0; i < tail; ++i) {
 		names[i] = elf_strptr(elf, scndx, symtab[i].st_name);
 		assert(names[i]);
+		printf("%s", names[i]);
 	}
 
 	elf_end(elf);
@@ -132,7 +133,6 @@ void ftrace_call(vaddr_t addr) {
 			break;
 		}
 	}
-			printf("call [%s@%#lx]\n", names[1], symtab[1].st_value);
 }
 
 void ftrace_ret(vaddr_t addr) {
