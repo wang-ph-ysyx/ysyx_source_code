@@ -114,7 +114,7 @@ void init_ftrace(char *elf_file) {
 	for (int i = 0; i < tail; ++i) {
 		names[i] = elf_strptr(elf, scndx, symtab[i].st_name);
 		assert(names[i]);
-		printf("%s", names[i]);
+		printf("%s\n", names[i]);
 	}
 
 	elf_end(elf);
