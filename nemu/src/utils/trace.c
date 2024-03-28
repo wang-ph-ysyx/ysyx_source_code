@@ -73,10 +73,11 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 #include <libelf.h>  
 
 #define SYMFUNC_SIZE 64
+#define SYMFUNC_NAMESIZE 32
 
 static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
-static char *names[SYMFUNC_SIZE];
+static char names[SYMFUNC_SIZE][SYMFUNC_NAMESIZE];
 
 void init_ftrace(char *elf_file) {
 	elf_version(EV_CURRENT);
@@ -112,8 +113,8 @@ void init_ftrace(char *elf_file) {
 	}
 
 	for (int i = 0; i < tail; ++i) {
-		names[i] = elf_strptr(elf, scndx, symtab[i].st_name);
-		assert(names[i]);
+		char *name = elf_strptr(elf, scndx, symtab[i].st_name);
+		strncpy(names[i], name, SYMFUNC_NAMESIZE);
 	}
 
 	elf_end(elf);
