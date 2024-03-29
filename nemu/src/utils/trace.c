@@ -3,7 +3,7 @@
 //code of iringbuf
 #define RINGBUF_SIZE 10
 
-#ifdef CONFIG_OTRACE
+#ifdef CONFIG_ITRACE
 
 typedef struct ringbuf_node{
 	vaddr_t pc, snpc;
