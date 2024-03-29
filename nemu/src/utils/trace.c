@@ -3,6 +3,8 @@
 //code of iringbuf
 #define RINGBUF_SIZE 10
 
+#ifdef CONFIG_OTRACE
+
 typedef struct ringbuf_node{
 	vaddr_t pc, snpc;
 	uint32_t inst;
@@ -48,6 +50,7 @@ void display_ringbuf(){
 	}
 }
 
+#endif
 //code of mtrace
 
 #define MTRACE_ADDR_START 0x80000000
