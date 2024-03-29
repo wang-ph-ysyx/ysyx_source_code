@@ -126,7 +126,7 @@ static int nest = 0;
 void ftrace_call(vaddr_t addr, vaddr_t pc) {
 	for (int i = 0; i < tail; ++i) {
 		if (addr >= symtab[i].st_value && addr < symtab[i].st_value + symtab[i].st_size) {
-			printf("%#x", pc);
+			printf("%#x: ", pc);
 			for (int j = 0; j < nest; ++j)
 				printf(" ");
 			++nest;
@@ -140,7 +140,7 @@ void ftrace_ret(vaddr_t addr, vaddr_t pc) {
 	for (int i = 0; i < tail; ++i) {
 		if (addr >= symtab[i].st_value && addr < symtab[i].st_value + symtab[i].st_size) {
 			--nest;
-			printf("%#x", pc);
+			printf("%#x: ", pc);
 			for (int j = 0; j < nest; ++j)
 				printf(" ");
 			printf("ret [%s]\n", names[i]);
