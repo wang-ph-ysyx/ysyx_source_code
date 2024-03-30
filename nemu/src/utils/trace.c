@@ -3,6 +3,8 @@
 //code of iringbuf
 #define RINGBUF_SIZE 10
 
+#ifdef CONFIG_ITRACE
+
 typedef struct ringbuf_node{
 	vaddr_t pc, snpc;
 	uint32_t inst;
@@ -48,6 +50,7 @@ void display_ringbuf(){
 	}
 }
 
+#endif
 //code of mtrace
 
 #define MTRACE_ADDR_START 0x80000000
@@ -123,9 +126,10 @@ void init_ftrace(char *elf_file) {
 
 static int nest = 0;
 
-void ftrace_call(vaddr_t addr) {
+void ftrace_call(vaddr_t addr, vaddr_t pc) {
 	for (int i = 0; i < tail; ++i) {
 		if (addr >= symtab[i].st_value && addr < symtab[i].st_value + symtab[i].st_size) {
+			printf("%#x: ", pc);
 			for (int j = 0; j < nest; ++j)
 				printf(" ");
 			++nest;
@@ -135,10 +139,11 @@ void ftrace_call(vaddr_t addr) {
 	}
 }
 
-void ftrace_ret(vaddr_t addr) {
+void ftrace_ret(vaddr_t addr, vaddr_t pc) {
 	for (int i = 0; i < tail; ++i) {
 		if (addr >= symtab[i].st_value && addr < symtab[i].st_value + symtab[i].st_size) {
 			--nest;
+			printf("%#x: ", pc);
 			for (int j = 0; j < nest; ++j)
 				printf(" ");
 			printf("ret [%s]\n", names[i]);
