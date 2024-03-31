@@ -75,8 +75,8 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 #include <unistd.h>  
 #include <libelf.h>  
 
-#define SYMFUNC_SIZE 64
-#define SYMFUNC_NAMESIZE 32
+#define SYMFUNC_SIZE 256
+#define SYMFUNC_NAMESIZE 256
 
 static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
