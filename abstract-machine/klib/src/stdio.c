@@ -24,25 +24,32 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 	for (int i = 0; fmt[i] != '\0'; ++i) {
 		if (fmt[i] == '%') {
 			++i;
-			if (fmt[i] == 'd') {
-				int data = va_arg(ap, int);
-				int len = 0;
-				char str[11] = {'\0'};
-				while (data) {
-					str[len] = data % 10 + '0';
-					data /= 10;
-					++len;
-				}
-				--len;
-				for (; len >= 0; --len, ++out) {
-					*out = str[len];
-				}
-			}
-			else if (fmt[i] == 's') {
-				char *str = va_arg(ap, char*);
-				for (; *str != '\0'; ++str, ++out) {
-					*out = *str;
-				}
+			switch (fmt[i]) {
+				case 'd':
+					int data = va_arg(ap, int);
+					int len = 0;
+					char str1[11] = {'\0'};
+					while (data) {
+						str1[len] = data % 10 + '0';
+						data /= 10;
+						++len;
+					}
+					--len;
+					for (; len >= 0; --len, ++out) {
+						*out = str1[len];
+					}
+				break;
+				case 's':
+					char *str2 = va_arg(ap, char*);
+					for (; *str2 != '\0'; ++str2, ++out) {
+						*out = *str2;
+					}
+				break;
+				case 'c':
+					char ch = va_arg(ap, int);
+					*out = ch;
+					++out;
+				break;
 			}
 		}
 		else {
