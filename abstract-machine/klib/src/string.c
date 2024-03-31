@@ -66,7 +66,10 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+	char srcchar[n];
+	memcpy(srcchar, src, n);
+	memcpy(dst, srcchar, n);
+	return dst;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
