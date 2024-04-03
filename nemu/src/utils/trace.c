@@ -75,8 +75,8 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 #include <unistd.h>  
 #include <libelf.h>  
 
-#define SYMFUNC_SIZE 64
-#define SYMFUNC_NAMESIZE 32
+#define SYMFUNC_SIZE 256
+#define SYMFUNC_NAMESIZE 256
 
 static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
@@ -151,3 +151,14 @@ void ftrace_ret(vaddr_t addr, vaddr_t pc) {
 		}
 	}
 }
+
+//code of dtrace
+
+void dtrace_read(const char *name, paddr_t addr, int len, paddr_t offset) {
+	printf("read : %s, addr: %#x, len: %d, offset: %#x\n", name, addr, len, offset);
+}
+
+void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_t data) {
+	printf("write: %s, addr: %#x, len: %d, offset: %#x, data: %#x\n", name, addr, len, offset, data);
+}
+
