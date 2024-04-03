@@ -23,8 +23,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 	volatile uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
 	uint32_t data = inl(VGACTL_ADDR);
 	int screen_w = data >> 16;
-	for (int i = ctl->y; i < ctl->h; ++i) {
-		for (int j = ctl->x; j < ctl->w; ++j) {
+	for (int i = ctl->y; i < ctl->y + ctl->h; ++i) {
+		for (int j = ctl->x; j < ctl->x + ctl->w; ++j) {
 			fb[i*screen_w+j] = pixels[(i-ctl->y)*ctl->w + (j-ctl->x)];
 		}
 	}	
