@@ -52,8 +52,8 @@ void init_map() {
   p_space = io_space;
 }
 
-void dtrace_read(char *name, paddr_t addr, int len, paddr_t offset);
-void dtrace_write(char *name, paddr_t addr, int len, paddr_t offset, word_t data);
+void dtrace_read(const char *name, paddr_t addr, int len, paddr_t offset);
+void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_t data);
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
