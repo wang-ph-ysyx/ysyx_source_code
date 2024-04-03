@@ -155,10 +155,10 @@ void ftrace_ret(vaddr_t addr, vaddr_t pc) {
 //code of dtrace
 
 void dtrace_read(const char *name, paddr_t addr, int len, paddr_t offset) {
-	printf("read : %s, addr: %#x, len: %d, offset: %#x", name, addr, len, offset);
+	printf("read : %s, addr: %#x, len: %d, offset: %#x\n", name, addr, len, offset);
 }
 
 void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_t data) {
-	printf("write: %s, addr: %#x, len: %d, offset: %#x, data: %#x", name, addr, len, offset, data);
+	printf("write: %s, addr: %#x, len: %d, offset: %#x, data: %#x\n", name, addr, len, offset, data);
 }
 
