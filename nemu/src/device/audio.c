@@ -32,6 +32,8 @@ static uint32_t *audio_base = NULL;
 
 void mycallback(void *userdata, uint8_t *stream, int len) {
 	static int sbuf_front = 0;
+	int count = audio_base[reg_count];
+	len = len > count ? count : len;
 	for (int i = 0; i < len; ++i, sbuf_front = (sbuf_front+1) % audio_base[reg_sbuf_size]) {
 		stream[i] = sbuf[sbuf_front];
 		sbuf[sbuf_front] = 0;
