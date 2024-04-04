@@ -29,9 +29,9 @@ enum {
 
 static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
-static int sbuf_front = 0;
 
 void mycallback(void *userdata, uint8_t *stream, int len) {
+	static int sbuf_front = 0;
 	for (int i = 0; i < len; ++i, sbuf_front = (sbuf_front+1) % audio_base[reg_sbuf_size]) {
 		stream[i] = sbuf[sbuf_front];
 		sbuf[sbuf_front] = 0;
@@ -53,6 +53,8 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 		SDL_InitSubSystem(SDL_INIT_AUDIO);
 		SDL_OpenAudio(&s, NULL);
 		SDL_PauseAudio(0);
+
+		audio_base[reg_init] = 0;
 	}
 }
 
