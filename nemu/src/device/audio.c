@@ -31,6 +31,7 @@ static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 
 void mycallback(void *userdata, uint8_t *stream, int len) {
+	SDL_zero(stream);
 	static int sbuf_front = 0;
 	int count = audio_base[reg_count];
 	len = len > count ? count : len;
