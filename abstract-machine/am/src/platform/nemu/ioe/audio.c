@@ -29,15 +29,15 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
 	int bufsize = inl(AUDIO_SBUF_SIZE_ADDR);
+	uint8_t *st = (uint8_t *)ctl->buf.start, *ed = (uint8_t *)ctl->buf.end;
 
 	//wait until the space is big enough
-	while (ctl->buf.end - ctl->buf.start > bufsize - inl(AUDIO_COUNT_ADDR));
+	while (ed - st > bufsize - inl(AUDIO_COUNT_ADDR));
 
-	uint8_t *fb = (uint8_t *)(uintptr_t)AUDIO_SBUF_ADDR;
+	uint8_t *ab = (uint8_t *)(uintptr_t)AUDIO_SBUF_ADDR;
 	static int i = 0;
-	uint8_t *st = (uint8_t *)ctl->buf.start, *ed = (uint8_t *)ctl->buf.end;
 	for (uint8_t *start = st; start < ed; ++start, i = (i + 1) % bufsize) {
-		fb[i] = *start;
+		ab[i] = *start;
 	}
 	int count = inl(AUDIO_COUNT_ADDR);
 	outl(AUDIO_COUNT_ADDR, count + ed - st);
