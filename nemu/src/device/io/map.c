@@ -57,7 +57,7 @@ void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
-  check_bound(map, addr);
+//  check_bound(map, addr);
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
 	IFDEF(CONFIG_DTRACE, dtrace_read(map->name, addr, len, offset);)
