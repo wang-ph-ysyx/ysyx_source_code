@@ -29,11 +29,13 @@ enum {
 
 static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
-static uint8_t *sbuf_front = NULL;
+static int sbuf_front = 0;
 
 void mycallback(void *userdata, uint8_t *stream, int len) {
-	stream = sbuf_front;
-	sbuf_front += len;
+	for (int i = 0; i < len; ++i, sbuf_front = (sbuf_front+1) % audio_base[reg_sbuf_size]) {
+		stream[i] = sbuf[sbuf_front];
+		sbuf[sbuf_front] = 0;
+	}
 	audio_base[reg_count] -= len;
 }
 
@@ -65,5 +67,4 @@ void init_audio() {
 
   sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);
   add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, NULL);
-	sbuf_front = sbuf;
 }
