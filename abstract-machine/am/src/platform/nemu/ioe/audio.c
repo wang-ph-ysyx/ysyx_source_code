@@ -35,9 +35,9 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
 	while (ed - st > bufsize - inl(AUDIO_COUNT_ADDR));
 
 	uint8_t *ab = (uint8_t *)(uintptr_t)AUDIO_SBUF_ADDR;
-	static int i = 0;
-	for (uint8_t *start = st; start < ed; ++start, i = (i + 1) % bufsize) {
-		ab[i] = *start;
+	static int sbuf_tail = 0; //队尾
+	for (uint8_t *start = st; start < ed; ++start, sbuf_tail = (sbuf_tail + 1) % bufsize) {
+		ab[sbuf_tail] = *start;
 	}
 	int count = inl(AUDIO_COUNT_ADDR);
 	outl(AUDIO_COUNT_ADDR, count + ed - st);
