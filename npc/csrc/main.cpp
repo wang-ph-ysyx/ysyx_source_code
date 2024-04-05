@@ -1,16 +1,19 @@
 #include <Vtop.h>
 #include "verilated.h"
+#include <stdint.h>
 
-unsigned memory[10000];
+#define MEM_BASE 0x80000000
 
-void pmem_write(unsigned addr, unsigned data) {
-	int index = (addr - 0x80000000)/4;
-	memory[index] = data;
+uint8_t memory[10000];
+
+void pmem_write(uint32_t addr, uint32_t data) {
+	uint32_t index = addr - MEM_BASE;
+	*(uint32_t *)(memory + index) = data;
 }
 
-unsigned pmem_read(unsigned addr) {
-	int index = (addr - 0x80000000)/4;
-	return memory[index];
+unsigned pmem_read(uint32_t addr) {
+	uint32_t index = addr - MEM_BASE;
+	return *(uint32_t *)(memory + index);
 }
 
 void one_cycle(Vtop* top) {
