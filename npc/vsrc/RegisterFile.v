@@ -17,7 +17,7 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
 
   always @(posedge clk) begin
     if (wen) rf[waddr] <= wdata;
-		$display("register status: 0:%d, 1:%d, 2:%d, wdata:%d", rf[0], rf[1], rf[2], wdata);
+		//$display("register status: 0:%d, 1:%d, 2:%d, wdata:%d", rf[0], rf[1], rf[2], wdata);
   end
 
 	assign rdata1 = rf[raddr1];
