@@ -21,7 +21,7 @@ unsigned pmem_read(uint32_t addr) {
 
 void load_img(char *img_file) {
 	if (img_file == NULL) {
-		printf("No image is given. Use the default build-in image.");
+		printf("No image is given. Use the default build-in image.\n");
 		return;
 	}
 
