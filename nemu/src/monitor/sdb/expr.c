@@ -238,7 +238,10 @@ int pos_of_maincomp(int p, int q, bool *success) {
 			++bracket;
 		else if (tokens[i].type == ')')
 			--bracket;
-		if (bracket < 0) *success = false;
+		if (bracket < 0) {
+			*success = false;
+			assert(0);
+		}
 		if (bracket > 0) continue;
 		else if (tokens[i].type == TK_AND) {
 				pos = i;
