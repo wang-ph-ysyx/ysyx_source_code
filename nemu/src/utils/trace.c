@@ -76,7 +76,7 @@ void mtrace_write(paddr_t addr, int len, word_t data) {
 #include <libelf.h>  
 
 #define SYMFUNC_SIZE 256
-#define SYMFUNC_NAMESIZE 256
+#define SYMFUNC_NAMESIZE 32
 
 static GElf_Sym symtab[SYMFUNC_SIZE];
 static int tail = 0;
@@ -104,6 +104,7 @@ void init_ftrace(char *elf_file) {
 			GElf_Sym sym;
 			for (size_t i = 0; gelf_getsym(data, i, &sym) != NULL; ++i) {
 				if (GELF_ST_TYPE(sym.st_info) == STT_FUNC) {
+					assert(tail < SYMFUNC_SIZE);
 					symtab[tail] = sym;
 					++tail;
 				}
