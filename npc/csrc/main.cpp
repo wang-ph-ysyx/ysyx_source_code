@@ -69,6 +69,9 @@ int main(int argc, char **argv) {
 		top->inst = pmem_read(top->pc);
 		one_cycle(top);
 	}
+	if (top->halt_ret)
+		printf("HIT BAD TRAP");
+	else printf("HIT GOOD TREP");
 	delete top;
 	delete contextp;
 	return 0;

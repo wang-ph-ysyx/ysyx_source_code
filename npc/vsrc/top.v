@@ -3,7 +3,8 @@ module top(
 	input reset,
 	input [31:0] inst,
 	output [31:0] pc,
-	output finished
+	output finished,
+	output [31:0] halt_ret
 );
 
 	wire [31:0] next_pc;
@@ -18,7 +19,7 @@ module top(
 	wire [31:0] val;
 	wire [31:0] src2;
 	wire [2:0] Type;
-	wire reg_wen;
+	wire  reg_wen;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
@@ -76,7 +77,8 @@ module top(
 		.rdata2(src2),
 		.raddr1(rs1),
 		.raddr2(rs2),
-		.wen(reg_wen)
+		.wen(reg_wen),
+		.halt_ret(halt_ret)
 	);
 
 	assign finished = (inst == 32'h00100073);
