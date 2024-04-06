@@ -11,12 +11,11 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
 
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
 
-	initial begin
-		rf[0] = 0;
-	end
-
   always @(posedge clk) begin
-    if (wen) rf[waddr] <= wdata;
+		if (wen) begin
+			rf[waddr] <= wdata;
+			rf[0] <= 0;
+		end
 		$display("register status: 0:%d, 1:%d, 2:%d, wdata:%d", rf[0], rf[1], rf[2], wdata);
   end
 
