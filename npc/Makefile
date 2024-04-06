@@ -7,6 +7,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
+IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 default: $(BIN)
@@ -30,7 +31,7 @@ all: default
 	@echo "Write this Makefile by your self."
 
 sim: $(BIN)
-	@$^
+	@$(BIN) $(IMG)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 
