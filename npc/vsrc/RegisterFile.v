@@ -16,7 +16,7 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
 			rf[waddr] <= wdata;
 			rf[0] <= 0;
 		end
-		$display("register status: 0:%d, 1:%d, 2:%d, wdata:%d, wen:%d, waddr:%d", rf[0], rf[1], rf[2], wdata, wen, waddr);
+		$display("register status: 0:%x, 1:%x, 2:%x, wdata:%x, wen:%d, waddr:%d", rf[0], rf[1], rf[2], wdata, wen, waddr);
   end
 
 	assign rdata1 = rf[raddr1];
