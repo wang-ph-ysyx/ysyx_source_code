@@ -14,24 +14,33 @@ module idu(
 	assign rs2 = in[24:20];
 	assign rd = in[11:7];
 	assign funct3 = in[14:12];
+	assign funct7 = in[31:25];
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 
-	MuxKeyInternal #(1, 7, 3, 0) choose_type(
+	MuxKeyInternal #(6, 7, 3, 1) choose_type(
 		.out(Type),
 		.key(opcode),
 		.default_out(3'b0),
 		.lut({
-			7'b0010011, TYPE_I
+			7'b0010011, TYPE_I,   //addi
+			7'b0110111, TYPE_U,   //lui
+			7'b0010111, TYPE_U,   //auipc
+			7'b0100011, TYPE_S,   //sw
+			7'b1101111, TYPE_J,   //jal
+			7'b1100111, TYPE_I    //jalr
 		})
 	);
 
-	MuxKeyInternal #(1, 3, 32, 0) choose_imm(
+	MuxKeyInternal #(4, 3, 32, 1) choose_imm(
 		.out(imm),
 		.key(Type),
 		.default_out(32'b0),
 		.lut({
-			TYPE_I, {20'b0, in[31:20]}
+			TYPE_I, {{20{in[31]}}, in[31:20]},
+			TYPE_U, {in[31:12], 12'b0},
+			TYPE_S, {{20{in[31]}}, in[31:25], in[11:7]},
+			TYPE_J, {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0}
 		})
 	);
 

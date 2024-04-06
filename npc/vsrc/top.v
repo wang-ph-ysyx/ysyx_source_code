@@ -22,13 +22,24 @@ module top(
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
-	wire [31:0] next_pc;
-	assign next_pc = pc + 4;
+	wire [31:0] jump;
+	wire [31:0] dnpc;
+	wire [31:0] snpc;
+	assign snpc = pc + 4;
+
+	MuxKeyInternal #(1, 32, 32, 1) calculate_dnpc(
+		.out(dnpc),
+		.key(jump),
+		.default_out(jump),
+		.lut({
+			32'b0, snpc
+		})
+	);
 
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
-		.din(next_pc),
+		.din(dnpc),
 		.dout(pc),
 		.wen(1'b1)
 	);
@@ -52,7 +63,9 @@ module top(
 		.imm(imm),
 		.funct3(funct3),
 		.funct7(funct7),
-		.val(val)
+		.val(val),
+		.pc(pc),
+		.jump(jump)
 	);
 
 	RegisterFile #(5, 32) my_reg(
@@ -67,6 +80,6 @@ module top(
 	);
 
 	assign finished = (inst == 32'h00100073);
-	assign reg_wen = (Type == TYPE_I);
+	assign reg_wen = (Type == TYPE_I) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
 
 endmodule
