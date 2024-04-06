@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
 		one_cycle(top);
 	}
 	if (top->halt_ret)
-		printf("HIT BAD TRAP");
-	else printf("HIT GOOD TREP");
+		printf("\33[1;41mHIT BAD TRAP\n");
+	else printf("\33[1;42mHIT GOOD TREP\n");
 	delete top;
 	delete contextp;
 	return 0;
