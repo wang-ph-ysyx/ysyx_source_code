@@ -40,12 +40,8 @@ void load_img(char *img_file) {
 
 void init_memory() {
 	pmem_write(0x80000000, 0x00100093);
-	pmem_write(0x80000004, 0x00108113);
-	pmem_write(0x80000008, 0x00210093);
 	pmem_write(0x8000000c, 0x00310113);
-	pmem_write(0x80000010, 0x00408093);
 	pmem_write(0x80000014, 0x00100073);
-	pmem_write(0x80000100, 0x00100073);
 }
 
 void one_cycle(Vtop* top) {
