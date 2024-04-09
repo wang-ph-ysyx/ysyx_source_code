@@ -11,7 +11,7 @@ static int halt = 0;
 
 void cpu_exec(unsigned n) {
 	if (halt) {
-		printf("the program is ended.");
+		printf("the program is ended.\n");
 		return;
 	}
 	for (; n > 0; --n) {
