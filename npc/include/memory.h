@@ -1,6 +1,8 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
+#include <stdint.h>
+
 #define MEM_BASE 0x80000000
 #define MEM_SIZE 0x8000000
 

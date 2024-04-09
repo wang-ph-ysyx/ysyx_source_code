@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <memory.h>
 
 static uint8_t memory[MEM_SIZE];
