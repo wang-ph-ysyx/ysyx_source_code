@@ -29,7 +29,7 @@ void cpu_exec(unsigned n) {
 
 	if (top->halt_ret)
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m\n");
-	else printf("\33[1;32HIT GOOD TRAP\33[1;0m\n");
+	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m\n");
 }
 
 void reset() {
