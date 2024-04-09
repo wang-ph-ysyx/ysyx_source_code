@@ -28,12 +28,10 @@ $(BIN): $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 all: default
-	@echo "Write this Makefile by your self."
 
 sim: $(BIN)
 	@$(BIN) $(IMG)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by your self."
 
 .PHONY: clean all default sim
 
