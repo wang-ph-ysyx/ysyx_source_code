@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
 	contextp->commandArgs(argc, argv);
 	top = new Vtop{contextp};
 
+	reset();
+
 	init_monitor(argc, argv);
 
 	sdb_mainloop();
