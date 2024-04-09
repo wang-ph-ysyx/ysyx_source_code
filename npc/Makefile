@@ -7,7 +7,9 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
+IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
+INC_PATH += $(abspath ./include)
 
 default: $(BIN)
 
@@ -18,6 +20,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+LDFLAGS += -lreadline
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)
@@ -27,12 +30,10 @@ $(BIN): $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 all: default
-	@echo "Write this Makefile by your self."
 
 sim: $(BIN)
-	@$^
+	@$(BIN) $(IMG)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by your self."
 
 .PHONY: clean all default sim
 

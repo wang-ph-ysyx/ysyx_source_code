@@ -1,40 +1,56 @@
 #include <Vtop.h>
 #include "verilated.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <assert.h>
+#include <memory.h>
 
-unsigned memory[10000];
+Vtop* top = NULL;
 
-void pmem_write(unsigned addr, unsigned data) {
-	int index = (addr - 0x80000000)/4;
-	memory[index] = data;
-}
+void init_monitor(int argc, char **argv);
+void sdb_mainloop();
 
-unsigned pmem_read(unsigned addr) {
-	int index = (addr - 0x80000000)/4;
-	return memory[index];
-}
-
-void one_cycle(Vtop* top) {
+void one_cycle() {
+	top->inst = pmem_read(top->pc);
 	top->clk = 0; top->eval();
 	top->clk = 1; top->eval();
+}
+
+void cpu_exec(unsigned n) {
+	if (top->finished) {
+		printf("the program is ended.\n");
+		return;
+	}
+
+	for (; n > 0; --n) {
+		one_cycle();
+		if (top->finished) break;
+	}
+
+	if (top->halt_ret)
+		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
+	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
+	printf("at pc = %#x\n", top->pc);
+}
+
+void reset() {
+	top->reset = 1;
+	top->clk = 0; top->eval();
+	top->clk = 1; top->eval();
+	top->reset = 0;
 }
 
 int main(int argc, char **argv) {
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
-	Vtop* top = new Vtop{contextp};
-	pmem_write(0x80000000, 0x00100093);
-	pmem_write(0x80000004, 0x00108113);
-	pmem_write(0x80000008, 0x00210093);
-	pmem_write(0x8000000c, 0x00310113);
-	pmem_write(0x80000010, 0x00408093);
-	pmem_write(0x80000014, 0x00100073);
-	top->reset = 1;
-	one_cycle(top);
-	top->reset = 0;
-	while(!top->finished) {
-		top->inst = pmem_read(top->pc);
-		one_cycle(top);
-	}
+	top = new Vtop{contextp};
+
+	reset();
+
+	init_monitor(argc, argv);
+
+	sdb_mainloop();
+
 	delete top;
 	delete contextp;
 	return 0;
