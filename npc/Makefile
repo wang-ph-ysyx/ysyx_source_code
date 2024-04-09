@@ -9,6 +9,7 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
+INC_PATH += $(abspath ./include)
 
 default: $(BIN)
 
