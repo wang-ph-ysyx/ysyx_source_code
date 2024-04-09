@@ -20,6 +20,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+LDFLAGS += -lreadline
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)
