@@ -6,19 +6,9 @@
 #include <stdlib.h>
 #include <memory.h>
 
-int one_cycle();
 static int halt = 0;
 
-void cpu_exec(unsigned n) {
-	if (halt) {
-		printf("the program is ended.\n");
-		return;
-	}
-	for (; n > 0; --n) {
-		halt = one_cycle();
-		if (halt) return;
-	}
-}
+void cpu_exec(unsigned n);
 
 static int cmd_c(char *args) {
 	cpu_exec(-1);
