@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-static int halt = 0;
-
+void reg_display();
 void cpu_exec(unsigned n);
 
 static int cmd_c(char *args) {
@@ -26,6 +25,16 @@ static int cmd_si(char *args) {
 	if (args != NULL)
 		sscanf(args, "%d", &steps);
 	cpu_exec(steps);
+	return 0;
+}
+
+static int cmd_info(char *args) {
+	char ch = 'r';
+	if (args != NULL)
+		ch = *args;
+	if (ch == 'r')
+		reg_display();
+	else printf("Usage: info r\n");
 	return 0;
 }
 
@@ -71,7 +80,7 @@ static struct {
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NPC", cmd_q },
 	{ "si", "Execute the program for several steps", cmd_si },
-	//{ "info", "Print the status of the program", cmd_info },
+	{ "info", "Print the status of the program", cmd_info },
 	{ "x", "Scan the memory", cmd_x},
 };
 

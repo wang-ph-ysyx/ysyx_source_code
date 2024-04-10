@@ -1,4 +1,3 @@
-#include <Vtop___024root.h>
 #include <Vtop.h>
 #include "verilated.h"
 #include <stdint.h>
@@ -15,7 +14,6 @@ void one_cycle() {
 	top->inst = pmem_read(top->pc);
 	top->clk = 0; top->eval();
 	top->clk = 1; top->eval();
-	printf("%d\n", top->rootp->top__DOT__my_reg__DOT__rf[2]);
 }
 
 void cpu_exec(unsigned n) {
@@ -49,7 +47,6 @@ int main(int argc, char **argv) {
 	top = new Vtop{contextp};
 
 	reset();
-
 
 	init_monitor(argc, argv);
 

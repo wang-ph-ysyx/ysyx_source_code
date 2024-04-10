@@ -1,6 +1,9 @@
+#include <Vtop___024root.h>
 #include <stdio.h>
 #include <Vtop.h>
 #include "verilated.h"
+
+extern Vtop* top;
 
 const char *regs[] = {
 	"$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -9,6 +12,9 @@ const char *regs[] = {
 	"s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-void isa_reg_display() {
-
+void reg_display() {
+	printf("pc\t%#x\t%d\n", top->pc, top->pc);
+	for (int i = 0; i < 32; ++i) {
+		printf("%s\t%#x\t%d\n", top->rootp->top__DOT__my_reg__DOT__rf[i], top->rootp->top__DOT__my_reg__DOT__rf[i]);
+	}
 }
