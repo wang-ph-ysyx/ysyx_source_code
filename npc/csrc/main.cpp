@@ -1,3 +1,4 @@
+#include <Vtop___024root.h>
 #include <Vtop.h>
 #include "verilated.h"
 #include <stdint.h>
@@ -47,6 +48,8 @@ int main(int argc, char **argv) {
 	top = new Vtop{contextp};
 
 	reset();
+
+	printf("%d\n", top->rootp->top__DOT__my_reg__DOT__rf[0]);
 
 	init_monitor(argc, argv);
 
