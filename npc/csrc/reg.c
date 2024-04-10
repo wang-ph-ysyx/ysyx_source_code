@@ -15,6 +15,6 @@ const char *regs[] = {
 void reg_display() {
 	printf("pc\t%#x\t%d\n", top->pc, top->pc);
 	for (int i = 0; i < 32; ++i) {
-		printf("%s\t%#x\t%d\n", top->rootp->top__DOT__my_reg__DOT__rf[i], top->rootp->top__DOT__my_reg__DOT__rf[i]);
+		printf("%s\t%#x\t%d\n", regs[i], top->rootp->top__DOT__my_reg__DOT__rf[i], top->rootp->top__DOT__my_reg__DOT__rf[i]);
 	}
 }
