@@ -41,3 +41,9 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 include ../Makefile
+
+count:
+	find . -name *.[chv] | xargs cat | wc -l
+
+countNoblank:
+	find . -name *.[cvh] | xargs grep -v '^$$' | wc -l
