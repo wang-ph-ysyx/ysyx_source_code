@@ -20,7 +20,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-LDFLAGS += -lreadline
+LDFLAGS += -lreadline -L$(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)
