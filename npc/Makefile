@@ -32,7 +32,7 @@ $(BIN): $(VSRCS) $(CSRCS)
 all: default
 
 sim: $(BIN)
-	@$(BIN) $(IMG)
+	@$(BIN) -g $(IMG)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 .PHONY: clean all default sim
