@@ -3,8 +3,9 @@
 #include <memory.h>
 
 static char *img_file = NULL;
+long img_size = 0;
 
-static void load_img() {
+static long load_img() {
 	if (img_file == NULL) {
 		printf("No image is given. Use the default build-in image.\n");
 		return;
@@ -21,6 +22,8 @@ static void load_img() {
 	assert(ret == 1);
 
 	fclose(fp);
+
+	return size;
 }
 
 void init_monitor(int argc, char **argv) {
@@ -28,5 +31,5 @@ void init_monitor(int argc, char **argv) {
 
 	init_memory();
 
-	load_img();
+	img_size = load_img();
 }
