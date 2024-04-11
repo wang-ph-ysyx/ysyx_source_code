@@ -4,6 +4,7 @@
 #include <memory.h>
 
 Vtop *top = NULL;
+int npc_abort = 0;
 
 void one_cycle() {
 	top->inst = pmem_read(top->pc);
@@ -12,13 +13,21 @@ void one_cycle() {
 }
 
 void cpu_exec(unsigned n) {
-	if (top->finished) {
+	if (top->finished || abort) {
 		printf("the program is ended.\n");
 		return;
 	}
 
 	for (; n > 0; --n) {
 		one_cycle();
+#ifdef DIFFTEST
+		difftest_step(top->pc);
+#endif
+		if (npc_abort) {
+			printf("\33[1;31mNPC ABORT\33[1;0m ");
+			printf("at pc = %#x\n", top->pc);
+			return;
+		}
 		if (top->finished) break;
 	}
 
