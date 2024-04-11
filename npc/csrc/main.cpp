@@ -5,8 +5,6 @@ extern Vtop* top;
 
 void init_monitor(int argc, char **argv);
 void sdb_mainloop();
-void one_cycle();
-void cpu_exec(unsigned n);
 void reset();
 
 int main(int argc, char **argv) {
