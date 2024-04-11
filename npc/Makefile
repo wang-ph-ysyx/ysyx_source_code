@@ -20,19 +20,21 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
+NPC_FLAGS += -g $(IMG) -d $(DIFF_SO)
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
 
 all: default
 
 sim: $(BIN)
-	@$(BIN) $(IMG)
+	@$(BIN) $(NPC_FLAGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 .PHONY: clean all default sim
@@ -41,3 +43,9 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 include ../Makefile
+
+count:
+	find . -name *.[chv] | xargs cat | wc -l
+
+countNoblank:
+	find . -name *.[cvh] | xargs grep -v '^$$' | wc -l
