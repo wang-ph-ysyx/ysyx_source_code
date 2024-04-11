@@ -1,14 +1,17 @@
+#include <getopt.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
 #include <memory.h>
 
 static char *img_file = NULL;
+static char *diff_so_file = NULL;
 long img_size = 0;
 
 static long load_img() {
 	if (img_file == NULL) {
 		printf("No image is given. Use the default build-in image.\n");
-		return;
+		return 4096;
 	}
 
 	FILE *fp = fopen(img_file, "rb");
@@ -26,8 +29,24 @@ static long load_img() {
 	return size;
 }
 
+static int parse_args(int argc, char **argv) {
+	const struct option table[] = {
+		{"diff"     , required_argument, NULL, 'd'},
+		{"img"      , required_argument, NULL, 'g'},
+		{0          , 0                , NULL,  0 },
+	};
+	int o;
+	while ( (o = getopt_long(argc, argv, "-d:g:", table, NULL)) != -1) {
+		switch (o) {
+			case 'd': diff_so_file = optarg; break;
+			case 'g': img_file = optarg; break;
+		}
+	}
+	return 0;
+}
+
 void init_monitor(int argc, char **argv) {
-	if (argc > 0) img_file = argv[1];
+	parse_args(argc, argv);
 
 	init_memory();
 
