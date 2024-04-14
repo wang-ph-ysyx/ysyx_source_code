@@ -22,7 +22,7 @@ module exu(
 		.default_out(32'b0),
 		.lut({
 			7'b0110111, imm,       //lui
-			7'b0010111, pc + imm + 1,  //auipc
+			7'b0010111, pc + imm,  //auipc
 			7'b1101111, pc + 4     //jal
 		})
 	);
