@@ -32,9 +32,8 @@ void cpu_exec(unsigned n) {
 	}
 
 	if (trigger_difftest) {
-		printf("difftest ABORT ");
+		printf("\33[1;31mdifftest ABORT\33[1;0m ");
 		reg_display();
-		return;
 	}
 	else if (top->halt_ret)
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
