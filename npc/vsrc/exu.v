@@ -23,7 +23,7 @@ module exu(
 		.lut({
 			7'b0110111, imm,       //lui
 			7'b0010111, pc + imm,  //auipc
-			7'b1101111, pc + 4 + 1     //jal
+			7'b1101111, pc + 4     //jal
 		})
 	);
 
