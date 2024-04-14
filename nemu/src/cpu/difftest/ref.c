@@ -21,6 +21,7 @@
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 	uint8_t *_buf = (uint8_t *)buf;
 	if (direction == DIFFTEST_TO_REF) {
+		printf("test\n");
 		for (int i = 0; i < n; ++i) {
 			paddr_write(addr, 1, _buf[i]);
 		}	
