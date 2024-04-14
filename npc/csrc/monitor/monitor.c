@@ -53,7 +53,7 @@ void init_monitor(int argc, char **argv) {
 
 	init_memory();
 
-	init_difftest(diff_so_file, img_size, 1234);
-
 	img_size = load_img();
+
+	init_difftest(diff_so_file, img_size, 1234);
 }
