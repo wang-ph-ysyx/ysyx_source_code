@@ -9,6 +9,7 @@ Vtop *top = NULL;
 int trigger_difftest = 0;
 
 void difftest_step(uint32_t pc);
+void reg_display();
 
 void one_cycle() {
 	top->inst = pmem_read(top->pc);
@@ -32,6 +33,7 @@ void cpu_exec(unsigned n) {
 
 	if (trigger_difftest) {
 		printf("difftest ABORT\n");
+		reg_display();
 		return;
 	}
 	if (top->halt_ret)
