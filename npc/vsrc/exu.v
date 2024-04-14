@@ -32,7 +32,7 @@ module exu(
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0000010011, src1 + imm + 1,   //addi
+			10'b0000010011, src1 + imm,   //addi
 			10'b0001100111, pc + 4       //jalr
 		})
 	);
