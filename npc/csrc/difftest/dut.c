@@ -39,6 +39,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(MEM_BASE, guest2host(MEM_BASE), img_size, DIFFTEST_TO_REF);
+	for (uint8_t *p = guest2host(MEM_BASE), i = 0; i < 32; ++i, ++p)
+		printf("%#x\n", *p);
   ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], DIFFTEST_TO_REF);
 }
 
@@ -55,7 +57,6 @@ void difftest_step(uint32_t pc) {
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_r, DIFFTEST_TO_DUT);
-	for (int i = 0; i < 32; ++i) printf("%d\n", ref_r[i]);
 
   checkregs(ref_r, pc);
 }
