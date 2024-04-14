@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <Vtop.h>
 #include <Vtop___024root.h>
