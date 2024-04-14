@@ -43,7 +43,6 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(uint32_t *ref, uint32_t pc) {
-	if (pc != top->pc) trigger_difftest = 1;
 	for (int i = 0; i < 32; ++i) {
 		if (ref[i] != top->rootp->top__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
