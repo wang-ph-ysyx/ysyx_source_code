@@ -55,6 +55,7 @@ void difftest_step(uint32_t pc) {
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_r, DIFFTEST_TO_DUT);
+	for (int i = 0; i < 32; ++i) printf("%d\n", ref_r[i]);
 
   checkregs(ref_r, pc);
 }
