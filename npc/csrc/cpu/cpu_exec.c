@@ -3,6 +3,7 @@
 #include <Vtop.h>
 #include "verilated.h"
 #include <memory.h>
+#include <config.h>
 
 Vtop *top = NULL;
 int trigger_difftest = 0;
