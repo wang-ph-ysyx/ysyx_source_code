@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <memory.h>
 
+void init_difftest(char *ref_so_file, long immg_size, int port);
+
 static char *img_file = NULL;
 static char *diff_so_file = NULL;
 long img_size = 0;
@@ -49,6 +51,8 @@ void init_monitor(int argc, char **argv) {
 	parse_args(argc, argv);
 
 	init_memory();
+
+	init_difftest(diff_so_file, img_size, 1234);
 
 	img_size = load_img();
 }
