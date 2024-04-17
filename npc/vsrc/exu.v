@@ -24,6 +24,7 @@ module exu(
 	always @(*) begin
 		if (valid) begin
 			rdata = pmem_read(src1 + imm);
+			$display(rdata);
 			if (wen) begin
 				pmem_write(src1 + imm, src2, wmask);
 			end
@@ -90,7 +91,7 @@ module exu(
 		.lut({
 			10'b0000100011, 8'h1, //sb
 			10'b0010100011, 8'h3, //sh
-			10'b0100100011, 8'hf //sw
+			10'b0100100011, 8'hf  //sw
 		})
 	);
 
