@@ -7,10 +7,10 @@ uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	uint8_t *haddr = guest2host(waddr & ~0x3u);
-	if (wmask & 0x1) haddr[3] = wdata & 0xff;
-	if (wmask & 0x2) haddr[2] = wdata & 0xff00;
-	if (wmask & 0x4) haddr[1] = wdata & 0xff0000;
-	if (wmask & 0x8) haddr[0] = wdata & 0xff000000;
+	if (wmask & 0x1) haddr[0] = wdata & 0xff;
+	if (wmask & 0x2) haddr[1] = wdata & 0xff00;
+	if (wmask & 0x4) haddr[2] = wdata & 0xff0000;
+	if (wmask & 0x8) haddr[3] = wdata & 0xff000000;
 }
 
 extern "C" int pmem_read(int raddr) {
