@@ -24,7 +24,7 @@ module exu(
 	always @(*) begin
 		if (valid) begin
 			rdata = pmem_read(src1 + imm);
-			$display(rdata, "  ", src1 + imm);
+			$display("%x  %x", rdata, src1 + imm);
 			if (wen) begin
 				pmem_write(src1 + imm, src2, wmask);
 			end
