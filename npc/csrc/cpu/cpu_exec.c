@@ -11,7 +11,7 @@ int trigger_difftest = 0;
 void difftest_step(uint32_t pc);
 void reg_display();
 
-void one_cycle() {
+static void one_cycle() {
 	top->inst = pmem_read(top->pc);
 	top->clk = 0; top->eval();
 	top->clk = 1; top->eval();
@@ -37,6 +37,7 @@ void cpu_exec(unsigned n) {
 		reg_display();
 		printf("\33[1;31mdifftest ABORT\33[1;0m ");
 	}
+	else if (!top->finished) return;
 	else if (top->halt_ret)
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
