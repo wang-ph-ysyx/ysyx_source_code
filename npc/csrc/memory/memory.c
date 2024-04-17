@@ -1,4 +1,5 @@
 #include <memory.h>
+#include <stdio.h>
 
 static uint8_t memory[MEM_SIZE];
 
@@ -15,6 +16,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 
 extern "C" int pmem_read(int raddr) {
 	uint8_t *haddr = guest2host(raddr & ~0x3u);
+	printf("%d\t%#x\n", *(int *)haddr, raddr);
 	return *(int *)haddr;
 }
 
