@@ -23,11 +23,11 @@ module idu(
 		.key(opcode),
 		.default_out(3'b0),
 		.lut({
-			7'b0010011, TYPE_I,   //addi
 			7'b0110111, TYPE_U,   //lui
 			7'b0010111, TYPE_U,   //auipc
 			7'b0100011, TYPE_S,   //sw
 			7'b1101111, TYPE_J,   //jal
+			7'b0010011, TYPE_I,   //addi
 			7'b1100111, TYPE_I,   //jalr
 			7'b0000011, TYPE_I    //lw
 		})
