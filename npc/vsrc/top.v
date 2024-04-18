@@ -7,7 +7,6 @@ module top(
 	output [31:0] halt_ret
 );
 
-	wire [31:0] next_pc;
 	wire [6:0] opcode;
 	wire [4:0] rs1;
 	wire [4:0] rs2;
