@@ -34,13 +34,14 @@ void cpu_exec(unsigned n) {
 
 	if (trigger_difftest) {
 		reg_display();
-		printf("\33[1;31mdifftest ABORT\33[1;0m ");
+		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", pc);
+		return;
 	}
-	else if (!top->finished) return;
-	else if (top->halt_ret)
+	if (!top->finished) return;
+	if (top->halt_ret)
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
-	printf("at pc = %#x\n", pc);
+	printf("at pc = %#x\n", top->pc);
 }
 
 void reset() {
