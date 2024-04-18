@@ -12,6 +12,7 @@ void difftest_step(uint32_t pc);
 void reg_display();
 
 static void one_cycle() {
+	top->inst = pmem_read(top->pc);
 	top->clk = 0; top->eval();
 	top->clk = 1; top->eval();
 }
