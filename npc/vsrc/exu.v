@@ -16,6 +16,8 @@ module exu(
 	wire [31:0] jump1;
 	wire [31:0] jump2;
 
+	wire [31:0] compare;
+
 	wire valid, wen;
 	wire [7:0] wmask;
 	reg [31:0] rdata;
@@ -73,12 +75,13 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(1, 10, 32, 1) calculate_jump2(
+	MuxKeyInternal #(2, 10, 32, 1) calculate_jump2(
 		.out(jump2),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0001100111, (src1 + imm) & (~32'b1)   //jalr
+			10'b0001100111, (src1 + imm) & (~32'b1),   //jalr
+			10'b0001100011, (pc + imm) & (~{32{|compare}})   //beq
 		})
 	);
 
@@ -97,5 +100,6 @@ module exu(
 	assign jump = jump1 | jump2;
 	assign valid = ((opcode == 7'b0100011) || (opcode == 7'b0000011));
 	assign wen = opcode == 7'b0100011;
+	assign compare = src1 - src2;
 
 endmodule
