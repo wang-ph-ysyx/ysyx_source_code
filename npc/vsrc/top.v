@@ -4,12 +4,12 @@ import "DPI-C" function void pmem_write(
 module top(
 	input clk,
 	input reset,
-	input [31:0] inst,
 	output [31:0] pc,
 	output finished,
 	output [31:0] halt_ret
 );
 
+	reg [31:0] inst;
 	wire [6:0] opcode;
 	wire [4:0] rs1;
 	wire [4:0] rs2;
@@ -22,6 +22,12 @@ module top(
 	wire [31:0] src2;
 	wire [2:0] Type;
 	wire  reg_wen;
+
+	always @(*) begin
+		if (!reset)
+			inst = pmem_read(pc);
+		else inst = 0;
+	end
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
