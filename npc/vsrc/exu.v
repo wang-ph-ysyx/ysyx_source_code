@@ -50,7 +50,7 @@ module exu(
 		.default_out(32'b0),
 		.lut({
 			10'b0100000011, rdata,                  //lw
-			10'b1000000011, rdata | 32'hff,         //lbu
+			10'b1000000011, rdata & 32'hff,         //lbu
 			10'b0000010011, src1 + imm,             //addi
 			10'b0110010011, {31'b0, {src1 < imm}},  //sltiu
 			10'b0001100111, pc + 4                  //jalr
