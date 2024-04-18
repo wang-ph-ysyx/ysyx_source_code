@@ -56,11 +56,12 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(1, 17, 32, 1) calculate_val2(
+	MuxKeyInternal #(2, 17, 32, 1) calculate_val2(
 		.out(val2),
 		.key({funct7, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
+			17'b00000000010010011, src1 << imm,  //slli
 			17'b00000000000110011, src1 + src2   //add
 		})
 	);
