@@ -19,7 +19,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 		if (!(wmask & 0x2)) wdata = wdata & ~0xff00;
 		if (!(wmask & 0x4)) wdata = wdata & ~0xff0000;
 		if (!(wmask & 0x8)) wdata = wdata & ~0xff000000;
-		putchar(wdata);
+		putc(wdata, stderr);
 		return;
 	}
 	uint8_t *haddr = guest2host(waddr/* & ~0x3u*/);
