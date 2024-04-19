@@ -6,6 +6,7 @@
 #include <config.h>
 
 void init_difftest(char *ref_so_file, long immg_size, int port);
+void init_time();
 
 static char *img_file = NULL;
 static char *diff_so_file = NULL;
@@ -56,4 +57,6 @@ void init_monitor(int argc, char **argv) {
 	img_size = load_img();
 
 	init_difftest(diff_so_file, img_size, 1234);
+
+	init_time();
 }

@@ -1,12 +1,20 @@
 #include <memory.h>
 #include <stdio.h>
+#include <time.h>
 
 #define SERIAL 0xa00003f8
+#define RTC    0xa0000048
+
+clock_t start_time;
 
 static uint8_t memory[MEM_SIZE];
 
 uint8_t *guest2host(uint32_t paddr) {return memory + paddr - MEM_BASE;}
 uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
+
+void init_time() {
+	start_time = clock();
+}
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	if (waddr == SERIAL) {
@@ -25,6 +33,11 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
+	if (raddr == RTC) {
+		clock_t time = clock();
+		int total = time - start_time;
+		return total;
+	}
 	uint8_t *haddr = guest2host(raddr/* & ~0x3u*/);
 	return *(int *)haddr;
 }
