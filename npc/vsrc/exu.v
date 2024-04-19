@@ -88,7 +88,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(6, 10, 32, 1) calculate_jump2(
+	MuxKeyInternal #(7, 10, 32, 1) calculate_jump2(
 		.out(jump2),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
@@ -96,6 +96,7 @@ module exu(
 			10'b0001100111, (src1 + imm) & (~32'b1),          //jalr
 			10'b0001100011, (pc + imm) & (~{32{|compare}}),   //beq
 			10'b0011100011, (pc + imm) & {32{|compare}},      //bne
+			10'b1001100011, (pc + imm) & {32{(src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31]}},      //blt
 			10'b1011100011, (pc + imm) & {32{(~src1[31] & src2[31]) | ~(src1[31] ^ src2[31]) & ~compare[31]}},      //bge
 			10'b1101100011, (pc + imm) & {32{src1 < src2}},   //bltu
 			10'b1111100011, (pc + imm) & {32{src1 >= src2}}   //bgeu
