@@ -23,6 +23,8 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
 NPC_FLAGS += -g $(IMG) -d $(DIFF_SO)
+# 批处理
+NPC_FLAGS += -b
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)

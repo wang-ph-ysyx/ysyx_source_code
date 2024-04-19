@@ -1,27 +1,42 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <Vtop.h>
 #include "verilated.h"
 #include <memory.h>
+#include <config.h>
 
 Vtop *top = NULL;
+int trigger_difftest = 0;
 
-void one_cycle() {
-	top->inst = pmem_read(top->pc);
+void difftest_step(uint32_t pc);
+void reg_display();
+
+static void one_cycle() {
 	top->clk = 0; top->eval();
 	top->clk = 1; top->eval();
 }
 
 void cpu_exec(unsigned n) {
-	if (top->finished) {
+	if (top->finished || trigger_difftest) {
 		printf("the program is ended.\n");
 		return;
 	}
 
+	uint32_t pc = top->pc;
 	for (; n > 0; --n) {
+		pc = top->pc;
 		one_cycle();
-		if (top->finished) break;
+#ifdef DIFFTEST
+		difftest_step(top->pc);
+#endif
+		if (top->finished || trigger_difftest) break;
 	}
 
+	if (trigger_difftest) {
+		reg_display();
+		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", pc);
+		return;
+	}
 	if (!top->finished) return;
 	if (top->halt_ret)
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
@@ -31,7 +46,6 @@ void cpu_exec(unsigned n) {
 
 void reset() {
 	top->reset = 1;
-	top->clk = 0; top->eval();
-	top->clk = 1; top->eval();
+	one_cycle();
 	top->reset = 0;
 }

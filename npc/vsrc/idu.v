@@ -18,21 +18,24 @@ module idu(
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 
-	MuxKeyInternal #(6, 7, 3, 1) choose_type(
+	MuxKeyInternal #(9, 7, 3, 1) choose_type(
 		.out(Type),
 		.key(opcode),
 		.default_out(3'b0),
 		.lut({
-			7'b0010011, TYPE_I,   //addi
 			7'b0110111, TYPE_U,   //lui
 			7'b0010111, TYPE_U,   //auipc
 			7'b0100011, TYPE_S,   //sw
 			7'b1101111, TYPE_J,   //jal
-			7'b1100111, TYPE_I    //jalr
+			7'b0010011, TYPE_I,   //addi
+			7'b1100111, TYPE_I,   //jalr
+			7'b0000011, TYPE_I,   //lw
+			7'b0010011, TYPE_I,   //slli
+			7'b1100011, TYPE_B    //beq
 		})
 	);
 
-	MuxKeyInternal #(4, 3, 32, 1) choose_imm(
+	MuxKeyInternal #(5, 3, 32, 1) choose_imm(
 		.out(imm),
 		.key(Type),
 		.default_out(32'b0),
@@ -40,7 +43,8 @@ module idu(
 			TYPE_I, {{20{in[31]}}, in[31:20]},
 			TYPE_U, {in[31:12], 12'b0},
 			TYPE_S, {{20{in[31]}}, in[31:25], in[11:7]},
-			TYPE_J, {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0}
+			TYPE_J, {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0},
+			TYPE_B, {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0}
 		})
 	);
 
