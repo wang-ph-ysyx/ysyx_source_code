@@ -59,7 +59,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(10, 17, 32, 1) calculate_val2(
+	MuxKeyInternal #(11, 17, 32, 1) calculate_val2(
 		.out(val2),
 		.key({funct7, funct3, opcode}),
 		.default_out(32'b0),
@@ -70,6 +70,7 @@ module exu(
 			17'b00000000000110011, src1 + src2,             //add
 			17'b01000000000110011, src1 - src2,             //sub
 			17'b00000000010110011, src1 << (0'h1f & src2),  //sll
+			17'b00000000100110011, {31'b0, {(src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31]}},  //slt
 			17'b00000000110110011, {31'b0, {src1 < src2}},  //sltu
 			17'b00000001000110011, src1 ^ src2,             //xor
 			17'b00000001100110011, src1 | src2,             //or
