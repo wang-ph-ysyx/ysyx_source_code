@@ -9,11 +9,11 @@
 void reg_display();
 void cpu_exec(unsigned n);
 
-//int batch_mode = 0;
+int batch_mode = 0;
 
-/*void set_batch_mode() {
+void set_batch_mode() {
 	batch_mode = 1;
-}*/
+}
 
 static int cmd_c(char *args) {
 	cpu_exec(-1);
@@ -114,13 +114,11 @@ static int cmd_help(char *args) {
 }
 
 void sdb_mainloop() {
-/*	if (batch_mode) {
+	if (batch_mode) {
 		cmd_c(NULL);
 		return;
-	}*/
+	}
 
-	cmd_c(NULL);
-	return;
 	for (char *str; (str = rl_gets()) != NULL; ) {
 		char *str_end = str + strlen(str);
 
