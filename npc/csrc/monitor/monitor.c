@@ -55,7 +55,5 @@ void init_monitor(int argc, char **argv) {
 
 	img_size = load_img();
 
-#ifdef DIFFTEST
 	init_difftest(diff_so_file, img_size, 1234);
-#endif
 }

@@ -15,12 +15,7 @@ uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	if (waddr == SERIAL) {
-		printf("test\n");
-		if (!(wmask & 0x1)) wdata = wdata & ~0xff;
-		if (!(wmask & 0x2)) wdata = wdata & ~0xff00;
-		if (!(wmask & 0x4)) wdata = wdata & ~0xff0000;
-		if (!(wmask & 0x8)) wdata = wdata & ~0xff000000;
-		putc(wdata, stderr);
+		putc((char)wdata, stderr);
 		return;
 	}
 	uint8_t *haddr = guest2host(waddr/* & ~0x3u*/);
@@ -31,6 +26,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
+	if (raddr == SERIAL) return 0;
 	if (raddr == RTC || raddr == RTC + 4) {
 		if (!time_start) {
 			start_time = clock();
