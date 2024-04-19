@@ -30,14 +30,15 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
-	if (raddr == RTC) {
+	if (raddr == RTC || raddr == RTC + 4) {
 		if (!time_start) {
 			start_time = clock();
 			time_start = 1;
 		}
 		clock_t time = clock();
-		int total = time - start_time;
-		return total;
+		long total = time - start_time;
+		if (raddr == RTC + 4) return (int)(total >> 32);
+		else return (int) total;
 	}
 	uint8_t *haddr = guest2host(raddr/* & ~0x3u*/);
 	return *(int *)haddr;
