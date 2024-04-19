@@ -119,6 +119,8 @@ void sdb_mainloop() {
 		return;
 	}*/
 
+	cmd_c(NULL);
+	return;
 	for (char *str; (str = rl_gets()) != NULL; ) {
 		char *str_end = str + strlen(str);
 
