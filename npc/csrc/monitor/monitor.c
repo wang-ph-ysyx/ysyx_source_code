@@ -10,6 +10,7 @@ void init_difftest(char *ref_so_file, long immg_size, int port);
 static char *img_file = NULL;
 static char *diff_so_file = NULL;
 long img_size = 0;
+//void sdb_set_batch_mode();
 
 static long load_img() {
 	if (img_file == NULL) {
@@ -34,13 +35,15 @@ static long load_img() {
 
 static int parse_args(int argc, char **argv) {
 	const struct option table[] = {
+		//{"batch"    , no_argument      , NULL, 'b'},
 		{"diff"     , required_argument, NULL, 'd'},
 		{"img"      , required_argument, NULL, 'g'},
 		{0          , 0                , NULL,  0 },
 	};
 	int o;
-	while ( (o = getopt_long(argc, argv, "-d:g:", table, NULL)) != -1) {
+	while ( (o = getopt_long(argc, argv, "-bd:g:", table, NULL)) != -1) {
 		switch (o) {
+			//case 'b': sdb_set_batch_mode(); break;
 			case 'd': diff_so_file = optarg; break;
 			case 'g': img_file = optarg; break;
 		}
