@@ -15,8 +15,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
-	uint8_t *haddr = guest2host(raddr /*& ~0x3u*/);
-	printf("%#x: %#x\n", raddr, *(int *)haddr);
+	uint8_t *haddr = guest2host(raddr/* & ~0x3u*/);
 	return *(int *)haddr;
 }
 
