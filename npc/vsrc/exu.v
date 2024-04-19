@@ -21,7 +21,7 @@ module exu(
 	wire valid, wen;
 	wire [7:0] wmask;
 	reg [31:0] rdata;
-	always @(src1 or src2 or imm or wmask) begin
+	always @(*) begin
 		if (valid) begin
 			rdata = pmem_read(src1 + imm);
 			if (wen) begin
