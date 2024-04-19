@@ -49,7 +49,7 @@ module exu(
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0010000011, rdata | {{16{rdata[15]}}, 16'h0}, //lh
+			10'b0010000011, (rdata & 32'hffff) | {{16{rdata[15]}}, 16'h0}, //lh
 			10'b0100000011, rdata,                  //lw
 			10'b1000000011, rdata & 32'hff,         //lbu
 			10'b0000010011, src1 + imm,             //addi
