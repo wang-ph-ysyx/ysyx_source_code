@@ -5,16 +5,13 @@
 #define SERIAL 0xa00003f8
 #define RTC    0xa0000048
 
-clock_t start_time;
+static clock_t start_time;
+static int time_start = 0;
 
 static uint8_t memory[MEM_SIZE];
 
 uint8_t *guest2host(uint32_t paddr) {return memory + paddr - MEM_BASE;}
 uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
-
-void init_time() {
-	start_time = clock();
-}
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	if (waddr == SERIAL) {
@@ -34,6 +31,10 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 
 extern "C" int pmem_read(int raddr) {
 	if (raddr == RTC) {
+		if (!time_start) {
+			start_time = clock();
+			time_start = 1;
+		}
 		clock_t time = clock();
 		int total = time - start_time;
 		return total;
