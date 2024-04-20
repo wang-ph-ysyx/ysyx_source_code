@@ -99,7 +99,7 @@ static int cmd_p(char *args) {
 	bool success = true;
 	word_t res = expr(args, &success);
 	if (!success) printf("bad expression\n");
-	else printf("val:  %u\n", res);
+	else printf("val:  %u   %#x\n", res, res);
 
 	return 0;
 }
