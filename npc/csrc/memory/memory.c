@@ -5,9 +5,6 @@
 #define SERIAL 0xa00003f8
 #define RTC    0xa0000048
 
-static clock_t start_time;
-static int time_start = 0;
-
 static uint8_t memory[MEM_SIZE];
 
 uint8_t *guest2host(uint32_t paddr) {return memory + paddr - MEM_BASE;}
@@ -28,6 +25,8 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 extern "C" int pmem_read(int raddr) {
 	if (raddr == SERIAL) return 0;
 	if (raddr == RTC || raddr == RTC + 4) {
+		static clock_t start_time;
+		static int time_start = 0;
 		if (!time_start) {
 			start_time = clock();
 			time_start = 1;
