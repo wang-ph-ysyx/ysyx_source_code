@@ -163,3 +163,10 @@ void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_
 	printf("write: %s, addr: %#x, len: %d, offset: %#x, data: %#x\n", name, addr, len, offset, data);
 }
 
+//code of etrace
+void etrace(word_t NO) {
+	switch (NO) {
+		case -1: printf("trigger yield\n"); break;
+		default: printf("unknown error trace\n");
+	}
+}
