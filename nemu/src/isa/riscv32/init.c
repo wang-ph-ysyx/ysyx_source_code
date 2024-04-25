@@ -34,7 +34,7 @@ static void restart() {
   cpu.gpr[0] = 0;
 
 	/* To support difftest, the mstatus rigister is initially 0x1800*/
-	cpu.csr.mstatus = 0x1800;
+	//cpu.csr.mstatus = 0x1800;
 }
 
 void init_isa() {
