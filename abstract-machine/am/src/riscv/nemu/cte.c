@@ -34,7 +34,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-	Context *cp = (Context *)(kstack.end - NR_REGS - 3 - 1);
+	Context *cp = (Context *)(kstack.end - (NR_REGS + 3 + 1)*4);
   cp->mepc = (uintptr_t)entry;
 	return cp;
 }
