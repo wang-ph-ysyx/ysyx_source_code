@@ -1,10 +1,12 @@
 #include <am.h>
 #include <riscv/riscv.h>
 #include <klib.h>
+#include <stdio.h>
 
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
+	printf("test\n");
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
