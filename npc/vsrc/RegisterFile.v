@@ -23,6 +23,6 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
 	assign rdata1 = rf[raddr1];
 	assign rdata2 = rf[raddr2];
 	assign halt_ret = rf[10];
-	assign cause = rf[17];
+	assign cause = rf[15];
 
 endmodule

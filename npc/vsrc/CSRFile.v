@@ -31,7 +31,7 @@ module CSRFile #(DATA_WIDTH = 1) (
 			csr[addr] <= wdata;
 		end
 		else if (inst_ecall) begin
-			csr[0] <= epc;
+			csr[0] <= epc + 4;
 			csr[1] <= cause;
 		end
 	end
