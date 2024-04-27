@@ -21,7 +21,16 @@ module top(
 	wire [31:0] val;
 	wire [31:0] src2;
 	wire [2:0] Type;
-	wire  reg_wen;
+	wire reg_wen;
+	wire csr_enable;
+	wire inst_ecall;
+	wire inst_mret;
+	wire [31:0] cause;
+
+	wire [31:0] csr_wdata;
+	wire [31:0] csr_val;
+	wire [31:0] exu_val;
+	wire csr_wen;
 
 	always @(*) begin
 		if (!reset)
@@ -31,6 +40,8 @@ module top(
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
+	wire [31:0] csr_jump;
+	wire [31:0] exu_jump;
 	wire [31:0] jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
@@ -72,9 +83,11 @@ module top(
 		.imm(imm),
 		.funct3(funct3),
 		.funct7(funct7),
-		.val(val),
+		.val(exu_val),
 		.pc(pc),
-		.jump(jump)
+		.jump(exu_jump),
+		.csr_val(csr_val),
+		.csr_wdata(csr_wdata)
 	);
 
 	RegisterFile #(5, 32) my_reg(
@@ -86,10 +99,29 @@ module top(
 		.raddr1(rs1),
 		.raddr2(rs2),
 		.wen(reg_wen),
-		.halt_ret(halt_ret)
+		.halt_ret(halt_ret),
+		.cause(cause)
+	);
+
+	CSRFile #(32) my_CSRreg(
+		.clk(clk),
+		.imm(imm[11:0]),
+		.wdata(csr_wdata),
+		.rdata(csr_val),
+		.enable(csr_enable),
+		.inst_ecall(inst_ecall),
+		.epc(pc),
+		.cause(cause),
+		.jump(csr_jump),
+		.inst_mret(inst_mret)
 	);
 
 	assign finished = (inst == 32'h00100073);
-	assign reg_wen = (Type == TYPE_I) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
+	assign inst_ecall = (inst == 32'h00000073);
+	assign inst_mret = (inst == 32'h30200073);
+	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
+	assign val = (exu_val | csr_val);
+	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
+	assign jump = exu_jump | csr_jump;
 
 endmodule

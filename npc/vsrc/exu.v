@@ -7,7 +7,9 @@ module exu(
 	input [6:0] funct7,
 	input [31:0] pc,
 	output [31:0] val,
-	output [31:0] jump);
+	output [31:0] jump,
+	input [31:0] csr_val,
+	output [31:0] csr_wdata);
 
 	wire [31:0] val0;
 	wire [31:0]	val1;
@@ -115,6 +117,16 @@ module exu(
 			10'b0000100011, 8'h1, //sb
 			10'b0010100011, 8'h3, //sh
 			10'b0100100011, 8'hf  //sw
+		})
+	);
+
+	MuxKeyInternal #(2, 10, 32, 1) calculate_csr_wdata(
+		.out(csr_wdata),
+		.key({funct3, opcode}),
+		.default_out(32'b0),
+		.lut({
+			10'b0101110011, src1 | csr_val, //csrrs
+			10'b0011110011, src1            //csrrw
 		})
 	);
 
