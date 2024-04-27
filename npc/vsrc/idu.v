@@ -18,7 +18,7 @@ module idu(
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 
-	MuxKeyInternal #(9, 7, 3, 1) choose_type(
+	MuxKeyInternal #(10, 7, 3, 1) choose_type(
 		.out(Type),
 		.key(opcode),
 		.default_out(3'b0),
@@ -31,7 +31,8 @@ module idu(
 			7'b1100111, TYPE_I,   //jalr
 			7'b0000011, TYPE_I,   //lw
 			7'b0010011, TYPE_I,   //slli
-			7'b1100011, TYPE_B    //beq
+			7'b1100011, TYPE_B,   //beq
+			7'b1110011, TYPE_I    //csrrs csrrw
 		})
 	);
 
