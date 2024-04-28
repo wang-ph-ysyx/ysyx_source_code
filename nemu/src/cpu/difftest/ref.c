@@ -33,14 +33,14 @@ __EXPORT void difftest_regcpy(void *dut, uint32_t *pc, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
 		for (int i = 0; i < 32; ++i) {
 			cpu.gpr[i] = cpu_dut->gpr[i];
-			cpu.pc = *pc;
 		}
+		cpu.pc = *pc;
 	}
 	else {
 		for (int i = 0; i < 32; ++i) {
 			cpu_dut->gpr[i] = cpu.gpr[i];
-			*pc = cpu.pc;
 		}
+		*pc = cpu.pc;
 	}
 }
 

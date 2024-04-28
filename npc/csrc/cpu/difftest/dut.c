@@ -52,7 +52,7 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	for (int i = 0; i < 32; ++i) {
 		if (ref[i] != top->rootp->top__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
-		//if (pc != ref_pc) trigger_difftest = 1;
+		if (pc != ref_pc) trigger_difftest = 1;
 	}
 }
 
