@@ -8,7 +8,7 @@
 Vtop *top = NULL;
 int trigger_difftest = 0;
 
-void difftest_step(uint32_t pc);
+void difftest_step();
 void reg_display();
 
 static void one_cycle() {
@@ -27,7 +27,7 @@ void cpu_exec(unsigned n) {
 		pc = top->pc;
 		one_cycle();
 #ifdef DIFFTEST
-		difftest_step(top->pc);
+		difftest_step();
 #endif
 		if (top->finished || trigger_difftest) break;
 	}
