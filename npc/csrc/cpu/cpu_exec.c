@@ -27,7 +27,7 @@ void cpu_exec(unsigned n) {
 		pc = top->pc;
 		one_cycle();
 #ifdef DIFFTEST
-		difftest_step(top->pc);
+		difftest_step(pc);
 #endif
 		if (top->finished || trigger_difftest) break;
 	}
