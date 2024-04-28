@@ -22,7 +22,6 @@ static bool is_skip_ref = false;
 
 void difftest_skip_ref() {
 	is_skip_ref = true;
-	printf("%#x\n", top->pc);
 }
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
@@ -57,14 +56,23 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	}
 }
 
-void difftest_step(uint32_t pc) {
+void difftest_step() {
 	uint32_t ref_r[32];
 	uint32_t ref_pc;
 
-	if (is_skip_ref) {
+	static bool skip = false;
+	static bool ret = false;
+	if (skip) {
 		ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], &top->pc, DIFFTEST_TO_REF);
-		printf("%#x %#x\n", pc, top->pc);
+		skip = false;
+		ret = true;
+	}
+	if (is_skip_ref) {
 		is_skip_ref = false;
+		skip = true;
+	}
+	if (ret) {
+		ret = false;
 		return;
 	}
 
