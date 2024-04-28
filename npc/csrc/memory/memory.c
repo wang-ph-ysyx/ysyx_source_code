@@ -1,6 +1,7 @@
 #include <memory.h>
 #include <stdio.h>
 #include <time.h>
+#include <config.h>
 
 #define SERIAL 0xa00003f8
 #define RTC    0xa0000048
