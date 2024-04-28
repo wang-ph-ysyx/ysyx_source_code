@@ -61,7 +61,7 @@ void difftest_step(uint32_t pc) {
 	uint32_t ref_pc;
 
 	if (is_skip_ref) {
-		ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], &top->pc, DIFFTEST_TO_REF);
+		ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], &pc, DIFFTEST_TO_REF);
 		is_skip_ref = false;
 		return;
 	}
