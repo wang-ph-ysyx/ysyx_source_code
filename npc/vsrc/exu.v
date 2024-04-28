@@ -46,11 +46,12 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(9, 10, 32, 1) calculate_val1(
+	MuxKeyInternal #(10, 10, 32, 1) calculate_val1(
 		.out(val1),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
+			10'b0000000011, (rdata & 32'hff) | {{24{rdata[7]}}, 8'h0}, //lb
 			10'b0010000011, (rdata & 32'hffff) | {{16{rdata[15]}}, 16'h0}, //lh
 			10'b0100000011, rdata,                  //lw
 			10'b1000000011, rdata & 32'hff,         //lbu
