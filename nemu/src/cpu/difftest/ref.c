@@ -39,10 +39,8 @@ __EXPORT void difftest_regcpy(void *dut, uint32_t *pc, bool direction) {
 	else {
 		for (int i = 0; i < 32; ++i) {
 			cpu_dut->gpr[i] = cpu.gpr[i];
-			printf("%#x\n", cpu_dut->gpr[i]);
 		}
 		*pc = cpu.pc;
-		printf("%#x\n", *pc);
 	}
 }
 
