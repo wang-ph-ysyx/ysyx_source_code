@@ -14,7 +14,9 @@ void difftest_skip_ref();
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	if (waddr == SERIAL) {
 		putc((char)wdata, stderr);
+#ifdef DIFFTEST
 		difftest_skip_ref();
+#endif
 		return;
 	}
 	uint8_t *haddr = guest2host(waddr/* & ~0x3u*/);
@@ -35,7 +37,9 @@ extern "C" int pmem_read(int raddr) {
 		}
 		clock_t time = clock();
 		long total = time - start_time;
+#ifdef DIFFTEST
 		difftest_skip_ref();
+#endif
 		if (raddr == RTC + 4) return (int)(total >> 32);
 		else return (int) total;
 	}
