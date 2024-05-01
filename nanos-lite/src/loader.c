@@ -17,6 +17,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 	ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
 
 	assert(*(uint32_t *)ehdr.e_ident == 0x464c457f);
+	printf("%d\n", ehdr.e_phnum);
 
 	Elf_Phdr phdr[ehdr.e_phnum];
 	ramdisk_read(&phdr, ehdr.e_phoff, ehdr.e_phnum * sizeof(Elf_Phdr));
@@ -24,7 +25,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 		if (phdr[i].p_type == PT_LOAD) {
 			void *buf = (void *)phdr[i].p_vaddr;
 			ramdisk_read(buf, phdr[i].p_offset, phdr[i].p_filesz);
-			printf("test\n");
 			memcpy(buf + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);
 		}
 	}
