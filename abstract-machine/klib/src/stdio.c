@@ -30,6 +30,11 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 					int data = va_arg(ap, int);
 					int len = 0;
 					char str1[11] = {'\0'};
+					if (data < 0) {
+						*out = '-';
+						++out;
+						data = -data;
+					}
 					while (data) {
 						str1[len] = data % 10 + '0';
 						data /= 10;
