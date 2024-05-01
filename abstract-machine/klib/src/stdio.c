@@ -26,6 +26,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 			++i;
 			switch (fmt[i]) {
 				case 'd':
+				case 'p':
 					int data = va_arg(ap, int);
 					int len = 0;
 					char str1[11] = {'\0'};
