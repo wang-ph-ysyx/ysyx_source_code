@@ -31,7 +31,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 					int len = 0;
 					char str1[11] = {'\0'};
 					while (data) {
-						str1[len] = data % 10 + '0';
+						str1[len] = data % 10 ;
 						data /= 10;
 						++len;
 					}
