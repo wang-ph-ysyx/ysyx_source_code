@@ -19,11 +19,12 @@ int printf(const char *fmt, ...) {
 	return count;
 }
 
-static int num2str(int num, char *str, int base, int format) {
+static int num2str(int data, char *str, int base, int format, int sign) {
 	const char table[16] = "0123456789abcdef";
 	int len = 0;
-	if (num < 0) {
-		num = -num;
+	unsigned num = data;
+	if (sign && data < 0) {
+		num = -data;
 		str[len] = '-';
 		++len;
 	}
@@ -52,13 +53,13 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 			++i;
 			switch (fmt[i]) {
 				case 'p':
-					out += num2str(va_arg(ap, int), out, 16, 1);
+					out += num2str(va_arg(ap, int), out, 16, 1, 0);
 					break;
 				case 'd':
-					out += num2str(va_arg(ap, int), out, 10, 0);
+					out += num2str(va_arg(ap, int), out, 10, 0, 1);
 					break;
 				case 'x':
-					out += num2str(va_arg(ap, int), out, 16, 0);
+					out += num2str(va_arg(ap, int), out, 16, 0, 1);
 					break;
 				case 's':
 					char *str2 = va_arg(ap, char*);
