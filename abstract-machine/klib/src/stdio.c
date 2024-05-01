@@ -39,7 +39,8 @@ static int num2str(int data, char *str, int base, int format, int sign) {
 		num /= base;
 		++i;
 	}
-	if (i >= 0) --i;
+	if (i > 0) --i;
+	else buf[0] = '0';
 	for (; i >= 0; --i, ++len) {
 		str[len] = buf[i];
 	}
