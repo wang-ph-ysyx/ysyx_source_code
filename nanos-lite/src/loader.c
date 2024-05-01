@@ -30,6 +30,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
 	Elf_Phdr phdr[ehdr.e_phnum];
 	ramdisk_read(&phdr, ehdr.e_phoff, ehdr.e_phnum * sizeof(Elf_Phdr));
+
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
 			void *buf = (void *)phdr[i].p_vaddr;
