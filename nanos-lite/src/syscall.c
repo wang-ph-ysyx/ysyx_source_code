@@ -12,7 +12,7 @@ void do_syscall(Context *c) {
 	printf("cause: %d, args: %d %d %d\n", a[0], a[1], a[2], a[3]);
 
   switch (a[0]) {
-		case 0: halt(0);
+		case 0: halt(a[1]);
 		case 1: yield(); c->GPRx = 0; break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
