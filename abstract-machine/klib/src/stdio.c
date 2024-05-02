@@ -19,26 +19,49 @@ int printf(const char *fmt, ...) {
 	return count;
 }
 
+static int num2str(int data, char *str, int base, int format, int sign) {
+	const char table[16] = "0123456789abcdef";
+	int len = 0;
+	unsigned num = data;
+	if (sign && data < 0) {
+		num = -data;
+		str[len] = '-';
+		++len;
+	}
+	if (format) {
+		str[len] = '0'; ++len;
+		str[len] = 'x'; ++len;
+	}
+	char buf[32] = {'\0'};
+	int i = 0;
+	while (num) {
+		buf[i] = table[num % base];
+		num /= base;
+		++i;
+	}
+	if (i > 0) --i;
+	else buf[0] = '0';
+	for (; i >= 0; --i, ++len) {
+		str[len] = buf[i];
+	}
+	return len;
+}
+
 int vsprintf(char *out, const char *fmt, va_list ap) {
 	char *start = out;
 	for (int i = 0; fmt[i] != '\0'; ++i) {
 		if (fmt[i] == '%') {
 			++i;
 			switch (fmt[i]) {
+				case 'p':
+					out += num2str(va_arg(ap, int), out, 16, 1, 0);
+					break;
 				case 'd':
-					int data = va_arg(ap, int);
-					int len = 0;
-					char str1[11] = {'\0'};
-					while (data) {
-						str1[len] = data % 10 + '0';
-						data /= 10;
-						++len;
-					}
-					--len;
-					for (; len >= 0; --len, ++out) {
-						*out = str1[len];
-					}
-				break;
+					out += num2str(va_arg(ap, int), out, 10, 0, 1);
+					break;
+				case 'x':
+					out += num2str(va_arg(ap, int), out, 16, 0, 1);
+					break;
 				case 's':
 					char *str2 = va_arg(ap, char*);
 					for (; *str2 != '\0'; ++str2, ++out) {
