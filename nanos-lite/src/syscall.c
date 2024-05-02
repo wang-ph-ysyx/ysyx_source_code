@@ -9,7 +9,7 @@ void do_syscall(Context *c) {
 	a[2] = c->GPR3;
 	a[3] = c->GPR4;
 
-	printf("cause: %d, args: %d %#x %d\n", a[0], a[1], a[2], a[3]);
+	printf("cause: %d, args: %d %p %d\n", a[0], a[1], (void *)a[2], a[3]);
 
   switch (a[0]) {
 		case SYS_exit: halt(a[1]); break;
