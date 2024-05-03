@@ -5,6 +5,7 @@
 #define SECOND (2 * HALF_SECOND)
 
 int main() {
+	printf("clock start\n");
 	struct timeval tv;
 	struct timezone tz;
 
