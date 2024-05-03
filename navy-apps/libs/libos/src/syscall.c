@@ -61,7 +61,7 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  return _syscall_(SYS_open, path, flags, mode);
+  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
@@ -71,9 +71,10 @@ int _write(int fd, void *buf, size_t count) {
 extern char end;
 void *_sbrk(intptr_t increment) {
 	static uintptr_t pb = (uintptr_t)&end;
+	uintptr_t ret = pb;
+	uintptr_t pb_new = pb + increment;
 	if (_syscall_(SYS_brk, pb_new, 0, 0) == 0) {
-		uintptr_t ret = pb;
-		pb += increacement;
+		pb = pb_new;
 		return (void *)ret;
 	}
   return (void *)-1;
