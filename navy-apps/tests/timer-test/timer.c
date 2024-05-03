@@ -5,10 +5,10 @@
 #define SECOND (2 * HALF_SECOND)
 
 int main() {
-	printf("clock start\n");
 	struct timeval tv;
 	struct timezone tz;
 
+	printf("clock start\n");
 	gettimeofday(&tv, &tz);
 	printf("%ld, %ld, %d, %d\n", tv.tv_sec, tv.tv_usec, tz.tz_minuteswest, tz.tz_dsttime);
 
