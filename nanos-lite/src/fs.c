@@ -64,7 +64,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 size_t fs_write(int fd, const void *buf, size_t len) {
 	size_t write_len = len;
-	if (write_len + file_table[fd].open_offset > file_table[fd].size)
+	if (fd > 3 && write_len + file_table[fd].open_offset > file_table[fd].size)
 		write_len = file_table[fd].size - file_table[fd].open_offset;
 	file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, write_len);
 	file_table[fd].open_offset += write_len;
