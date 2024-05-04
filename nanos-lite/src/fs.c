@@ -1,7 +1,5 @@
 #include <fs.h>
 
-static size_t fb_size = 0;
-
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
@@ -46,7 +44,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 void init_fs() {
 	AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
-	fb_size = gpu.width * gpu.height * 4;
+	file_table[5].size = gpu.width * gpu.height * 4;
   // TODO: initialize the size of /dev/fb
 }
 
@@ -89,7 +87,7 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
 		case SEEK_END: file_table[fd].open_offset = offset + file_table[fd].size; break;
 		default: panic("Unknown whence");
 	}
-	if (fd > 5) assert(file_table[fd].open_offset <= file_table[fd].size);
+	assert(file_table[fd].open_offset <= file_table[fd].size);
 	return file_table[fd].open_offset;
 }
 
