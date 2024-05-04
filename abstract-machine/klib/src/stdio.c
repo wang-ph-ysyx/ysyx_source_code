@@ -95,11 +95,23 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+	va_list ap;
+
+	va_start(ap, fmt);
+	int count = vsnprintf(out, n, fmt, ap);
+	va_end(ap);
+
+	return count;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  char _out[256] = {'\0'};
+	int len = vsprintf(_out, fmt, ap);
+	for (int i = 0; i < n; ++i){
+		out[i] = _out[i];
+	}
+	if (len > n) len = n;
+	return n;
 }
 
 #endif

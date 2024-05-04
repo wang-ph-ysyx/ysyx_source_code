@@ -3,17 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <fcntl.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
+static int canvas_w = 0, canvas_h = 0;
 
 uint32_t NDL_GetTicks() {
-  return 0;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+  int fd = open("/dev/events", 0, 0);
+	len = read(fd, buf, len);
+	close(fd);
+	if (len > 0) return 1;
+	return 0;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -34,9 +43,32 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   }
+	else {
+		int fd = open("/proc/dispinfo", 0, 0);
+		char buf[64];
+		read(fd, buf, sizeof(buf));
+		sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &screen_w, &screen_h);
+		if (*w == 0 && *h == 0) {
+			*h = screen_h;
+			*w = screen_w;
+		}
+		canvas_h = *h;
+		canvas_w = *w;
+	}
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+	x += (screen_w - canvas_w) / 2;
+	y += (screen_h - canvas_h) / 2;
+	int fd = open("/dev/fb", 0, 0);
+	size_t offset = 4 * (y * screen_w + x);
+	for (int i = 0; i < h; ++i) {
+		lseek(fd, offset, SEEK_SET);
+		write(fd, pixels, w * 4);
+		pixels += w;
+		offset += screen_w * 4;
+	}
+	close(fd);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
