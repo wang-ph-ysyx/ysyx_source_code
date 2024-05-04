@@ -10,7 +10,6 @@ static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 
 size_t fs_read(int fd, void *buf, size_t len);
-int fs_open(const char *pathname, int flags, int mode);
 
 uint32_t NDL_GetTicks() {
 	struct timeval tv;
