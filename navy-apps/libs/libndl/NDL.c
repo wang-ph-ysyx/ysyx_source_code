@@ -59,7 +59,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 		write(fd, pixels, w * 4);
 		pixels += w;
 		offset += screen_w * 4;
-		printf("%d\n", offset);
+		printf("%d\n", *pixels);
 	}
 	close(fd);
 }
