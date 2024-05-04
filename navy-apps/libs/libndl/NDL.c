@@ -49,17 +49,17 @@ void NDL_OpenCanvas(int *w, int *h) {
 		read(fd, buf, sizeof(buf));
 		sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &screen_w, &screen_h);
 		if (*w == 0 && *h == 0) {
-			canvas_h = screen_h;
-			canvas_w = screen_w;
+			*h = screen_h;
+			*w = screen_w;
 		}
-		else {
-			canvas_h = *h;
-			canvas_w = *w;
-		}
+		canvas_h = *h;
+		canvas_w = *w;
 	}
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+	x += (screen_w - canvas_w) / 2;
+	y += (screen_h - canvas_h) / 2;
 	int fd = open("/dev/fb", 0, 0);
 	size_t offset = 4 * (y * screen_w + x);
 	for (int i = 0; i < h; ++i) {
