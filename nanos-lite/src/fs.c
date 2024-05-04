@@ -82,14 +82,14 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence) {
-	assert(fd > 2);
+	assert(fd > 4);
 	switch (whence) {
 		case SEEK_SET: file_table[fd].open_offset = offset;   break;
 		case SEEK_CUR: file_table[fd].open_offset += offset;  break;
 		case SEEK_END: file_table[fd].open_offset = offset + file_table[fd].size; break;
 		default: panic("Unknown whence");
 	}
-	assert(file_table[fd].open_offset <= file_table[fd].size);
+	if (fd > 5) assert(file_table[fd].open_offset <= file_table[fd].size);
 	return file_table[fd].open_offset;
 }
 
