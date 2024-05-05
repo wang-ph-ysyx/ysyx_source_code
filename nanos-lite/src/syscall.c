@@ -1,6 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 #include <stdio.h>
+#include <sys/time.h>
 
 int fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
