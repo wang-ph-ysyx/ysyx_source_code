@@ -22,7 +22,7 @@ int NDL_PollEvent(char *buf, int len) {
 	len = read(fd, buf, len);
 	close(fd);
 	if (len > 0) {
-		printf("%s", buf);
+		printf("%s\n", buf);
 		return 1;
 	}
 	return 0;
