@@ -76,6 +76,7 @@ int main(int argc, char *argv[], char *envp[]) {
   assert(logo_sf);
   set_i_max();
 
+	printf("test\n");
   while (1) {
     display_menu(i_max);
 
