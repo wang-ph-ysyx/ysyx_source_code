@@ -9,9 +9,15 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 	uint32_t *src_pixels = (uint32_t *) src->pixels;
 	uint32_t *dst_pixels = (uint32_t *) dst->pixels;
-	int src_w = src->w, dst_w = dst->w, src_x = srcrect->x, dst_x = dstrect->x, src_y = srcrect->y, dst_y = dstrect->y;
-	for (int i = srcrect->h - 1; i >= 0; --i) {
-		for (int j = srcrect->w - 1; j >= 0; --j) {
+	int src_x = 0, src_y = 0, dst_x = 0, dst_y = 0, srcrect_h = src->h, srcrect_w = src->w;
+	int src_w = src->w, dst_w = dst->w;
+ 	if (srcrect != NULL) { 
+		src_x = srcrect->x; src_y = srcrect->y; 
+		srcrect_h = srcrect->h; srcrect_w = srcrect->w;
+	}
+	if (dstrect != NULL) { dst_x = dstrect->x; dst_y = dstrect->y; }
+	for (int i = 0; i < srcrect_h; ++i) {
+		for (int j = 0; j < srcrect_w; ++j) {
 			dst_pixels[dst_w * (i + dst_x) + j + dst_y] = src_pixels[src_w * (i + src_x) + j + src_y];
 		}
 	}
