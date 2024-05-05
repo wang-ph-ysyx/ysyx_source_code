@@ -9,7 +9,7 @@ size_t fs_write(int fd, const void *buf, size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
 int fs_close(int fd);
 
-static int sys_gettimeofday(struct timeval *tv, void *tz) {
+static int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
 	uint64_t us = io_read(AM_TIMER_UPTIME).us;
 	tv->tv_sec = us / 1000000;
 	tv->tv_usec = us % 1000000;
