@@ -9,6 +9,7 @@ int main() {
 	printf("clock start\n");
 
 	uint32_t start = NDL_GetTicks();
+	printf("%d\n", start);
 	uint32_t interval = 0;
 	int half_sec = 1;
   while (1) {
