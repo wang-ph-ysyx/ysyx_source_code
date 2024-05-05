@@ -18,9 +18,9 @@ int SDL_PollEvent(SDL_Event *ev) {
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-	if (event == NULL) return 1;
 	char buf[32];
 	while (NDL_PollEvent(buf, sizeof(buf)) == 0); 
+	if (event == NULL) return 1;
 	if (buf[1] == 'u') event->type = SDL_KEYUP;
 	else if (buf[1] == 'd') event->type = SDL_KEYDOWN;
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
