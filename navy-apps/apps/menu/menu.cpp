@@ -79,7 +79,6 @@ int main(int argc, char *argv[], char *envp[]) {
   while (1) {
     display_menu(i_max);
 
-		printf("test\n");
     SDL_Event e;
     do {
       SDL_WaitEvent(&e);
@@ -137,7 +136,7 @@ static void draw_str(BDF_Font *font, int x, int y, char *str, uint32_t fp, uint3
 static void draw_text_row(char *s, int r) {
   r += 3;
   puts(s);
-  draw_str(font, 0, r * font->h, s, 0x123456, 0xffffff);
+  //draw_str(font, 0, r * font->h, s, 0x123456, 0xffffff);
 }
 
 static void display_menu(int n) {
