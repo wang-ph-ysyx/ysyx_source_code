@@ -54,7 +54,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 	int width = gpu.width;
 	int x = offset / 4 % width;
 	int y = offset / 4 / width;
-	char _buf[4096] = {'\0'};
+	char _buf[2048];
 	strcpy(_buf, buf);
 	assert(_buf[2047] == '\0');
 	io_write(AM_GPU_FBDRAW, x, y, _buf, len / 4, 1, 1);
