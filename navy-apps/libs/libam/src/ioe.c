@@ -1,7 +1,15 @@
 #include <am.h>
+#include <sys/time.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <assert.h>
 
 #define NAME(key) \
-  [AM_KEY_##key] = #key
+  [AM_KEY_##key] = #key,
 
 static const char *keyname[256] __attribute__((used)) = {
 	[AM_KEY_NONE] = "NONE",
@@ -14,10 +22,10 @@ void __am_timer_config(AM_TIMER_CONFIG_T *cfg) {
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
 	rtc->year = 1900;
-	rtc->month = rtc->day = rtc-hour = rtc->minute = rtc->second = 0;
+	rtc->month = rtc->day = rtc->hour = rtc->minute = rtc->second = 0;
 }
 
-void __am_timer_uptime(AM_TIMER_RTC_T *uptime) {
+void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	uptime->us = tv.tv_sec * 1000000 + tv.tv_usec;
@@ -27,7 +35,7 @@ void __am_input_config(AM_INPUT_CONFIG_T *cfg) {
 	cfg->present = true;
 }
 
-void __am_input_keybrd(AM_INPUT_KEYBRD *kbd) {
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 	int fd = open("/dev/events", 0, 0);
 	char buf[32];
 	if (read(fd, buf, sizeof(buf)) == 0) {
@@ -41,7 +49,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD *kbd) {
 	else if (buf[1] == 'u') 
 		kbd->keydown = false;
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
-		if (strcmp(keyname[i], buf[3]) == 0) {
+		if (strcmp(keyname[i], buf + 3) == 0) {
 			kbd->keycode = i;
 			return;
 		}
@@ -57,10 +65,10 @@ static void *lut[128] = {
 	[AM_INPUT_KEYBRD] = __am_input_keybrd,
 };
 
-static void fail(void *buf) { panic("access nonexist register"); }
+static void fail(void *buf) { printf("access nonexist register\n"); assert(0); }
 
 bool ioe_init() {
-	for (int i = 0; i < LENGTH(lut); i++)
+	for (int i = 0; i < sizeof(lut) / sizeof(void *); i++)
 		if (!lut[i]) lut[i] = fail;
   return true;
 }
