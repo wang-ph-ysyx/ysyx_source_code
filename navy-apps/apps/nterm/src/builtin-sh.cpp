@@ -23,7 +23,8 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-	char _cmd[64];
+	sh_printf(cmd);
+	/*char _cmd[64];
 	strcpy(_cmd, cmd);
 	char *token = strtok(_cmd, " ");
 	if (token == NULL) return;
@@ -32,7 +33,7 @@ static void sh_handle_cmd(const char *cmd) {
 		token = strtok(NULL, " ");
 		if (token == NULL) sh_printf("need one argument\n");
 		else sh_printf(token);
-	}
+	}*/
 }
 
 void builtin_sh_run() {
