@@ -42,9 +42,17 @@ static void sh_handle_cmd(const char *cmd) {
 	else if (strcmp(token, "quit") == 0) {
 		exit(0);
 	}
+	else {
+		char *p = token;
+		for (; *p != '/' && *p != '\0'; ++p);
+		if (*p != '\0')
+			execve(token, NULL, NULL);
+		else execvp(token, NULL);
+	}
 }
 
 void builtin_sh_run() {
+	setenv("PATH", "/bin", 0);
   sh_banner();
   sh_prompt();
 
