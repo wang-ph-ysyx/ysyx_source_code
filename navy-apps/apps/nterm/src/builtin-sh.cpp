@@ -30,7 +30,7 @@ static void sh_handle_cmd(const char *cmd) {
 	//实现简单的echo指令
 	if (strcmp(token, "echo") == 0) {
 		token = strtok(NULL, " ");
-		if (token == NULL) sh_printf("need one argument");
+		if (token == NULL) sh_printf("need one argument\n");
 		else sh_printf(token);
 	}
 }
