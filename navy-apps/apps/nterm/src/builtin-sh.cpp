@@ -33,9 +33,9 @@ static void sh_handle_cmd(const char *cmd) {
 		while (token) {
 			for (; *token == ' '; ++token);
 		  sh_printf(token);
+			sh_printf(" ");
 		  token = strtok(NULL, " ");
 		}
-		sh_printf("\n");
 	}
 }
 
