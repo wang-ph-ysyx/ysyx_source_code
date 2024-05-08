@@ -23,17 +23,16 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-	sh_printf(cmd);
-	/*char _cmd[64];
+	char _cmd[64];
 	strcpy(_cmd, cmd);
 	char *token = strtok(_cmd, " ");
 	if (token == NULL) return;
 	//实现简单的echo指令
 	if (strcmp(token, "echo") == 0) {
 		token = strtok(NULL, " ");
-		if (token == NULL) sh_printf("need one argument\n");
+		if (*token == '\n') sh_printf("need one argument\n");
 		else sh_printf(token);
-	}*/
+	}
 }
 
 void builtin_sh_run() {
