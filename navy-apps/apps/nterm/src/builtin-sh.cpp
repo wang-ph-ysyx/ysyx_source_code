@@ -25,6 +25,7 @@ static void sh_prompt() {
 static void sh_handle_cmd(const char *cmd) {
 	char _cmd[64];
 	strcpy(_cmd, cmd);
+	_cmd[strlen(_cmd) - 1] = '\0';
 	char *token = strtok(_cmd, " ");
 	if (token == NULL) return;
 	//实现简单的echo指令
@@ -33,9 +34,13 @@ static void sh_handle_cmd(const char *cmd) {
 		while (token) {
 			for (; *token == ' '; ++token);
 		  sh_printf(token);
-			sh_printf(" ");
 		  token = strtok(NULL, " ");
+			if (token) sh_printf(" ");
 		}
+		sh_printf("\n");
+	}
+	else if (strcmp(token, "quit") == 0) {
+		exit(0);
 	}
 }
 
