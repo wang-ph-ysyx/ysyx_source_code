@@ -29,8 +29,8 @@ static void sh_handle_cmd(const char *cmd) {
 	if (token == NULL) return;
 	//实现简单的echo指令
 	if (strcmp(token, "echo") == 0) {
-		token = strtok(NULL, " ");
-		if (*token == '\n') sh_printf("need one argument\n");
+		token = _cmd + 5;
+		for (; *token == ' '; ++token);
 		else sh_printf(token);
 	}
 }
