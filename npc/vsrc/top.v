@@ -6,7 +6,8 @@ module top(
 	input reset,
 	output [31:0] pc,
 	output finished,
-	output [31:0] halt_ret
+	output [31:0] halt_ret,
+	output valid
 );
 
 	reg [31:0] inst;
@@ -32,12 +33,6 @@ module top(
 	wire [31:0] exu_val;
 	wire csr_wen;
 
-	always @(*) begin
-		if (!reset)
-			inst = pmem_read(pc);
-		else inst = 0;
-	end
-
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
 	wire [31:0] csr_jump;
@@ -59,9 +54,17 @@ module top(
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
-		.din(dnpc),
+		.din({32{valid}} & dnpc | {32{~valid}} & pc),
 		.dout(pc),
 		.wen(1'b1)
+	);
+
+	ifu my_ifu(
+		.clk(clk),
+		.reset(reset),
+		.pc(pc),
+		.inst(inst),
+		.valid(valid)
 	);
 
 	idu my_idu(
@@ -87,7 +90,8 @@ module top(
 		.pc(pc),
 		.jump(exu_jump),
 		.csr_val(csr_val),
-		.csr_wdata(csr_wdata)
+		.csr_wdata(csr_wdata),
+		.valid(valid)
 	);
 
 	RegisterFile #(5, 32) my_reg(
@@ -100,7 +104,8 @@ module top(
 		.raddr2(rs2),
 		.wen(reg_wen),
 		.halt_ret(halt_ret),
-		.cause(cause)
+		.cause(cause),
+		.valid(valid)
 	);
 
 	CSRFile #(32) my_CSRreg(
@@ -113,7 +118,8 @@ module top(
 		.epc(pc),
 		.cause(cause),
 		.jump(csr_jump),
-		.inst_mret(inst_mret)
+		.inst_mret(inst_mret),
+		.valid(valid)
 	);
 
 	assign finished = (inst == 32'h00100073);

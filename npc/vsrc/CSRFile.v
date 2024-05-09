@@ -8,7 +8,8 @@ module CSRFile #(DATA_WIDTH = 1) (
 	input [31:0] epc,
 	input [31:0] cause,
 	output [31:0] jump,
-	input inst_mret
+	input inst_mret,
+	input valid
 );
 
 	wire [1:0] addr;
@@ -27,12 +28,14 @@ module CSRFile #(DATA_WIDTH = 1) (
 	);
 
 	always @(posedge clk) begin
-		if (enable) begin
-			csr[addr] <= wdata;
-		end
-		else if (inst_ecall) begin
-			csr[0] <= epc + 4;
-			csr[1] <= cause;
+		if (valid) begin
+			if (enable) begin
+				csr[addr] <= wdata;
+			end
+			else if (inst_ecall) begin
+				csr[0] <= epc + 4;
+				csr[1] <= cause;
+			end
 		end
 	end
 

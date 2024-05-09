@@ -4,6 +4,7 @@
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
+#include <stdio.h>
 
 Vtop *top = NULL;
 int trigger_difftest = 0;
@@ -27,7 +28,8 @@ void cpu_exec(unsigned n) {
 		pc = top->pc;
 		one_cycle();
 #ifdef DIFFTEST
-		difftest_step();
+		if (!top->valid)
+			difftest_step();
 #endif
 		if (top->finished || trigger_difftest) break;
 	}
@@ -46,6 +48,7 @@ void cpu_exec(unsigned n) {
 
 void reset() {
 	top->reset = 1;
+	one_cycle();
 	one_cycle();
 	top->reset = 0;
 }
