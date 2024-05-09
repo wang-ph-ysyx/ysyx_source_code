@@ -6,7 +6,8 @@ module top(
 	input reset,
 	output [31:0] pc,
 	output finished,
-	output [31:0] halt_ret
+	output [31:0] halt_ret,
+	output wb_valid
 );
 
 	reg [31:0] inst;
@@ -37,7 +38,6 @@ module top(
 	wire lsu_valid;
 	reg ifu_valid;
 	wire idu_valid;
-	wire wb_valid;
 	wire [7:0] wmask;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
