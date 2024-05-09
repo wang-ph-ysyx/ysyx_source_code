@@ -1,1 +1,1 @@
-//#define DIFFTEST
+#define DIFFTEST
