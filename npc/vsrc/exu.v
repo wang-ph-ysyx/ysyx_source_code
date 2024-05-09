@@ -9,7 +9,8 @@ module exu(
 	output [31:0] val,
 	output [31:0] jump,
 	input [31:0] csr_val,
-	output [31:0] csr_wdata);
+	output [31:0] csr_wdata,
+	input valid);
 
 	wire [31:0] val0;
 	wire [31:0]	val1;
@@ -20,18 +21,20 @@ module exu(
 
 	wire [31:0] compare;
 
-	wire valid, wen;
+	wire rw_valid, wen;
 	wire [7:0] wmask;
 	reg [31:0] rdata;
-	always @(src1 or src2 or imm or wmask or valid or wen) begin
+	always @(src1 or src2 or imm or wmask or rw_valid or wen) begin
 		if (valid) begin
-			rdata = pmem_read(src1 + imm);
-			if (wen) begin
-				pmem_write(src1 + imm, src2, wmask);
+			if (rw_valid) begin
+				rdata = pmem_read(src1 + imm);
+				if (wen) begin
+					pmem_write(src1 + imm, src2, wmask);
+				end
 			end
-		end
-		else begin
-			rdata = 0;
+			else begin
+				rdata = 0;
+			end
 		end
 	end
 
@@ -134,7 +137,7 @@ module exu(
 
 	assign val = val0 | val1 | val2;
 	assign jump = jump1 | jump2;
-	assign valid = ((opcode == 7'b0100011) || (opcode == 7'b0000011));
+	assign rw_valid = ((opcode == 7'b0100011) || (opcode == 7'b0000011));
 	assign wen = opcode == 7'b0100011;
 	assign compare = src1 - src2;
 

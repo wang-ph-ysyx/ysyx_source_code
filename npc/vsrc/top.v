@@ -90,7 +90,8 @@ module top(
 		.pc(pc),
 		.jump(exu_jump),
 		.csr_val(csr_val),
-		.csr_wdata(csr_wdata)
+		.csr_wdata(csr_wdata),
+		.valid(valid)
 	);
 
 	RegisterFile #(5, 32) my_reg(
