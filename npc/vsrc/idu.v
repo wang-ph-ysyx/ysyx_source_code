@@ -7,7 +7,10 @@ module idu(
 	output [4:0] rs1,
 	output [4:0] rs2,
 	output [31:0] imm,
-	output [2:0] Type);
+	output [2:0] Type,
+	output lsu_wen,
+	output lsu_ren,
+	input  idu_valid);
 
 	assign opcode = in[6:0];
 	assign rs1 = in[19:15];
@@ -15,6 +18,8 @@ module idu(
 	assign rd = in[11:7];
 	assign funct3 = in[14:12];
 	assign funct7 = in[31:25];
+	assign lsu_ren = (opcode == 7'b0000011) & idu_valid;
+	assign lsu_wen = (opcode == 7'b0100011) & idu_valid;
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 

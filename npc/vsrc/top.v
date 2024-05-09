@@ -6,8 +6,7 @@ module top(
 	input reset,
 	output [31:0] pc,
 	output finished,
-	output [31:0] halt_ret,
-	output valid
+	output [31:0] halt_ret
 );
 
 	reg [31:0] inst;
@@ -31,7 +30,15 @@ module top(
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
+	wire [31:0] lsu_val;
 	wire csr_wen;
+	wire lsu_wen;
+	wire lsu_ren;
+	wire lsu_valid;
+	reg ifu_valid;
+	wire idu_valid;
+	wire wb_valid;
+	wire [7:0] wmask;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
@@ -54,7 +61,7 @@ module top(
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
-		.din({32{valid}} & dnpc | {32{~valid}} & pc),
+		.din({32{wb_valid}} & dnpc | {32{~wb_valid}} & pc),
 		.dout(pc),
 		.wen(1'b1)
 	);
@@ -64,7 +71,8 @@ module top(
 		.reset(reset),
 		.pc(pc),
 		.inst(inst),
-		.valid(valid)
+		.ifu_valid(ifu_valid),
+		.idu_valid(idu_valid)
 	);
 
 	idu my_idu(
@@ -76,7 +84,10 @@ module top(
 		.rs1(rs1),
 		.rs2(rs2),
 		.imm(imm),
-		.Type(Type)
+		.Type(Type),
+		.lsu_ren(lsu_ren),
+		.lsu_wen(lsu_wen),
+		.idu_valid(idu_valid)
 	);
 
 	exu my_exu(
@@ -91,7 +102,21 @@ module top(
 		.jump(exu_jump),
 		.csr_val(csr_val),
 		.csr_wdata(csr_wdata),
-		.valid(valid)
+		.wmask(wmask)
+	);
+
+	lsu my_lsu(
+		.clk(clk),
+		.raddr(src1 + imm),
+		.ren(lsu_ren),
+		.val(lsu_val),
+		.waddr(src1 + imm),
+		.wdata(src2),
+		.wen(lsu_wen),
+		.wmask(wmask),
+		.valid(lsu_valid),
+		.opcode(opcode),
+		.funct3(funct3)
 	);
 
 	RegisterFile #(5, 32) my_reg(
@@ -105,7 +130,7 @@ module top(
 		.wen(reg_wen),
 		.halt_ret(halt_ret),
 		.cause(cause),
-		.valid(valid)
+		.valid(wb_valid)
 	);
 
 	CSRFile #(32) my_CSRreg(
@@ -119,15 +144,24 @@ module top(
 		.cause(cause),
 		.jump(csr_jump),
 		.inst_mret(inst_mret),
-		.valid(valid)
+		.valid(wb_valid)
 	);
 
 	assign finished = (inst == 32'h00100073);
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
 	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
-	assign val = (exu_val | csr_val);
+	assign val = (exu_val | csr_val | lsu_val);
 	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 	assign jump = exu_jump | csr_jump;
+	assign wb_valid = ~ifu_valid & (~lsu_ren | lsu_valid);
+
+	always @(posedge clk) begin
+		if (wb_valid) begin
+			ifu_valid <= 1;
+		end else begin
+			ifu_valid <= 0;
+		end
+	end
 
 endmodule

@@ -10,7 +10,7 @@ module exu(
 	output [31:0] jump,
 	input [31:0] csr_val,
 	output [31:0] csr_wdata,
-	input valid);
+	output [7:0] wmask);
 
 	wire [31:0] val0;
 	wire [31:0]	val1;
@@ -21,22 +21,7 @@ module exu(
 
 	wire [31:0] compare;
 
-	wire rw_valid, wen;
-	wire [7:0] wmask;
 	reg [31:0] rdata;
-	always @(src1 or src2 or imm or wmask or rw_valid or wen) begin
-		if (valid) begin
-			if (rw_valid) begin
-				rdata = pmem_read(src1 + imm);
-				if (wen) begin
-					pmem_write(src1 + imm, src2, wmask);
-				end
-			end
-			else begin
-				rdata = 0;
-			end
-		end
-	end
 
 	MuxKeyInternal #(3, 7, 32, 1) calculate_val0(
 		.out(val0),
@@ -49,16 +34,11 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(11, 10, 32, 1) calculate_val1(
+	MuxKeyInternal #(6, 10, 32, 1) calculate_val1(
 		.out(val1),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0000000011, (rdata & 32'hff) | {{24{rdata[7]}}, 8'h0}, //lb
-			10'b0010000011, (rdata & 32'hffff) | {{16{rdata[15]}}, 16'h0}, //lh
-			10'b0100000011, rdata,                  //lw
-			10'b1000000011, rdata & 32'hff,         //lbu
-			10'b1010000011, rdata & 32'hffff,       //lhu
 			10'b0000010011, src1 + imm,             //addi
 			10'b0110010011, {31'b0, {src1 < imm}},  //sltiu
 			10'b1000010011, src1 ^ imm,             //xori
@@ -137,8 +117,6 @@ module exu(
 
 	assign val = val0 | val1 | val2;
 	assign jump = jump1 | jump2;
-	assign rw_valid = ((opcode == 7'b0100011) || (opcode == 7'b0000011));
-	assign wen = opcode == 7'b0100011;
 	assign compare = src1 - src2;
 
 endmodule
