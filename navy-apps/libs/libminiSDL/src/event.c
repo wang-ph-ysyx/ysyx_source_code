@@ -28,6 +28,10 @@ int SDL_PollEvent(SDL_Event *event) {
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
 		if (strcmp(buf + 3, keyname[i]) == 0) {
 			event->key.keysym.sym = i;
+			if (event->type == SDL_KEYUP)
+				keysnap[i] = 0;
+			else if (event->type == SDL_KEYDOWN)
+				keysnap[i] = 1;
 			return 1;
 		}
 	}
@@ -43,6 +47,10 @@ int SDL_WaitEvent(SDL_Event *event) {
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
 		if (strcmp(buf + 3, keyname[i]) == 0) {
 			event->key.keysym.sym = i;
+			if (event->type == SDL_KEYUP)
+				keysnap[i] = 0;
+			else if (event->type == SDL_KEYDOWN)
+				keysnap[i] = 1;
 			return 1;
 		}
 	}
@@ -54,11 +62,5 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {
-	SDL_Event event;
-	SDL_PollEvent(&event);
-	if (event.type == SDL_KEYUP)
-		keysnap[event.key.keysym.sym] = 0;
-	else if (event.type == SDL_KEYDOWN)
-		keysnap[event.key.keysym.sym] = 1;
   return keysnap;
 }
