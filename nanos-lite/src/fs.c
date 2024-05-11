@@ -30,6 +30,9 @@ size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
 size_t dispinfo_read(void *buf, size_t offset, size_t len);
 size_t fb_write(const void *buf, size_t offset, size_t len);
+size_t sb_write(const void *buf, size_t offset, size_t len);
+size_t sbctl_read(void *buf, size_t offset, size_t len);
+size_t sbctl_write(const void *buf, size_t offset, size_t len);
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
@@ -39,6 +42,8 @@ static Finfo file_table[] __attribute__((used)) = {
 	{"/dev/events", 0, 0, events_read, invalid_write, 0},
 	{"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write, 0},
 	{"/dev/fb", 0, 0, invalid_read, fb_write, 0},
+	{"/dev/sb", 0, 0, invalid_read, sb_write, 0},
+	{"/dev/sbctl", 0, 0, sbctl_read, sbctl_write, 0},
 #include "files.h"
 };
 
@@ -63,7 +68,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
 	size_t read_len = len;
-	if (fd > 5 && read_len + file_table[fd].open_offset > file_table[fd].size)
+	if (fd > 7 && read_len + file_table[fd].open_offset > file_table[fd].size)
 		read_len = file_table[fd].size - file_table[fd].open_offset;
 	read_len = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, read_len);
 	file_table[fd].open_offset += read_len;
@@ -72,7 +77,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 size_t fs_write(int fd, const void *buf, size_t len) {
 	size_t write_len = len;
-	if (fd > 5 && write_len + file_table[fd].open_offset > file_table[fd].size)
+	if (fd > 7 && write_len + file_table[fd].open_offset > file_table[fd].size)
 		write_len = file_table[fd].size - file_table[fd].open_offset;
 	write_len = file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, write_len);
 	file_table[fd].open_offset += write_len;
