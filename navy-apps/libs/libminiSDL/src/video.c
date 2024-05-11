@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
@@ -54,8 +55,9 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		uint32_t *pixels = malloc(size * sizeof(uint32_t));
 		assert(pixels);
 		for (int i = 0; i < size; ++i) {
-			uint8_t index = *(uint8_t *)(s->pixels + i);
+			uint8_t index = *((uint8_t *)s->pixels + i);
 			SDL_Color *color = s->format->palette->colors + index;
+			pixels[i] = 0;
 			pixels[i] |= (uint32_t)color->r << 16;
 			pixels[i] |= (uint32_t)color->g << 8;
 			pixels[i] |= (uint32_t)color->b << 0;
