@@ -69,7 +69,6 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 		pixels += w;
 		offset += screen_w * 4;
 	}
-	if (w == 320) printf("test\n");
 	close(fd);
 }
 
