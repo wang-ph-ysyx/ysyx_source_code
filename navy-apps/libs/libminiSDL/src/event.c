@@ -3,6 +3,12 @@
 #include <string.h>
 
 #define keyname(k) #k,
+#define keysnap(k) [SDLK_##k] = 0,
+
+static uint8_t keysnap[] = {
+	[SDLK_NONE] = 0,
+	_KEYS(keysnap)
+};
 
 static const char *keyname[] = {
   "NONE",
@@ -48,5 +54,5 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {
-  return NULL;
+  return keysnap;
 }
