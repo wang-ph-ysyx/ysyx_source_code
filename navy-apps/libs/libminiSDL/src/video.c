@@ -3,9 +3,6 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
-
-static inline int maskToShift(uint32_t mask);
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
@@ -17,7 +14,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 		srcrect_h = srcrect->h; srcrect_w = srcrect->w;
 	}
 	if (dstrect != NULL) { dst_x = dstrect->x; dst_y = dstrect->y; }
-	printf("1: %d\n", dst->format->BitsPerPixel);
 	for (int i = 0; i < srcrect_h; ++i) {
 		for (int j = 0; j < srcrect_w; ++j) {
 			if (src->format->BitsPerPixel == 32)
@@ -32,13 +28,14 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 	int x = 0, y = 0, w = dst->w, h = dst->h;
 	if (dstrect != NULL) { x = dstrect->x; y = dstrect->y; w = dstrect->w; h = dstrect->h; }
 	int surface_w = dst->w;
-	printf("2: %d\n", dst->format->BitsPerPixel);
 	for (int i = y; i < y + h; ++i) {
 		for (int j = x; j < x + w; ++j) {
 			if (dst->format->BitsPerPixel == 32)
 				*((uint32_t *)dst->pixels + i * surface_w + j) = color;
-			else if (dst->format->BitsPerPixel == 8)
+			else if (dst->format->BitsPerPixel == 8) {
+				assert(0);
 				*((uint8_t *)dst->pixels + i * surface_w + j) = color;
+			}
 		}
 	}
 }
@@ -49,7 +46,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		w = s->w;
 		h = s->h;
 	}
-	printf("3: %d\n", s->format->BitsPerPixel);
 	if (s->format->BitsPerPixel == 32)
 		NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
 	else if (s->format->BitsPerPixel == 8) {
@@ -57,7 +53,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		uint32_t *pixels = malloc(size);
 		assert(pixels);
 		for (int i = 0; i < size; ++i) {
-			uint8_t index = *(uint8_t *)s->pixels;
+			uint8_t index = *(uint8_t *)s->pixels + i;
 			SDL_Color *color = s->format->palette->colors + index;
 			pixels[i] |= (uint32_t)color->r << 16;
 			pixels[i] |= (uint32_t)color->g << 8;
