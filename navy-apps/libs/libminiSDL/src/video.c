@@ -40,10 +40,10 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 				red = (uint8_t)(color >> 0);
 				int ncolors = dst->format->palette->ncolors;
 				SDL_Color *colors = dst->format->palette->colors;
-				for (uint8_t i = 0; i < ncolors; ++i) {
+				/*for (uint8_t i = 0; i < ncolors; ++i) {
 					if (red == colors[i].r && green == colors[i].g && blue == colors[i].b)
 						palette_pixel = i;
-				}
+				}*/
 				*((uint8_t *)dst->pixels + i * surface_w + j) = palette_pixel;
 			}
 		}
