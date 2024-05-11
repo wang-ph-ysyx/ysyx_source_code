@@ -3,7 +3,8 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
+
+static inline int maskToShift(uint32_t mask);
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
@@ -45,7 +46,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		w = s->w;
 		h = s->h;
 	}
-	printf("%d\n", s->format->BitsPerPixel);
 	if (s->format->BitsPerPixel == 32)
 		NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
 	else if (s->format->BitsPerPixel == 8) {
@@ -55,9 +55,9 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		for (int i = 0; i < size; ++i) {
 			uint8_t index = *(uint8_t *)s->pixels;
 			SDL_Color *color = s->format->palette->colors + index;
-			pixels[i] |= (uint32_t)color->r << 16;
-			pixels[i] |= (uint32_t)color->g << 8;
-			pixels[i] |= (uint32_t)color->b << 0;
+			pixels[i] |= (uint32_t)color->r << maskToShift(s->format->Rmask);
+			pixels[i] |= (uint32_t)color->g << maskToShift(s->format->Gmask);
+			pixels[i] |= (uint32_t)color->b << maskToShift(s->format->Bmask);
 		}	
 		NDL_DrawRect(pixels, x, y, w, h);
 		free(pixels);
