@@ -63,7 +63,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 			pixels[i] |= (uint32_t)color->g << 8;
 			pixels[i] |= (uint32_t)color->b << 0;
 		}	
-		printf("test\n");
 		NDL_DrawRect(pixels, x, y, w, h);
 		free(pixels);
 	}
