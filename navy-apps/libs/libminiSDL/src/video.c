@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 static inline int maskToShift(uint32_t mask);
 
@@ -55,6 +56,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		for (int i = 0; i < size; ++i) {
 			uint8_t index = *(uint8_t *)s->pixels;
 			SDL_Color *color = s->format->palette->colors + index;
+			printf("%#x\n", s->format->Rmask);
 			pixels[i] |= (uint32_t)color->r << maskToShift(s->format->Rmask);
 			pixels[i] |= (uint32_t)color->g << maskToShift(s->format->Gmask);
 			pixels[i] |= (uint32_t)color->b << maskToShift(s->format->Bmask);
