@@ -59,7 +59,6 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-	if (w == 320) printf("test\n");
 	x += (screen_w - canvas_w) / 2;
 	y += (screen_h - canvas_h) / 2;
 	int fd = open("/dev/fb", 0, 0);
@@ -70,6 +69,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 		pixels += w;
 		offset += screen_w * 4;
 	}
+	if (w == 320) printf("test\n");
 	close(fd);
 }
 
