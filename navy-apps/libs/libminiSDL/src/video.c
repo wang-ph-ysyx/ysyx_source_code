@@ -54,16 +54,19 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		int size = w * h;
 		uint32_t *pixels = malloc(size * sizeof(uint32_t));
 		assert(pixels);
+		int times = 0;
 		for (int i = 0; i < size; ++i) {
 			uint8_t index = *((uint8_t *)s->pixels + i);
 			SDL_Color *color = s->format->palette->colors + index;
 			printf("%d\n", index);
+			++times;
 			pixels[i] = 0;
 			pixels[i] |= (uint32_t)color->a << 24;
 			pixels[i] |= (uint32_t)color->r << 16;
 			pixels[i] |= (uint32_t)color->g << 8;
 			pixels[i] |= (uint32_t)color->b << 0;
 		}	
+		printf("%d\n", times);
 		NDL_DrawRect(pixels, x, y, w, h);
 		free(pixels);
 	}
