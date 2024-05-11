@@ -15,9 +15,9 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 		srcrect_h = srcrect->h; srcrect_w = srcrect->w;
 	}
 	if (dstrect != NULL) { dst_x = dstrect->x; dst_y = dstrect->y; }
+	printf("%d\n", src->format->BitsPerPixel);
 	for (int i = 0; i < srcrect_h; ++i) {
 		for (int j = 0; j < srcrect_w; ++j) {
-			printf("%d\n", src->format->BitsPerPixel);
 			if (src->format->BitsPerPixel == 32)
 				*((uint32_t *)dst->pixels + dst_w * (i + dst_y) + j + dst_x) = *((uint32_t *)src->pixels + src_w * (i + src_y) + j + src_x);
 			else if (src->format->BitsPerPixel == 8)
