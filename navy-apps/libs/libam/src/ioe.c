@@ -56,6 +56,33 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 	}
 }
 
+void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+	int fd = open("/proc/dispinfo", 0, 0);
+	char buf[64];
+	read(fd, buf, sizeof(buf));
+	sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &cfg->width, &cfg->height);
+	cfg->present = true; cfg->has_accel = false; cfg->vmemsz = 1;
+	close(fd);
+}
+
+void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
+	int width, height;
+	int fd = open("/proc/dispinfo", 0, 0);
+	char buf[64];
+	read(fd, buf, sizeof(buf));
+	sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &width, &height);
+	close(fd);
+	fd = open("/dev/fb", 0, 0);
+	size_t offset = 4 * (cfg->y * width + cfg->x);
+	for (int i = 0; i < cfg->h; ++i) {
+		lseek(fd, offset, SEEK_SET);
+		write(fd, cfg->pixels, 4 * cfg->w);
+		cfg->pixels += cfg->w;
+		offset += width * 4;
+	}
+	close(fd);
+}
+
 typedef void (*handler_t)(void *buf);
 static void *lut[128] = {
 	[AM_TIMER_CONFIG] = __am_timer_config,
@@ -63,6 +90,8 @@ static void *lut[128] = {
 	[AM_TIMER_UPTIME] = __am_timer_uptime,
 	[AM_INPUT_CONFIG] = __am_input_config,
 	[AM_INPUT_KEYBRD] = __am_input_keybrd,
+	[AM_GPU_CONFIG  ] = __am_gpu_config,
+	[AM_GPU_FBDRAW  ] = __am_gpu_fbdraw,
 };
 
 static void fail(void *buf) { printf("access nonexist register\n"); assert(0); }
