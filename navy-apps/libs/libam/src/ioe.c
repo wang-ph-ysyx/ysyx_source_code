@@ -66,7 +66,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
-	static AM_GPU_FBDRAW_T cfgs[64];
+	static AM_GPU_FBDRAW_T cfgs[256];
 	static int tail = 0;
 	cfgs[tail] = *cfg;
 	++tail;
