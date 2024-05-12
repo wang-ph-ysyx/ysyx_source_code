@@ -85,7 +85,6 @@ int main(int argc, char *argv[]) {
   fseek(fp, 0, SEEK_END);
   size_t size = ftell(fp);
   void *buf = malloc(size);
-	assert(buf);
   assert(size);
   fseek(fp, 0, SEEK_SET);
   int ret = fread(buf, size, 1, fp);
