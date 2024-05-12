@@ -61,7 +61,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 	char buf[64];
 	read(fd, buf, sizeof(buf));
 	sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &cfg->width, &cfg->height);
-	cfg->present = true; cfg->has_accel = false; cfg->vmemsz = 1;
+	cfg->present = true; cfg->has_accel = false; cfg->vmemsz = 0;
 	close(fd);
 }
 
