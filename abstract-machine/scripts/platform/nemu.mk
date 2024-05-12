@@ -16,6 +16,7 @@ NEMUFLAGS += -e $(IMAGE).elf
 # 批处理模式
 NEMUFLAGS += -b
 
+mainargs ?= mario
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
 .PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c
