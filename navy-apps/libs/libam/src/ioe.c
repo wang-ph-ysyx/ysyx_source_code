@@ -66,6 +66,13 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
+	static AM_GPU_FBDRAW_T cfgs[16];
+	static int tail = 0;
+	cfgs[tail] = *cfg;
+	++tail;
+	assert(tail <= sizeof(cfgs) / sizeof(cfgs[0]));
+	if (cfg->sync != 1) return;
+
 	int width, height;
 	int fd = open("/proc/dispinfo", 0, 0);
 	char buf[64];
@@ -73,12 +80,15 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
 	sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &width, &height);
 	close(fd);
 	fd = open("/dev/fb", 0, 0);
-	size_t offset = 4 * (cfg->y * width + cfg->x);
-	for (int i = 0; i < cfg->h; ++i) {
-		lseek(fd, offset, SEEK_SET);
-		write(fd, cfg->pixels, 4 * cfg->w);
-		cfg->pixels += cfg->w;
-		offset += width * 4;
+	for (; tail > 0; ) {
+		--tail;
+		size_t offset = 4 * (cfgs[tail].y * width + cfgs[tail].x);
+		for (int i = 0; i < cfgs[tail].h; ++i) {
+			lseek(fd, offset, SEEK_SET);
+			write(fd, cfgs[tail].pixels, 4 * cfgs[tail].w);
+			cfgs[tail].pixels += cfgs[tail].w;
+			offset += width * 4;
+		}
 	}
 	close(fd);
 }
