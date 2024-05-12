@@ -70,7 +70,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
 	static int tail = 0;
 	cfgs[tail] = *cfg;
 	++tail;
-	assert(tail <= sizeof(cfgs) / sizeof(cfgs[0]));
+	assert(tail <= 16);
 	if (cfg->sync != 1) return;
 
 	int width, height;
