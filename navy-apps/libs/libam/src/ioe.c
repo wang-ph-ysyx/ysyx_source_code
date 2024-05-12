@@ -66,11 +66,11 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
-	static AM_GPU_FBDRAW_T cfgs[16];
+	static AM_GPU_FBDRAW_T cfgs[64];
 	static int tail = 0;
 	cfgs[tail] = *cfg;
 	++tail;
-	assert(tail <= 16);
+	assert(tail <= sizeof(cfgs) / sizeof(cfgs[0]));
 	if (cfg->sync != 1) return;
 
 	int width, height;
