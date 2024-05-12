@@ -4,7 +4,6 @@
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
-#include <stdio.h>
 
 Vtop *top = NULL;
 int trigger_difftest = 0;
