@@ -6,7 +6,7 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 
-void context_uload(PCB *_pcb, const char *filename);
+void context_uload(PCB *_pcb, const char *filename, char *const argv[], char *const envp[]);
 void naive_uload(PCB *pcb, const char *filename);
 
 void switch_boot_pcb() {
@@ -28,7 +28,7 @@ void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
 
 void init_proc() {
 	context_kload(&pcb[0], hello_fun, (void *)1L);
-	context_uload(&pcb[1], "/bin/pal");
+	context_uload(&pcb[1], "/bin/pal", NULL, NULL);
   switch_boot_pcb();
 
   Log("Initializing processes...");
