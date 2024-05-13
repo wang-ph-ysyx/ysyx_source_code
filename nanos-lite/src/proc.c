@@ -21,7 +21,13 @@ void hello_fun(void *arg) {
   }
 }
 
+void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
+	_pcb->cp = kcontext((Area) {_pcb->stack, _pcb->stack + STACK_SIZE}, hello_fun, arg);
+}
+
 void init_proc() {
+	context_kload(&pcb[0], hello_fun, (void *)11L);
+	context_kload(&pcb[1], hello_fun, (void *)22L);
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -32,5 +38,7 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  return NULL;
+	current->cp = prev;
+	current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  return current->cp;
 }
