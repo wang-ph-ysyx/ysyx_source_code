@@ -65,7 +65,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 	close(fd);
 }
 
-void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
+void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 	int width, height;
 	int fd = open("/proc/dispinfo", 0, 0);
 	char buf[64];
@@ -73,11 +73,11 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *cfg) {
 	sscanf(buf, "WIDTH:%d\nHEIGHT:%d\n", &width, &height);
 	close(fd);
 	fd = open("/dev/fb", 0, 0);
-	size_t offset = 4 * (cfg->y * width + cfg->x);
-	for (int i = 0; i < cfg->h; ++i) {
+	size_t offset = 4 * (ctl->y * width + ctl->x);
+	for (int i = 0; i < ctl->h; ++i) {
 		lseek(fd, offset, SEEK_SET);
-		write(fd, cfg->pixels, 4 * cfg->w);
-		cfg->pixels += cfg->w;
+		write(fd, ctl->pixels, 4 * ctl->w);
+		ctl->pixels += ctl->w;
 		offset += width * 4;
 	}
 	close(fd);

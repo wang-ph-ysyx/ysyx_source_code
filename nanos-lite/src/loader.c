@@ -58,3 +58,29 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+	uintptr_t entry = loader(pcb, filename);
+	pcb->cp = ucontext(NULL, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
+	char *stack = (char *)heap.end;
+	int argc = 0;
+	for (; argv[argc] != NULL; ++argc) {
+		stack -= strlen(argv[argc]) + 1;
+		strcpy(stack, argv[argc]);
+	}
+	int envc = 0;
+	for (; envp[envc] != NULL; ++envc) {
+		stack -= strlen(envp[envc]) + 1;
+		strcpy(stack, envp[envc]);
+	}
+	stack -= (envc + 1) * 8;
+	for (int i = 0; i <= envc; ++i) {
+		*((char **)stack + i) = envp[i];
+	}
+	stack -= (argc + 1) * 8;
+	for (int i = 0; i <= argc; ++i) {
+		*((char **)stack + i) = argv[i];
+	}
+	stack -= sizeof(argc);
+	*(int *)stack = argc;
+	pcb->cp->GPRx = (uintptr_t)stack;
+}

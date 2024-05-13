@@ -6,6 +6,7 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 
+void context_uload(PCB *_pcb, const char *filename, char *const argv[], char *const envp[]);
 void naive_uload(PCB *pcb, const char *filename);
 
 void switch_boot_pcb() {
@@ -21,16 +22,25 @@ void hello_fun(void *arg) {
   }
 }
 
+void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
+	_pcb->cp = kcontext((Area) {_pcb->stack, _pcb->stack + STACK_SIZE}, hello_fun, arg);
+}
+
 void init_proc() {
+	context_kload(&pcb[0], hello_fun, (void *)1L);
+	char *argv[] = {""}, *envp[] = {""};
+	context_uload(&pcb[1], "/bin/pal", argv, envp);
   switch_boot_pcb();
 
   Log("Initializing processes...");
 
-	naive_uload(NULL, "/bin/menu");
+	//naive_uload(NULL, "/bin/menu");
   // load program here
 
 }
 
 Context* schedule(Context *prev) {
-  return NULL;
+	current->cp = prev;
+	current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  return current->cp;
 }
