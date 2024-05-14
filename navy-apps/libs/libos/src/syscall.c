@@ -100,7 +100,9 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
 	char filename[64];
 	strncpy(filename, fname, sizeof(filename));
-  return _syscall_(SYS_execve, (intptr_t)filename, (intptr_t)argv, (intptr_t)envp);
+	int ret = _syscall_(SYS_execve, (intptr_t)filename, (intptr_t)argv, (intptr_t)envp);
+	if (ret < 0) return -1;
+  return ret;
 }
 
 // Syscalls below are not used in Nanos-lite.
