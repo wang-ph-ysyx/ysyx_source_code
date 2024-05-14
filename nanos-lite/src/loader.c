@@ -76,12 +76,14 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 	}
 	stack -= (envc + 1) * 8;
 	for (int i = 0; i < envc; ++i) {
+		assert(envp[i]);
 		strptr -= strlen(envp[i]) + 1;
 		*((char **)stack + i) = strptr;
 	}
 	*((char **)stack + envc) = NULL;
 	stack -= (argc + 1) * 8;
 	for (int i = 0; i < argc; ++i) {
+		assert(argv[i]);
 		strptr -= strlen(argv[i]) + 1;
 		*((char **)stack + i) = strptr;
 	}
