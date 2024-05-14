@@ -8,9 +8,8 @@ void call_main(uintptr_t *args) {
 	int argc = *(int *)args;
 	args = (uintptr_t *)((int *)args + 1);
 	char **argv = (char **)args;
-	args = (uintptr_t *)((char **)args + argc + 1);
-	char **envp = (char **)args;
-  environ = envp;
-  exit(main(argc, argv, envp));
+	char *empty[] = {NULL };
+  environ = empty;
+  exit(main(argc, argv, empty));
   assert(0);
 }
