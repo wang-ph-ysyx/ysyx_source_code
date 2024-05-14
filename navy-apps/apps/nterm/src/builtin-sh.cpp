@@ -29,7 +29,7 @@ static void sh_handle_cmd(const char *cmd) {
 	char *token = strtok(_cmd, " ");
 	if (token == NULL) return;
 	//实现简单的echo指令
-	if (strcmp(token, "echo") == 0) {
+	/*if (strcmp(token, "echo") == 0) {
 		token = strtok(NULL, " ");
 		while (token) {
 			for (; *token == ' '; ++token);
@@ -39,7 +39,7 @@ static void sh_handle_cmd(const char *cmd) {
 		}
 		sh_printf("\n");
 	}
-	else if (strcmp(token, "quit") == 0) {
+	else*/ if (strcmp(token, "quit") == 0) {
 		exit(0);
 	}
 	else {
