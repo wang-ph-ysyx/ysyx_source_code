@@ -28,8 +28,8 @@ void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
 
 void init_proc() {
 	context_kload(&pcb[0], hello_fun, (void *)1L);
-	char *argv[] = {"/bin/exec-test", NULL}, *envp[] = {NULL};
-	context_uload(&pcb[1], "/bin/exec-test", argv, envp);
+	char *argv[] = {"/bin/menu", NULL}, *envp[] = {NULL};
+	context_uload(&pcb[1], "/bin/menu", argv, envp);
   switch_boot_pcb();
 
   Log("Initializing processes...");
