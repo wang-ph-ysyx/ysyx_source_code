@@ -84,7 +84,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 		strptr -= strlen(argv[i]) + 1;
 		*((char **)stack + i) = strptr;
 	}
-	*((char **)stack + argc) = strptr;
+	*((char **)stack + argc) = NULL;
 	stack -= sizeof(argc);
 	*(int *)stack = argc;
 	pcb->cp->GPRx = (uintptr_t)stack;
