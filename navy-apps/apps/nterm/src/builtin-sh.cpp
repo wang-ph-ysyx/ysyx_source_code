@@ -55,16 +55,16 @@ static void sh_handle_cmd(const char *cmd) {
 			if (argc > sizeof(argv) / sizeof(char *))
 				exit(1);
 		}
-		char *p = token;
+		/*char *p = token;
 		for (; *p != '/' && *p != '\0'; ++p);
 		if (*p != '\0')
 			execve(token, argv, (char **){NULL });
-		else execvp(token, argv);
+		else*/ execvp(token, argv);
 	}
 }
 
 void builtin_sh_run() {
-	setenv("PATH", "/bin", 0);
+	setenv("PATH", "/bin:/usr/bin", 0);
   sh_banner();
   sh_prompt();
 
