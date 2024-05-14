@@ -58,7 +58,7 @@ static void sh_handle_cmd(const char *cmd) {
 		char *p = token;
 		for (; *p != '/' && *p != '\0'; ++p);
 		if (*p != '\0')
-			execve(token, argv, NULL);
+			execve(token, argv, (char **){NULL });
 		else execvp(token, argv);
 	}
 }
