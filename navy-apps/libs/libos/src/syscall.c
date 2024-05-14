@@ -5,6 +5,7 @@
 #include <time.h>
 #include "syscall.h"
 #include <string.h>
+#include <errno.h>
 
 // helper macros
 #define _concat(x, y) x ## y
@@ -101,7 +102,10 @@ int _execve(const char *fname, char * const argv[], char *const envp[]) {
 	char filename[64];
 	strncpy(filename, fname, sizeof(filename));
 	int ret = _syscall_(SYS_execve, (intptr_t)filename, (intptr_t)argv, (intptr_t)envp);
-	if (ret < 0) return -1;
+	if (ret < 0) {
+		errno = -ret;
+		return -1;
+	}
   return ret;
 }
 
