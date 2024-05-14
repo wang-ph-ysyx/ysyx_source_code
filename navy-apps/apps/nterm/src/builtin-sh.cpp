@@ -28,39 +28,19 @@ static void sh_handle_cmd(const char *cmd) {
 	_cmd[strlen(_cmd) - 1] = '\0';
 	char *token = strtok(_cmd, " ");
 	if (token == NULL) return;
-	//实现简单的echo指令
-	/*if (strcmp(token, "echo") == 0) {
-		token = strtok(NULL, " ");
-		while (token) {
-			for (; *token == ' '; ++token);
-		  sh_printf(token);
-		  token = strtok(NULL, " ");
-			if (token) sh_printf(" ");
-		}
-		sh_printf("\n");
-	}
-	else*/ if (strcmp(token, "quit") == 0) {
-		exit(0);
-	}
-	else {
-		char *argv[8] = {token, NULL};
-		int argc = 1;
-		char *arg = token;
+	char *argv[8] = {token, NULL};
+	int argc = 1;
+	char *arg = token;
+	arg = strtok(NULL, " ");
+	while (arg) {
+		for (; *arg == ' '; ++arg);
+		argv[argc] = arg;
 		arg = strtok(NULL, " ");
-		while (arg) {
-			for (; *arg == ' '; ++arg);
-			argv[argc] = arg;
-			arg = strtok(NULL, " ");
-			++argc;
-			if (argc > sizeof(argv) / sizeof(char *))
-				exit(1);
-		}
-		/*char *p = token;
-		for (; *p != '/' && *p != '\0'; ++p);
-		if (*p != '\0')
-			execve(token, argv, (char **){NULL });
-		else*/ execvp(token, argv);
+		++argc;
 	}
+	if (argc > sizeof(argv) / sizeof(char *))
+		exit(1);
+	execvp(token, argv);
 }
 
 void builtin_sh_run() {
