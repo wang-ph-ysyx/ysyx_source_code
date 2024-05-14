@@ -31,7 +31,8 @@ void do_syscall(Context *c) {
 	//printf("cause: %d, args: %d %d %d\n", a[0], a[1], a[2], a[3]);
 
   switch (a[0]) {
-		case SYS_exit: naive_uload(NULL, "/bin/menu"); break;
+		case SYS_exit: context_uload(current, "/bin/menu", (char **){NULL}, (char **){NULL});
+									switch_boot_pcb(); yield(); break;
 		case SYS_yield: yield(); c->GPRx = 0; break;
 		case SYS_open: c->GPRx = fs_open((char *)a[1], a[2], a[3]); break;
 		case SYS_read: c->GPRx = fs_read(a[1], (char *)a[2], a[3]); break;
