@@ -43,11 +43,23 @@ static void sh_handle_cmd(const char *cmd) {
 		exit(0);
 	}
 	else {
+		char *argv[8] = {token, NULL};
+		int argc = 1;
+		char *arg = token;
+		arg = strtok(NULL, " ");
+		while (arg) {
+			for (; *arg == ' '; ++arg);
+			argv[argc] = arg;
+			arg = strtok(NULL, " ");
+			++argc;
+			if (argc > sizeof(argv) / sizeof(char *))
+				exit(1);
+		}
 		char *p = token;
 		for (; *p != '/' && *p != '\0'; ++p);
 		if (*p != '\0')
-			execve(token, NULL, NULL);
-		else execvp(token, NULL);
+			execve(token, argv, NULL);
+		else execvp(token, argv);
 	}
 }
 
