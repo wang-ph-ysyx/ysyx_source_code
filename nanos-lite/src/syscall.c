@@ -11,6 +11,7 @@ size_t fs_lseek(int fd, size_t offset, int whence);
 int fs_close(int fd);
 
 void naive_uload(PCB *pcb, const char *filename);
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 
 static int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
 	uint64_t us = io_read(AM_TIMER_UPTIME).us;
@@ -38,7 +39,8 @@ void do_syscall(Context *c) {
 		case SYS_close: c->GPRx = fs_close(a[1]); break;
 		case SYS_lseek: c->GPRx = fs_lseek(a[1], a[2], a[3]); break;
 		case SYS_brk: c->GPRx = 0; break;
-		case SYS_execve: naive_uload(NULL, (char *)a[1]); break;
+		case SYS_execve: context_uload(current, (char *)a[1], (char **)a[2], (char **)a[3]);
+										switch_boot_pcb(); yield(); break;
 		case SYS_gettimeofday: c->GPRx = sys_gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
