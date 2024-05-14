@@ -1,5 +1,6 @@
 #include <proc.h>
 #include <elf.h>
+#include <memory.h>
 
 #include <fs.h>
 
@@ -61,25 +62,19 @@ void naive_uload(PCB *pcb, const char *filename) {
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
 	uintptr_t entry = loader(pcb, filename);
 	pcb->cp = ucontext(NULL, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
-	char *stack = (char *)heap.end;
+	char *stack = (char *)new_page(8) + PGSIZE;
+	char *strptr = stack;
 	int argc = 0;
-	for (; argv[argc] != NULL; ++argc) {
+	for (; argv != NULL && argv[argc] != NULL; ++argc) {
 		stack -= strlen(argv[argc]) + 1;
 		strcpy(stack, argv[argc]);
 	}
-	int envc = 0;
-	for (; envp[envc] != NULL; ++envc) {
-		stack -= strlen(envp[envc]) + 1;
-		strcpy(stack, envp[envc]);
-	}
-	stack -= (envc + 1) * 8;
-	for (int i = 0; i <= envc; ++i) {
-		*((char **)stack + i) = envp[i];
-	}
 	stack -= (argc + 1) * 8;
-	for (int i = 0; i <= argc; ++i) {
-		*((char **)stack + i) = argv[i];
+	for (int i = 0; i < argc; ++i) {
+		strptr -= strlen(argv[i]) + 1;
+		*((char **)stack + i) = strptr;
 	}
+	*((char **)stack + argc) = NULL;
 	stack -= sizeof(argc);
 	*(int *)stack = argc;
 	pcb->cp->GPRx = (uintptr_t)stack;
