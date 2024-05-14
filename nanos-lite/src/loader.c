@@ -65,12 +65,12 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 	char *stack = (char *)new_page(8) + PGSIZE;
 	char *strptr = stack;
 	int argc = 0;
-	for (; argv[argc] != NULL; ++argc) {
+	for (; argv != NULL && argv[argc] != NULL; ++argc) {
 		stack -= strlen(argv[argc]) + 1;
 		strcpy(stack, argv[argc]);
 	}
 	int envc = 0;
-	for (; envp[envc] != NULL; ++envc) {
+	for (; envp != NULL && envp[envc] != NULL; ++envc) {
 		stack -= strlen(envp[envc]) + 1;
 		strcpy(stack, envp[envc]);
 	}
