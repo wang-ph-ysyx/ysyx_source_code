@@ -9,7 +9,7 @@ module sram(
 	output [31:0] rdata,
 	output [1:0] rresp,
 	output rvalid,
-	input  rreaady,
+	input  rready,
 
 	input [31:0] awaddr,
 	input awvalid,
@@ -20,7 +20,7 @@ module sram(
 	input wvalid,
 	output wready,
 
-	output [1:0] bresp,
+	output reg [1:0] bresp,
 	output bvalid,
 	input bready
 );
@@ -38,7 +38,7 @@ module sram(
 		.rst(reset),
 		.din(0),
 		.dout(rresp),
-		.wen(rresp)
+		.wen(arvalid & arready)
 	);
 
 	Reg #(1, 0) reg_rvalid(

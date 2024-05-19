@@ -7,7 +7,7 @@ module top(
 	output [31:0] pc,
 	output finished,
 	output [31:0] halt_ret,
-	output reg ifu_valid
+	output ifu_arvalid
 );
 
 	reg [31:0] inst;
@@ -40,6 +40,11 @@ module top(
 	wire wb_valid;
 	wire [7:0] wmask;
 
+	wire ifu_arready;
+	wire ifu_rvalid;
+	wire [1:0] ifu_rresp;
+	wire ifu_rready;
+
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
 	wire [31:0] csr_jump;
@@ -66,13 +71,26 @@ module top(
 		.wen(1'b1)
 	);
 
-	ifu my_ifu(
+	sram ifu_sram(
 		.clk(clk),
 		.reset(reset),
-		.pc(pc),
-		.inst(inst),
-		.ifu_arvalid(ifu_valid),
-		.idu_valid(idu_valid)
+		.araddr(pc),
+		.arvalid(ifu_arvalid),
+		.arready(ifu_arready),
+		.rdata(inst),
+		.rresp(ifu_rresp),
+		.rvalid(ifu_rvalid),
+		.rready(ifu_rready),
+		.awaddr(0),
+		.awvalid(0),
+		.awready(),
+		.wdata(0),
+		.wstrb(0),
+		.wvalid(0),
+		.wready(),
+		.bresp(),
+		.bvalid(),
+		.bready(0)
 	);
 
 	idu my_idu(
@@ -154,10 +172,16 @@ module top(
 	assign val = (exu_val | csr_val | lsu_val);
 	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 	assign jump = exu_jump | csr_jump;
-	assign wb_valid = ~ifu_valid & (~lsu_ren | lsu_valid);
+	assign wb_valid = ~ifu_arvalid & (~lsu_ren | lsu_valid);
+	assign ifu_rready = 1;
+	assign idu_valid = ifu_rvalid & ifu_rready;
 
-	always @(posedge clk) begin
-		ifu_valid <= wb_valid;
-	end
+	Reg #(1, 0) reg_ifu_arvalid(
+		.clk(clk),
+		.rst(reset),
+		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & wb_valid),
+		.dout(ifu_arvalid),
+		.wen(1)
+	);
 
 endmodule

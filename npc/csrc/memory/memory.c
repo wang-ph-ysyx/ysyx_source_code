@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <config.h>
+#include <assert.h>
 
 #define SERIAL 0xa00003f8
 #define RTC    0xa0000048
@@ -45,6 +46,7 @@ extern "C" int pmem_read(int raddr) {
 		else return (int) total;
 	}
 	uint8_t *haddr = guest2host(raddr/* & ~0x3u*/);
+	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) return 0;
 	return *(int *)haddr;
 }
 
