@@ -71,7 +71,7 @@ module top(
 		.reset(reset),
 		.pc(pc),
 		.inst(inst),
-		.ifu_valid(ifu_valid),
+		.ifu_arvalid(ifu_valid),
 		.idu_valid(idu_valid)
 	);
 

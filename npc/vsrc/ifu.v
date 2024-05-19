@@ -2,7 +2,7 @@ module ifu(
 	input clk,
 	input reset,
 	input [31:0] pc,
-	input ifu_valid,
+	input ifu_arvalid,
 	output [31:0] inst,
 	output reg idu_valid
 );
@@ -11,7 +11,7 @@ module ifu(
 
 	always @(posedge clk) begin
 		if (!reset) begin
-			if (ifu_valid) begin
+			if (ifu_arvalid) begin
 				inst_reg <= pmem_read(pc);
 				idu_valid <= 1;
 			end
