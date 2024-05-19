@@ -46,8 +46,7 @@ extern "C" int pmem_read(int raddr) {
 	}
 	uint8_t *haddr = guest2host(raddr/* & ~0x3u*/);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
-		printf("read out of bound\n");
-		return 0;
+		printf("\nread out of bound\n\n");
 	}
 	return *(int *)haddr;
 }

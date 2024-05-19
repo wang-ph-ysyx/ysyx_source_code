@@ -6,7 +6,7 @@ module sram(
 	input arvalid,
 	output arready,
 
-	output [31:0] rdata,
+	output reg [31:0] rdata,
 	output [1:0] rresp,
 	output rvalid,
 	input  rready,
@@ -25,13 +25,14 @@ module sram(
 	input bready
 );
 
-	Reg #(32, 0) reg_rdata(
-		.clk(clk),
-		.rst(reset),
-		.din(pmem_read(araddr)),
-		.dout(rdata),
-		.wen(arvalid & arready)
-	);
+	always @(posedge clk) begin
+		if (reset) begin
+			rdata <= 0;
+		end
+		else if (arvalid & arready) begin
+			rdata <= pmem_read(araddr);
+		end
+	end
 
 	Reg #(2, 0) reg_rresp(
 		.clk(clk),
