@@ -157,11 +157,7 @@ module top(
 	assign wb_valid = ~ifu_valid & (~lsu_ren | lsu_valid);
 
 	always @(posedge clk) begin
-		if (wb_valid) begin
-			ifu_valid <= 1;
-		end else begin
-			ifu_valid <= 0;
-		end
+		ifu_valid <= wb_valid;
 	end
 
 endmodule
