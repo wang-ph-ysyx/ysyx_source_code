@@ -10,7 +10,7 @@ module top(
 	output ifu_arvalid
 );
 
-	reg [31:0] inst;
+	wire [31:0] inst;
 	wire [6:0] opcode;
 	wire [4:0] rs1;
 	wire [4:0] rs2;
@@ -66,9 +66,9 @@ module top(
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
-		.din({32{wb_valid}} & dnpc | {32{~wb_valid}} & pc),
+		.din(dnpc),
 		.dout(pc),
-		.wen(1'b1)
+		.wen(wb_valid)
 	);
 
 	sram ifu_sram(
