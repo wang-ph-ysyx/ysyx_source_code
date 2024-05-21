@@ -13,7 +13,7 @@ module sram(
 
 	input [31:0] awaddr,
 	input awvalid,
-	output awready,
+	output reg awready,
 
 	input [31:0] wdata,
 	input [3:0] wstrb,
@@ -45,12 +45,18 @@ module sram(
 	Reg #(1, 0) reg_rvalid(
 		.clk(clk),
 		.rst(reset),
-		.din(arvalid & arready | rvalid & ~rready),
+		.din(~rvalid & arvalid & arready | rvalid & ~rready),
 		.dout(rvalid),
 		.wen(1)
 	);
 
-	assign arready = ~rvalid;
+	Reg #(1, 1) reg_arready(
+		.clk(clk),
+		.rst(reset),
+		.din(~arready & rvalid & rready | arready & ~arvalid),
+		.dout(arready),
+		.wen(1)
+	);
 
 	Reg #(1, 1) reg_awready(
 		.clk(clk),

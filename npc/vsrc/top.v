@@ -66,15 +66,7 @@ module top(
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
 	assign snpc = pc + 4;
-
-	MuxKeyInternal #(1, 32, 32, 1) calculate_dnpc(
-		.out(dnpc),
-		.key(jump),
-		.default_out(jump),
-		.lut({
-			32'b0, snpc
-		})
-	);
+	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
 
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
