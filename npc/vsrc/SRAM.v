@@ -25,6 +25,8 @@ module sram(
 	input bready
 );
 
+	wire __rvalid;
+
 	always @(posedge clk) begin
 		if (reset) begin
 			rdata <= 0;
@@ -45,9 +47,16 @@ module sram(
 	Reg #(1, 0) reg_rvalid(
 		.clk(clk),
 		.rst(reset),
-		.din(~rvalid & arvalid & arready | rvalid & ~rready),
-		.dout(rvalid),
+		.din(~__rvalid & arvalid & arready | __rvalid & ~(rvalid & rready)),
+		.dout(__rvalid),
 		.wen(1)
+	);
+
+	delay rvalid_delay(
+		.clk(clk),
+		.reset(reset),
+		.data_in(__rvalid),
+		.data_out(rvalid)
 	);
 
 	Reg #(1, 1) reg_arready(
