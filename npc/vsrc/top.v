@@ -76,6 +76,14 @@ module top(
 		.wen(wb_valid)
 	);
 
+	wire [7:0] random;
+	lfsr gen_random(
+		.clk(clk),
+		.reset(reset),
+		.enable(wb_valid),
+		.random(random)
+	);
+
 	sram ifu_sram(
 		.clk(clk),
 		.reset(reset),
@@ -95,7 +103,8 @@ module top(
 		.wready(),
 		.bresp(),
 		.bvalid(),
-		.bready(0)
+		.bready(0),
+		.random(random)
 	);
 
 	idu my_idu(
@@ -160,7 +169,8 @@ module top(
 		.wready(lsu_wready),
 		.bresp(lsu_bresp),
 		.bvalid(lsu_bvalid),
-		.bready(lsu_bready)
+		.bready(lsu_bready),
+		.random(random)
 	);
 
 	RegisterFile #(5, 32) my_reg(

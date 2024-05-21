@@ -22,7 +22,9 @@ module sram(
 
 	output reg [1:0] bresp,
 	output bvalid,
-	input bready
+	input bready,
+
+	input [7:0] random
 );
 
 	wire araddr_valid;
@@ -58,7 +60,8 @@ module sram(
 		.clk(clk),
 		.reset(reset),
 		.data_in(araddr_valid),
-		.data_out(rvalid)
+		.data_out(rvalid),
+		.random(random)
 	);
 
 	Reg #(1, 1) reg_arready(
@@ -132,7 +135,8 @@ module sram(
 		.clk(clk),
 		.reset(reset),
 		.data_in(awaddr_valid & wdata_valid),
-		.data_out(bvalid)
+		.data_out(bvalid),
+		.random(random)
 	);
 
 	always @(bvalid) begin
