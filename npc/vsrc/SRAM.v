@@ -61,7 +61,7 @@ module sram(
 		.reset(reset),
 		.data_in(araddr_valid),
 		.data_out(rvalid),
-		.random(random)
+		.random(random[3:1])
 	);
 
 	Reg #(1, 1) reg_arready(
@@ -136,7 +136,7 @@ module sram(
 		.reset(reset),
 		.data_in(awaddr_valid & wdata_valid),
 		.data_out(bvalid),
-		.random(random)
+		.random(random[2:0])
 	);
 
 	always @(bvalid) begin

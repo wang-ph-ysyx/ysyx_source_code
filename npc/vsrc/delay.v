@@ -2,7 +2,7 @@ module delay #(DELAY = 15) (
 	input  clk,
 	input  reset,
 	input  data_in,
-	input  [7:0] random,
+	input  [2:0] random,
 	output data_out
 );
 
@@ -17,6 +17,6 @@ module delay #(DELAY = 15) (
 		end
 	end
 
-	assign data_out = data_buf[DELAY-1-random[2:0]];
+	assign data_out = data_buf[DELAY-1-random];
 
 endmodule
