@@ -61,7 +61,7 @@ module sram(
 		.reset(reset),
 		.data_in(araddr_valid),
 		.data_out(rvalid),
-		.random(random[3:1])
+		.random(random[4:2])
 	);
 
 	Reg #(1, 1) reg_arready(
