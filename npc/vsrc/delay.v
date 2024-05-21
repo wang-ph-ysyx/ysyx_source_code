@@ -1,4 +1,4 @@
-module delay #(DELAY = 50) (
+module delay #(DELAY = 500) (
 	input  clk,
 	input  reset,
 	input  data_in,
