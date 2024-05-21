@@ -13,7 +13,7 @@ module sram(
 
 	input [31:0] awaddr,
 	input awvalid,
-	output awready,
+	output reg awready,
 
 	input [31:0] wdata,
 	input [3:0] wstrb,
@@ -22,8 +22,14 @@ module sram(
 
 	output reg [1:0] bresp,
 	output bvalid,
-	input bready
+	input bready,
+
+	input [7:0] random
 );
+
+	wire araddr_valid;
+	wire awaddr_valid;
+	wire wdata_valid;
 
 	always @(posedge clk) begin
 		if (reset) begin
@@ -42,15 +48,37 @@ module sram(
 		.wen(arvalid & arready)
 	);
 
-	Reg #(1, 0) reg_rvalid(
+	Reg #(1, 0) reg_araddr_valid(
 		.clk(clk),
 		.rst(reset),
-		.din(arvalid & arready | rvalid & ~rready),
-		.dout(rvalid),
+		.din(~araddr_valid & arvalid & arready | araddr_valid & ~(rvalid & rready)),
+		.dout(araddr_valid),
 		.wen(1)
 	);
 
-	assign arready = ~rvalid;
+	delay rvalid_delay(
+		.clk(clk),
+		.reset(reset),
+		.data_in(araddr_valid),
+		.data_out(rvalid),
+		.random(random[3:1])
+	);
+
+	Reg #(1, 1) reg_arready(
+		.clk(clk),
+		.rst(reset),
+		.din(~arready & rvalid & rready | arready & ~arvalid),
+		.dout(arready),
+		.wen(1)
+	);
+
+	Reg #(1, 0) reg_awaddr_valid(
+		.clk(clk),
+		.rst(reset),
+		.din(~awaddr_valid & awvalid & awready | awaddr_valid & ~(bvalid & bready)),
+		.dout(awaddr_valid),
+		.wen(1)
+	);
 
 	Reg #(1, 1) reg_awready(
 		.clk(clk),
@@ -67,6 +95,14 @@ module sram(
 		.din(awaddr),
 		.dout(stored_awaddr),
 		.wen(awvalid & awready)
+	);
+
+	Reg #(1, 0) reg_wdata_valid(
+		.clk(clk),
+		.rst(reset),
+		.din(~wdata_valid & wvalid & wready | wdata_valid & ~(bvalid & bready)),
+		.dout(wdata_valid),
+		.wen(1)
 	);
 
 	Reg #(1, 1) reg_wready(
@@ -95,7 +131,13 @@ module sram(
 		.wen(wvalid & wready)
 	);
 
-	assign bvalid = ~awready & ~wready;
+	delay bvalid_delay(
+		.clk(clk),
+		.reset(reset),
+		.data_in(awaddr_valid & wdata_valid),
+		.data_out(bvalid),
+		.random(random[2:0])
+	);
 
 	always @(bvalid) begin
 		if (~reset & bvalid) begin

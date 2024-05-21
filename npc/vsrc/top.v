@@ -66,15 +66,7 @@ module top(
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
 	assign snpc = pc + 4;
-
-	MuxKeyInternal #(1, 32, 32, 1) calculate_dnpc(
-		.out(dnpc),
-		.key(jump),
-		.default_out(jump),
-		.lut({
-			32'b0, snpc
-		})
-	);
+	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
 
 	Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
@@ -82,6 +74,14 @@ module top(
 		.din(dnpc),
 		.dout(pc),
 		.wen(wb_valid)
+	);
+
+	wire [7:0] random;
+	lfsr gen_random(
+		.clk(clk),
+		.reset(reset),
+		.enable(wb_valid),
+		.random(random)
 	);
 
 	sram ifu_sram(
@@ -103,7 +103,8 @@ module top(
 		.wready(),
 		.bresp(),
 		.bvalid(),
-		.bready(0)
+		.bready(0),
+		.random(random)
 	);
 
 	idu my_idu(
@@ -168,7 +169,8 @@ module top(
 		.wready(lsu_wready),
 		.bresp(lsu_bresp),
 		.bvalid(lsu_bvalid),
-		.bready(lsu_bready)
+		.bready(lsu_bready),
+		.random(random)
 	);
 
 	RegisterFile #(5, 32) my_reg(
