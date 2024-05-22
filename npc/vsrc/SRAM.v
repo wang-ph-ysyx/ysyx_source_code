@@ -56,13 +56,14 @@ module sram(
 		.wen(1)
 	);
 
-	delay rvalid_delay(
+	/*delay rvalid_delay(
 		.clk(clk),
 		.reset(reset),
 		.data_in(araddr_valid),
 		.data_out(rvalid),
 		.random(random[3:1])
-	);
+	);*/
+	assign rvalid = araddr_valid;
 
 	Reg #(1, 1) reg_arready(
 		.clk(clk),
@@ -131,13 +132,14 @@ module sram(
 		.wen(wvalid & wready)
 	);
 
-	delay bvalid_delay(
+	/*delay bvalid_delay(
 		.clk(clk),
 		.reset(reset),
 		.data_in(awaddr_valid & wdata_valid),
 		.data_out(bvalid),
 		.random(random[2:0])
-	);
+	);*/
+ assign bvalid = awaddr_valid & wdata_valid;
 
 	always @(bvalid) begin
 		if (~reset & bvalid) begin
