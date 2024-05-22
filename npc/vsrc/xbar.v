@@ -62,7 +62,7 @@ module xbar(
 	Reg #(1, 0) state_ifu_reading(
 		.clk(clk),
 		.rst(reset),
-		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_arready)),
+		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
 		.dout(ifu_reading),
 		.wen(1)
 	);
@@ -70,7 +70,7 @@ module xbar(
 	Reg #(1, 0) state_lsu_reading(
 		.clk(clk),
 		.rst(reset),
-		.din(~lsu_reading & ~ifu_arvalid & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_arready)),
+		.din(~lsu_reading & ~ifu_arvalid & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),
 		.dout(lsu_reading),
 		.wen(1)
 	);
