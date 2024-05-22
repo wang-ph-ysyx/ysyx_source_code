@@ -7,7 +7,7 @@ module top(
 	output [31:0] pc,
 	output finished,
 	output [31:0] halt_ret,
-	output ifu_arvalid
+	output wb_valid
 );
 
 	wire [31:0] inst;
@@ -37,7 +37,7 @@ module top(
 	wire lsu_ren;
 	wire lsu_valid;
 	wire idu_valid;
-	wire wb_valid;
+	wire ifu_arvalid;
 	wire [7:0] wmask;
 
 	wire ifu_arready;
