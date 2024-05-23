@@ -32,6 +32,7 @@ module top(
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
+	wire [31:0] lsu_val_tmp;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
@@ -202,8 +203,8 @@ module top(
 		.wmask(wmask)
 	);
 
-	MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val(
-		.out(lsu_val),
+	MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
+		.out(lsu_val_tmp),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
@@ -260,6 +261,14 @@ module top(
 		.din(ifu_rdata),
 		.dout(inst),
 		.wen(ifu_rvalid & ifu_rready)
+	);
+
+	Reg #(32, 0) reg_lsu_val(
+		.clk(clk),
+		.rst(reset),
+		.din(lsu_val_tmp),
+		.dout(lsu_val),
+		.wen(lsu_rvalid & lsu_rready)
 	);
 
 	Reg #(1, 0) reg_idu_valid(
