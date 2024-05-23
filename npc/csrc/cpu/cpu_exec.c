@@ -25,7 +25,6 @@ void cpu_exec(unsigned n) {
 	uint32_t pc = top->pc;
 	for (; n > 0; --n) {
 		pc = top->pc;
-		printf("%#x\n", pc);
 		one_cycle();
 #ifdef DIFFTEST
 		static int difftest = 0;
