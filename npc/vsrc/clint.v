@@ -28,7 +28,7 @@ module clint(
 	Reg #(1, 1) reg_arready(
 		.clk(clk),
 		.rst(reset),
-		.din(~arready & rvalid & rready | arready & arvalid),
+		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
 		.wen(1)
 	);

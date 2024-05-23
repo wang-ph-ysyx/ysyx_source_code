@@ -88,7 +88,7 @@ module xbar(
 	assign sram_writing = (awaddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
 	assign uart_writing = (awaddr == 32'ha00003f8);
 	assign sram_reading = (araddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
-	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha0000048);
+	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha000004c);
 
 	Reg #(1, 0) state_ifu_reading(
 		.clk(clk),
