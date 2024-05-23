@@ -67,15 +67,28 @@ module xbar(
 
 	input  [1:0]  uart_bresp,
 	input  uart_bvalid,
-	output uart_bready
+	output uart_bready,
+
+	output [31:0] clint_araddr,
+	output clint_arvalid,
+	input  clint_arready,
+
+	input  [31:0] clint_rdata,
+	input  [1:0]  clint_rresp,
+	input  clint_rvalid,
+	output clint_rready
 );
 
 	wire ifu_reading, lsu_reading;
 	wire sram_writing, uart_writing;
+	wire sram_reading, clint_reading;
 	wire [31:0] awaddr;
+	wire [31:0] araddr;
 
 	assign sram_writing = (awaddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
 	assign uart_writing = (awaddr == 32'ha00003f8);
+	assign sram_reading = (araddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
+	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha0000048);
 
 	Reg #(1, 0) state_ifu_reading(
 		.clk(clk),
@@ -93,18 +106,23 @@ module xbar(
 		.wen(1)
 	);
 
-	assign sram_araddr = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & lsu_araddr;
-	assign sram_arvalid= ifu_reading & ifu_arvalid | lsu_reading & lsu_arvalid;
-	assign ifu_arready = ifu_reading & sram_arready;
-	assign lsu_arready = lsu_reading & sram_arready;
+	assign araddr = lsu_araddr;
 
-	assign ifu_rdata   = {32{ifu_reading}} & sram_rdata;
-	assign lsu_rdata   = {32{lsu_reading}} & sram_rdata;
-	assign ifu_rvalid  = ifu_reading & sram_rvalid;
-	assign lsu_rvalid  = lsu_reading & sram_rvalid;
-	assign ifu_rresp   = {2{ifu_reading}} & sram_rresp;
-	assign lsu_rresp   = {2{lsu_reading}} & sram_rresp;
-	assign sram_rready = ifu_reading & ifu_rready | lsu_reading & lsu_rready;
+	assign sram_araddr   = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{sram_reading}} & lsu_araddr;
+	assign clint_araddr  = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
+	assign sram_arvalid  = ifu_reading & ifu_arvalid | lsu_reading & sram_reading & lsu_arvalid;
+	assign clint_arvalid = lsu_reading & clint_reading & lsu_arvalid;
+	assign ifu_arready   = ifu_reading & sram_arready;
+	assign lsu_arready   = lsu_reading & (sram_reading & sram_arready | clint_reading & clint_arready);
+
+	assign ifu_rdata    = {32{ifu_reading}} & sram_rdata;
+	assign lsu_rdata    = {32{lsu_reading}} & ({32{sram_reading}} & sram_rdata | {32{clint_reading}} & clint_rdata);
+	assign ifu_rvalid   = ifu_reading & sram_rvalid;
+	assign lsu_rvalid   = lsu_reading & (sram_reading & sram_rvalid | clint_reading & clint_rvalid);
+	assign ifu_rresp    = {2{ifu_reading}} & sram_rresp;
+	assign lsu_rresp    = {2{lsu_reading}} & ({2{sram_reading}} & sram_rresp | {2{clint_reading}} & clint_rresp);
+	assign sram_rready  = ifu_reading & ifu_rready | lsu_reading & lsu_rready;
+	assign clint_rready = lsu_reading & clint_reading & lsu_rready;
 
 	assign awaddr = lsu_awaddr;
 

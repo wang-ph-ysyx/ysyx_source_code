@@ -89,6 +89,14 @@ module top(
 	wire uart_bvalid;
 	wire uart_bready;
 
+	wire [31:0] clint_araddr;
+	wire clint_arvalid;
+	wire clint_arready;
+	wire [31:0] clint_rdata;
+	wire [1:0]  clint_rresp;
+	wire clint_rvalid;
+	wire clint_rready;
+
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
 	wire [31:0] csr_jump;
@@ -168,7 +176,26 @@ module top(
 		.uart_wready(uart_wready),
 		.uart_bresp(uart_bresp),
 		.uart_bvalid(uart_bvalid),
-		.uart_bready(uart_bready)
+		.uart_bready(uart_bready),
+		.clint_araddr(clint_araddr),
+		.clint_arvalid(clint_arvalid),
+		.clint_arready(clint_arready),
+		.clint_rdata(clint_rdata),
+		.clint_rresp(clint_rresp),
+		.clint_rvalid(clint_rvalid),
+		.clint_rready(clint_rready)
+	);
+
+	clint my_clint(
+		.clk(clk),
+		.reset(reset),
+		.araddr(clint_araddr),
+		.arvalid(clint_arvalid),
+		.arready(clint_arready),
+		.rdata(clint_rdata),
+		.rresp(clint_rresp),
+		.rvalid(clint_rvalid),
+		.rready(clint_rready)
 	);
 
 	uart my_uart(
