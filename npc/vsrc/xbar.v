@@ -34,30 +34,61 @@ module xbar(
 	input  lsu_bready,
 
 
-	output [31:0] araddr,
-	output arvalid,
-	input  arready,
+	output [31:0] sram_araddr,
+	output sram_arvalid,
+	input  sram_arready,
 
-	input  [31:0] rdata,
-	input  [1:0]  rresp,
-	input  rvalid,
-	output rready,
+	input  [31:0] sram_rdata,
+	input  [1:0]  sram_rresp,
+	input  sram_rvalid,
+	output sram_rready,
 
-	output [31:0] awaddr,
-	output awvalid,
-	input  awready,
+	output [31:0] sram_awaddr,
+	output sram_awvalid,
+	input  sram_awready,
 
-	output [31:0] wdata,
-	output [3:0]  wstrb,
-	output wvalid,
-	input  wready,
+	output [31:0] sram_wdata,
+	output [3:0]  sram_wstrb,
+	output sram_wvalid,
+	input  sram_wready,
 
-	input  [1:0]  bresp,
-	input  bvalid,
-	output bready
+	input  [1:0]  sram_bresp,
+	input  sram_bvalid,
+	output sram_bready,
+
+	output [31:0] uart_awaddr,
+	output uart_awvalid,
+	input  uart_awready,
+
+	output [31:0] uart_wdata,
+	output [3:0]  uart_wstrb,
+	output uart_wvalid,
+	input  uart_wready,
+
+	input  [1:0]  uart_bresp,
+	input  uart_bvalid,
+	output uart_bready,
+
+	output [31:0] clint_araddr,
+	output clint_arvalid,
+	input  clint_arready,
+
+	input  [31:0] clint_rdata,
+	input  [1:0]  clint_rresp,
+	input  clint_rvalid,
+	output clint_rready
 );
 
 	wire ifu_reading, lsu_reading;
+	wire sram_writing, uart_writing;
+	wire sram_reading, clint_reading;
+	wire [31:0] awaddr;
+	wire [31:0] araddr;
+
+	assign sram_writing = (awaddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
+	assign uart_writing = (awaddr == 32'ha00003f8);
+	assign sram_reading = (araddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
+	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha000004c);
 
 	Reg #(1, 0) state_ifu_reading(
 		.clk(clk),
@@ -75,30 +106,43 @@ module xbar(
 		.wen(1)
 	);
 
-	assign araddr      = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & lsu_araddr;
-	assign arvalid     = ifu_reading & ifu_arvalid | lsu_reading & lsu_arvalid;
-	assign ifu_arready = ifu_reading & arready;
-	assign lsu_arready = lsu_reading & arready;
+	assign araddr = lsu_araddr;
 
-	assign ifu_rdata   = {32{ifu_reading}} & rdata;
-	assign lsu_rdata   = {32{lsu_reading}} & rdata;
-	assign ifu_rvalid  = ifu_reading & rvalid;
-	assign lsu_rvalid  = lsu_reading & rvalid;
-	assign ifu_rresp   = {2{ifu_reading}} & rresp;
-	assign lsu_rresp   = {2{lsu_reading}} & rresp;
-	assign rready      = ifu_reading & ifu_rready | lsu_reading & lsu_rready;
+	assign sram_araddr   = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{sram_reading}} & lsu_araddr;
+	assign clint_araddr  = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
+	assign sram_arvalid  = ifu_reading & ifu_arvalid | lsu_reading & sram_reading & lsu_arvalid;
+	assign clint_arvalid = lsu_reading & clint_reading & lsu_arvalid;
+	assign ifu_arready   = ifu_reading & sram_arready;
+	assign lsu_arready   = lsu_reading & (sram_reading & sram_arready | clint_reading & clint_arready);
 
-	assign awaddr      = lsu_awaddr;
-	assign awvalid     = lsu_awvalid;
-	assign lsu_awready = awready;
+	assign ifu_rdata    = {32{ifu_reading}} & sram_rdata;
+	assign lsu_rdata    = {32{lsu_reading}} & ({32{sram_reading}} & sram_rdata | {32{clint_reading}} & clint_rdata);
+	assign ifu_rvalid   = ifu_reading & sram_rvalid;
+	assign lsu_rvalid   = lsu_reading & (sram_reading & sram_rvalid | clint_reading & clint_rvalid);
+	assign ifu_rresp    = {2{ifu_reading}} & sram_rresp;
+	assign lsu_rresp    = {2{lsu_reading}} & ({2{sram_reading}} & sram_rresp | {2{clint_reading}} & clint_rresp);
+	assign sram_rready  = ifu_reading & ifu_rready | lsu_reading & lsu_rready;
+	assign clint_rready = lsu_reading & clint_reading & lsu_rready;
 
-	assign wdata       = lsu_wdata;
-	assign wstrb       = lsu_wstrb;
-	assign wvalid      = lsu_wvalid;
-	assign lsu_wready  = wready;
+	assign awaddr = lsu_awaddr;
 
-	assign lsu_bresp   = bresp;
-	assign lsu_bvalid  = bvalid;
-	assign bready      = lsu_bready;
+	assign sram_awaddr = {32{sram_writing}} & lsu_awaddr;
+	assign uart_awaddr = {32{uart_writing}} & lsu_awaddr;
+	assign sram_awvalid= sram_writing & lsu_awvalid;
+	assign uart_awvalid= uart_writing & lsu_awvalid;
+	assign lsu_awready = sram_writing & sram_awready | uart_wvalid & uart_awready;
+
+	assign sram_wdata  = {32{sram_writing}} & lsu_wdata;
+	assign uart_wdata  = {32{uart_writing}} & lsu_wdata;
+	assign sram_wstrb  = {4{sram_writing}} & lsu_wstrb;
+	assign uart_wstrb  = {4{uart_writing}} & lsu_wstrb;
+	assign sram_wvalid = sram_writing & lsu_wvalid;
+	assign uart_wvalid = uart_writing & lsu_wvalid;
+	assign lsu_wready  = sram_writing & sram_wready | uart_writing & uart_wready;
+
+	assign lsu_bresp   = {2{sram_writing}} & sram_bresp | {2{uart_writing}} & uart_bresp | {2{~sram_writing & ~uart_writing}} & 2'b11;
+	assign lsu_bvalid  = sram_writing & sram_bvalid | uart_writing & uart_bvalid;
+	assign sram_bready = sram_writing & lsu_bready;
+	assign uart_bready = uart_writing & lsu_bready;
 
 endmodule

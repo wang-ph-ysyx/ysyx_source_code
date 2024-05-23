@@ -60,23 +60,42 @@ module top(
 	wire lsu_bvalid;
 	wire lsu_bready;
 
-	wire [31:0] araddr;
-	wire arvalid;
-	wire arready;
-	wire [31:0] rdata;
-	wire [1:0]  rresp;
-	wire rvalid;
-	wire rready;
-	wire [31:0] awaddr;
-	wire awvalid;
-	wire awready;
-	wire [31:0] wdata;
-	wire [3:0]  wstrb;
-	wire wvalid;
-	wire wready;
-	wire [1:0] bresp;
-	wire bvalid;
-	wire bready;
+	wire [31:0] sram_araddr;
+	wire sram_arvalid;
+	wire sram_arready;
+	wire [31:0] sram_rdata;
+	wire [1:0]  sram_rresp;
+	wire sram_rvalid;
+	wire sram_rready;
+	wire [31:0] sram_awaddr;
+	wire sram_awvalid;
+	wire sram_awready;
+	wire [31:0] sram_wdata;
+	wire [3:0]  sram_wstrb;
+	wire sram_wvalid;
+	wire sram_wready;
+	wire [1:0] sram_bresp;
+	wire sram_bvalid;
+	wire sram_bready;
+
+	wire [31:0] uart_awaddr;
+	wire uart_awvalid;
+	wire uart_awready;
+	wire [31:0] uart_wdata;
+	wire [3:0]  uart_wstrb;
+	wire uart_wvalid;
+	wire uart_wready;
+	wire [1:0] uart_bresp;
+	wire uart_bvalid;
+	wire uart_bready;
+
+	wire [31:0] clint_araddr;
+	wire clint_arvalid;
+	wire clint_arready;
+	wire [31:0] clint_rdata;
+	wire [1:0]  clint_rresp;
+	wire clint_rvalid;
+	wire clint_rready;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
@@ -131,45 +150,89 @@ module top(
 		.lsu_bresp(lsu_bresp),
 		.lsu_bvalid(lsu_bvalid),
 		.lsu_bready(lsu_bready),
-		.araddr(araddr),
-		.arvalid(arvalid),
-		.arready(arready),
-		.rdata(rdata),
-		.rresp(rresp),
-		.rvalid(rvalid),
-		.rready(rready),
-		.awaddr(awaddr),
-		.awvalid(awvalid),
-		.awready(awready),
-		.wdata(wdata),
-		.wstrb(wstrb),
-		.wvalid(wvalid),
-		.wready(wready),
-		.bresp(bresp),
-		.bvalid(bvalid),
-		.bready(bready)
+		.sram_araddr(sram_araddr),
+		.sram_arvalid(sram_arvalid),
+		.sram_arready(sram_arready),
+		.sram_rdata(sram_rdata),
+		.sram_rresp(sram_rresp),
+		.sram_rvalid(sram_rvalid),
+		.sram_rready(sram_rready),
+		.sram_awaddr(sram_awaddr),
+		.sram_awvalid(sram_awvalid),
+		.sram_awready(sram_awready),
+		.sram_wdata(sram_wdata),
+		.sram_wstrb(sram_wstrb),
+		.sram_wvalid(sram_wvalid),
+		.sram_wready(sram_wready),
+		.sram_bresp(sram_bresp),
+		.sram_bvalid(sram_bvalid),
+		.sram_bready(sram_bready),
+		.uart_awaddr(uart_awaddr),
+		.uart_awvalid(uart_awvalid),
+		.uart_awready(uart_awready),
+		.uart_wdata(uart_wdata),
+		.uart_wstrb(uart_wstrb),
+		.uart_wvalid(uart_wvalid),
+		.uart_wready(uart_wready),
+		.uart_bresp(uart_bresp),
+		.uart_bvalid(uart_bvalid),
+		.uart_bready(uart_bready),
+		.clint_araddr(clint_araddr),
+		.clint_arvalid(clint_arvalid),
+		.clint_arready(clint_arready),
+		.clint_rdata(clint_rdata),
+		.clint_rresp(clint_rresp),
+		.clint_rvalid(clint_rvalid),
+		.clint_rready(clint_rready)
+	);
+
+	clint my_clint(
+		.clk(clk),
+		.reset(reset),
+		.araddr(clint_araddr),
+		.arvalid(clint_arvalid),
+		.arready(clint_arready),
+		.rdata(clint_rdata),
+		.rresp(clint_rresp),
+		.rvalid(clint_rvalid),
+		.rready(clint_rready)
+	);
+
+	uart my_uart(
+		.clk(clk),
+		.reset(reset),
+		.awaddr(uart_awaddr),
+		.awvalid(uart_awvalid),
+		.awready(uart_awready),
+		.wdata(uart_wdata),
+		.wstrb(uart_wstrb),
+		.wvalid(uart_wvalid),
+		.wready(uart_wready),
+		.bresp(uart_bresp),
+		.bvalid(uart_bvalid),
+		.bready(uart_bready)
 	);
 
 	sram my_sram(
 		.clk(clk),
 		.reset(reset),
-		.araddr(araddr),
-		.arvalid(arvalid),
-		.arready(arready),
-		.rdata(rdata),
-		.rresp(rresp),
-		.rvalid(rvalid),
-		.rready(rready),
-		.awaddr(awaddr),
-		.awvalid(awvalid),
-		.awready(awready),
-		.wdata(wdata),
-		.wstrb(wstrb),
-		.wvalid(wvalid),
-		.wready(wready),
-		.bresp(bresp),
-		.bvalid(bvalid),
-		.bready(bready),
+		.araddr(sram_araddr),
+		.arvalid(sram_arvalid),
+		.arready(sram_arready),
+		.rdata(sram_rdata),
+		.rresp(sram_rresp),
+		.rvalid(sram_rvalid),
+		.rready(sram_rready),
+		.awaddr(sram_awaddr),
+		.awvalid(sram_awvalid),
+		.awready(sram_awready),
+		.wdata(sram_wdata),
+		.wstrb(sram_wstrb),
+		.wvalid(sram_wvalid),
+		.wready(sram_wready),
+		.bresp(sram_bresp),
+		.bvalid(sram_bvalid),
+		.bready(sram_bready),
 		.random(random)
 	);
 

@@ -14,13 +14,6 @@ void difftest_skip_ref();
 void reg_display();
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
-	if (waddr == SERIAL) {
-		putc((char)wdata, stderr);
-#ifdef DIFFTEST
-		difftest_skip_ref();
-#endif
-		return;
-	}
 	uint8_t *haddr = guest2host(waddr/* & ~0x3u*/);
 	if (wmask & 0x1) haddr[0] = wdata & 0xff;
 	if (wmask & 0x2) haddr[1] = (wdata >> 8) & 0xff;
@@ -29,7 +22,6 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
-	if (raddr == SERIAL) return 0;
 	if (raddr == RTC || raddr == RTC + 4) {
 		static clock_t start_time;
 		static int time_start = 0;
