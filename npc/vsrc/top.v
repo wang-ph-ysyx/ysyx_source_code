@@ -40,6 +40,7 @@ module top(
 	wire ifu_arvalid;
 	wire [7:0] wmask;
 
+	wire [31:0] ifu_rdata;
 	wire ifu_arready;
 	wire ifu_rvalid;
 	wire [1:0] ifu_rresp;
@@ -108,7 +109,7 @@ module top(
 		.ifu_araddr(pc),
 		.ifu_arvalid(ifu_arvalid),
 		.ifu_arready(ifu_arready),
-		.ifu_rdata(inst),
+		.ifu_rdata(ifu_rdata),
 		.ifu_rresp(ifu_rresp),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
@@ -252,7 +253,22 @@ module top(
 	assign ifu_rready = 1;
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign idu_valid = ifu_rvalid & ifu_rready;
+
+	Reg #(32, 0) reg_inst(
+		.clk(clk),
+		.rst(reset),
+		.din(ifu_rdata),
+		.dout(inst),
+		.wen(ifu_rvalid & ifu_rready)
+	);
+
+	Reg #(1, 0) reg_idu_valid(
+		.clk(clk),
+		.rst(reset),
+		.din(~idu_valid & ifu_rvalid & ifu_rready),
+		.dout(idu_valid),
+		.wen(1)
+	);
 
 	Reg #(1, 0) reg_lsu_arvalid(
 		.clk(clk),
