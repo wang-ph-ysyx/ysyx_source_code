@@ -266,9 +266,9 @@ module top(
 	Reg #(32, 0) reg_lsu_val(
 		.clk(clk),
 		.rst(reset),
-		.din(lsu_val_tmp),
+		.din(lsu_val_tmp & {32{~wb_valid}}),
 		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready)
+		.wen(lsu_rvalid & lsu_rready | wb_valid)
 	);
 
 	Reg #(1, 0) reg_idu_valid(
