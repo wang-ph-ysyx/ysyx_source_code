@@ -7,7 +7,7 @@ module top(
 	output [31:0] pc,
 	output finished,
 	output [31:0] halt_ret,
-	output ifu_arvalid
+	output wb_valid
 );
 
 	wire [31:0] inst;
@@ -32,14 +32,16 @@ module top(
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
+	wire [31:0] lsu_val_tmp;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
 	wire lsu_valid;
 	wire idu_valid;
-	wire wb_valid;
+	wire ifu_arvalid;
 	wire [7:0] wmask;
 
+	wire [31:0] ifu_rdata;
 	wire ifu_arready;
 	wire ifu_rvalid;
 	wire [1:0] ifu_rresp;
@@ -57,6 +59,24 @@ module top(
 	wire [1:0] lsu_bresp;
 	wire lsu_bvalid;
 	wire lsu_bready;
+
+	wire [31:0] araddr;
+	wire arvalid;
+	wire arready;
+	wire [31:0] rdata;
+	wire [1:0]  rresp;
+	wire rvalid;
+	wire rready;
+	wire [31:0] awaddr;
+	wire awvalid;
+	wire awready;
+	wire [31:0] wdata;
+	wire [3:0]  wstrb;
+	wire wvalid;
+	wire wready;
+	wire [1:0] bresp;
+	wire bvalid;
+	wire bready;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
@@ -84,26 +104,72 @@ module top(
 		.random(random)
 	);
 
-	sram ifu_sram(
+	xbar my_xbar(
 		.clk(clk),
 		.reset(reset),
-		.araddr(pc),
-		.arvalid(ifu_arvalid),
-		.arready(ifu_arready),
-		.rdata(inst),
-		.rresp(ifu_rresp),
-		.rvalid(ifu_rvalid),
-		.rready(ifu_rready),
-		.awaddr(0),
-		.awvalid(0),
-		.awready(),
-		.wdata(0),
-		.wstrb(0),
-		.wvalid(0),
-		.wready(),
-		.bresp(),
-		.bvalid(),
-		.bready(0),
+		.ifu_araddr(pc),
+		.ifu_arvalid(ifu_arvalid),
+		.ifu_arready(ifu_arready),
+		.ifu_rdata(ifu_rdata),
+		.ifu_rresp(ifu_rresp),
+		.ifu_rvalid(ifu_rvalid),
+		.ifu_rready(ifu_rready),
+		.lsu_araddr(src1 + imm),
+		.lsu_arvalid(lsu_arvalid),
+		.lsu_arready(lsu_arready),
+		.lsu_rdata(lsu_rdata),
+		.lsu_rresp(lsu_rresp),
+		.lsu_rvalid(lsu_rvalid),
+		.lsu_rready(lsu_rready),
+		.lsu_awaddr(src1 + imm),
+		.lsu_awvalid(lsu_awvalid),
+		.lsu_awready(lsu_awready),
+		.lsu_wdata(src2),
+		.lsu_wstrb(wmask[3:0]),
+		.lsu_wvalid(lsu_wvalid),
+		.lsu_wready(lsu_wready),
+		.lsu_bresp(lsu_bresp),
+		.lsu_bvalid(lsu_bvalid),
+		.lsu_bready(lsu_bready),
+		.araddr(araddr),
+		.arvalid(arvalid),
+		.arready(arready),
+		.rdata(rdata),
+		.rresp(rresp),
+		.rvalid(rvalid),
+		.rready(rready),
+		.awaddr(awaddr),
+		.awvalid(awvalid),
+		.awready(awready),
+		.wdata(wdata),
+		.wstrb(wstrb),
+		.wvalid(wvalid),
+		.wready(wready),
+		.bresp(bresp),
+		.bvalid(bvalid),
+		.bready(bready)
+	);
+
+	sram my_sram(
+		.clk(clk),
+		.reset(reset),
+		.araddr(araddr),
+		.arvalid(arvalid),
+		.arready(arready),
+		.rdata(rdata),
+		.rresp(rresp),
+		.rvalid(rvalid),
+		.rready(rready),
+		.awaddr(awaddr),
+		.awvalid(awvalid),
+		.awready(awready),
+		.wdata(wdata),
+		.wstrb(wstrb),
+		.wvalid(wvalid),
+		.wready(wready),
+		.bresp(bresp),
+		.bvalid(bvalid),
+		.bready(bready),
 		.random(random)
 	);
 
@@ -137,8 +203,8 @@ module top(
 		.wmask(wmask)
 	);
 
-	MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val(
-		.out(lsu_val),
+	MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
+		.out(lsu_val_tmp),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
@@ -148,29 +214,6 @@ module top(
 			10'b1000000011, lsu_rdata & 32'hff,                                    //lbu
 			10'b1010000011, lsu_rdata & 32'hffff                                   //lhu
 		})
-	);
-
-	sram lsu_sram(
-		.clk(clk),
-		.reset(reset),
-		.araddr(src1 + imm),
-		.arvalid(lsu_arvalid),
-		.arready(lsu_arready),
-		.rdata(lsu_rdata),
-		.rresp(lsu_rresp),
-		.rvalid(lsu_rvalid),
-		.rready(lsu_rready),
-		.awaddr(src1 + imm),
-		.awvalid(lsu_awvalid),
-		.awready(lsu_awready),
-		.wdata(src2),
-		.wstrb(wmask[3:0]),
-		.wvalid(lsu_wvalid),
-		.wready(lsu_wready),
-		.bresp(lsu_bresp),
-		.bvalid(lsu_bvalid),
-		.bready(lsu_bready),
-		.random(random)
 	);
 
 	RegisterFile #(5, 32) my_reg(
@@ -211,7 +254,30 @@ module top(
 	assign ifu_rready = 1;
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign idu_valid = ifu_rvalid & ifu_rready;
+
+	Reg #(32, 0) reg_inst(
+		.clk(clk),
+		.rst(reset),
+		.din(ifu_rdata),
+		.dout(inst),
+		.wen(ifu_rvalid & ifu_rready)
+	);
+
+	Reg #(32, 0) reg_lsu_val(
+		.clk(clk),
+		.rst(reset),
+		.din(lsu_val_tmp & {32{~wb_valid}}),
+		.dout(lsu_val),
+		.wen(lsu_rvalid & lsu_rready | wb_valid)
+	);
+
+	Reg #(1, 0) reg_idu_valid(
+		.clk(clk),
+		.rst(reset),
+		.din(~idu_valid & ifu_rvalid & ifu_rready),
+		.dout(idu_valid),
+		.wen(1)
+	);
 
 	Reg #(1, 0) reg_lsu_arvalid(
 		.clk(clk),

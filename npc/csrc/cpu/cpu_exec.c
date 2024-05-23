@@ -27,8 +27,10 @@ void cpu_exec(unsigned n) {
 		pc = top->pc;
 		one_cycle();
 #ifdef DIFFTEST
-		if (top->ifu_arvalid)
+		static int difftest = 0;
+		if (difftest)
 			difftest_step();
+		difftest = top->wb_valid;
 #endif
 		if (top->finished || trigger_difftest) break;
 	}
