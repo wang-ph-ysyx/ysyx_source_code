@@ -92,7 +92,7 @@ module ysyx_23060236_xbar(
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
 		.dout(ifu_reading),
 		.wen(1)
@@ -100,7 +100,7 @@ module ysyx_23060236_xbar(
 
 	ysyx_23060236_Reg #(1, 0) state_lsu_reading(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~lsu_reading & ~ifu_arvalid & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),
 		.dout(lsu_reading),
 		.wen(1)

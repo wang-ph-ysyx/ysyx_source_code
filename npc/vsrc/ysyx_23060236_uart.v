@@ -18,7 +18,7 @@ module ysyx_23060236_uart(
 
 	ysyx_23060236_Reg #(1, 1) reg_awready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~awready & bvalid & bready | awready & ~awvalid),
 		.dout(awready),
 		.wen(1)
@@ -27,7 +27,7 @@ module ysyx_23060236_uart(
 	wire [31:0] stored_awaddr;
 	ysyx_23060236_Reg #(32, 0) reg_stored_awaddr(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
 		.wen(awvalid & awready)
@@ -35,7 +35,7 @@ module ysyx_23060236_uart(
 
 	ysyx_23060236_Reg #(1, 1) reg_wready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~wready & bvalid & bready | wready & ~wvalid),
 		.dout(wready),
 		.wen(1)
@@ -44,7 +44,7 @@ module ysyx_23060236_uart(
 	wire [31:0] stored_wdata;
 	ysyx_23060236_Reg #(32, 0) reg_stored_wdata(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(wdata),
 		.dout(stored_wdata),
 		.wen(wvalid & wready)

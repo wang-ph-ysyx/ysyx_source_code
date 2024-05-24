@@ -42,7 +42,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(2, 0) reg_rresp(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(0),
 		.dout(rresp),
 		.wen(arvalid & arready)
@@ -50,7 +50,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 0) reg_araddr_valid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~araddr_valid & arvalid & arready | araddr_valid & ~(rvalid & rready)),
 		.dout(araddr_valid),
 		.wen(1)
@@ -67,7 +67,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 1) reg_arready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
 		.wen(1)
@@ -75,7 +75,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 0) reg_awaddr_valid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~awaddr_valid & awvalid & awready | awaddr_valid & ~(bvalid & bready)),
 		.dout(awaddr_valid),
 		.wen(1)
@@ -83,7 +83,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 1) reg_awready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(bvalid & bready | awready & ~awvalid),
 		.dout(awready),
 		.wen(1)
@@ -92,7 +92,7 @@ module ysyx_23060236_sram(
 	reg [31:0] stored_awaddr;
 	ysyx_23060236_Reg #(32, 0) reg_awaddr(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
 		.wen(awvalid & awready)
@@ -100,7 +100,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 0) reg_wdata_valid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~wdata_valid & wvalid & wready | wdata_valid & ~(bvalid & bready)),
 		.dout(wdata_valid),
 		.wen(1)
@@ -108,7 +108,7 @@ module ysyx_23060236_sram(
 
 	ysyx_23060236_Reg #(1, 1) reg_wready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(bvalid & bready | wready & ~wvalid),
 		.dout(wready),
 		.wen(1)
@@ -117,7 +117,7 @@ module ysyx_23060236_sram(
 	reg [31:0] stored_wdata;
 	ysyx_23060236_Reg #(32, 0) reg_wdata(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(wdata),
 		.dout(stored_wdata),
 		.wen(wvalid & wready)
@@ -126,7 +126,7 @@ module ysyx_23060236_sram(
 	reg [3:0] stored_wstrb;
 	ysyx_23060236_Reg #(4, 0) reg_wstrb(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(wstrb),
 		.dout(stored_wstrb),
 		.wen(wvalid & wready)

@@ -19,7 +19,7 @@ module ysyx_23060236_clint(
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(mtime + 1),
 		.dout(mtime),
 		.wen(1)
@@ -27,7 +27,7 @@ module ysyx_23060236_clint(
 
 	ysyx_23060236_Reg #(1, 1) reg_arready(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
 		.wen(1)
@@ -35,7 +35,7 @@ module ysyx_23060236_clint(
 
 	ysyx_23060236_Reg #(32, 0) reg_rdata(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(data_out),
 		.dout(rdata),
 		.wen(arvalid & arready)
@@ -43,7 +43,7 @@ module ysyx_23060236_clint(
 
 	ysyx_23060236_Reg #(2, 0) reg_rresp(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(0),
 		.dout(rresp),
 		.wen(arvalid & arready)
@@ -51,7 +51,7 @@ module ysyx_23060236_clint(
 
 	ysyx_23060236_Reg #(1, 0) reg_rvalid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~rvalid & arvalid & arready | rvalid & ~rready),
 		.dout(rvalid),
 		.wen(1)

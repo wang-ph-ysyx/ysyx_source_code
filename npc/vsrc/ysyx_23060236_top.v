@@ -109,7 +109,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(32, 32'h80000000) pc_adder(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(dnpc),
 		.dout(pc),
 		.wen(wb_valid)
@@ -320,7 +320,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(ifu_rdata),
 		.dout(inst),
 		.wen(ifu_rvalid & ifu_rready)
@@ -328,7 +328,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(lsu_val_tmp & {32{~wb_valid}}),
 		.dout(lsu_val),
 		.wen(lsu_rvalid & lsu_rready | wb_valid)
@@ -336,7 +336,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~idu_valid & ifu_rvalid & ifu_rready),
 		.dout(idu_valid),
 		.wen(1)
@@ -344,7 +344,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren),
 		.dout(lsu_arvalid),
 		.wen(1)
@@ -352,7 +352,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen),
 		.dout(lsu_awvalid),
 		.wen(1)
@@ -360,7 +360,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
 		.dout(lsu_wvalid),
 		.wen(1)
@@ -368,7 +368,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
 		.dout(wb_valid),
 		.wen(1)
@@ -376,7 +376,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
 		.clock(clock),
-		.rst(reset),
+		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & wb_valid),
 		.dout(ifu_arvalid),
 		.wen(1)
