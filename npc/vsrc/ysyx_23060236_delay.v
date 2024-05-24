@@ -1,4 +1,4 @@
-module delay #(DELAY = 15) (
+module ysyx_23060236_delay #(DELAY = 15) (
 	input  clk,
 	input  reset,
 	input  data_in,

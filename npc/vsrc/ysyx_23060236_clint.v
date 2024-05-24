@@ -1,4 +1,4 @@
-module clint(
+module ysyx_23060236_clint(
 	input  clk,
 	input  reset,
 
@@ -17,7 +17,7 @@ module clint(
 	
 	assign data_out = {32{araddr == 32'ha0000048}} & mtime[31:0] | {32{araddr == 32'ha000004c}} & mtime[63:32];
 
-	Reg #(64, 0) reg_mtime(
+	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clk(clk),
 		.rst(reset),
 		.din(mtime + 1),
@@ -25,7 +25,7 @@ module clint(
 		.wen(1)
 	);
 
-	Reg #(1, 1) reg_arready(
+	ysyx_23060236_Reg #(1, 1) reg_arready(
 		.clk(clk),
 		.rst(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
@@ -33,7 +33,7 @@ module clint(
 		.wen(1)
 	);
 
-	Reg #(32, 0) reg_rdata(
+	ysyx_23060236_Reg #(32, 0) reg_rdata(
 		.clk(clk),
 		.rst(reset),
 		.din(data_out),
@@ -41,7 +41,7 @@ module clint(
 		.wen(arvalid & arready)
 	);
 
-	Reg #(2, 0) reg_rresp(
+	ysyx_23060236_Reg #(2, 0) reg_rresp(
 		.clk(clk),
 		.rst(reset),
 		.din(0),
@@ -49,7 +49,7 @@ module clint(
 		.wen(arvalid & arready)
 	);
 
-	Reg #(1, 0) reg_rvalid(
+	ysyx_23060236_Reg #(1, 0) reg_rvalid(
 		.clk(clk),
 		.rst(reset),
 		.din(~rvalid & arvalid & arready | rvalid & ~rready),

@@ -1,4 +1,4 @@
-module ifu(
+module ysyx_23060236_ifu(
 	input clk,
 	input reset,
 	input [31:0] pc,

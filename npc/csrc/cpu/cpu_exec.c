@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <Vtop.h>
+#include <Vysyx_23060236.h>
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
 
-Vtop *top = NULL;
+Vysyx_23060236 *top = NULL;
 int trigger_difftest = 0;
 
 void difftest_step();

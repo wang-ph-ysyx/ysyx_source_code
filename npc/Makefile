@@ -1,4 +1,4 @@
-TOPNAME = top
+TOPNAME = ysyx_23060236
 INC_PATH ?=
 
 VERILATOR = verilator

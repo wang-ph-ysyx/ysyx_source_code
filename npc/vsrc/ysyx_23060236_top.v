@@ -1,7 +1,7 @@
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
 	  input int waddr, input int wdata, input byte wmask);
-module top(
+module ysyx_23060236(
 	input clk,
 	input reset,
 	output [31:0] pc,
@@ -107,7 +107,7 @@ module top(
 	assign snpc = pc + 4;
 	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
 
-	Reg #(32, 32'h80000000) pc_adder(
+	ysyx_23060236_Reg #(32, 32'h80000000) pc_adder(
 		.clk(clk),
 		.rst(reset),
 		.din(dnpc),
@@ -116,14 +116,14 @@ module top(
 	);
 
 	wire [7:0] random;
-	lfsr gen_random(
+	ysyx_23060236_lfsr gen_random(
 		.clk(clk),
 		.reset(reset),
 		.enable(wb_valid),
 		.random(random)
 	);
 
-	xbar my_xbar(
+	ysyx_23060236_xbar my_xbar(
 		.clk(clk),
 		.reset(reset),
 		.ifu_araddr(pc),
@@ -186,7 +186,7 @@ module top(
 		.clint_rready(clint_rready)
 	);
 
-	clint my_clint(
+	ysyx_23060236_clint my_clint(
 		.clk(clk),
 		.reset(reset),
 		.araddr(clint_araddr),
@@ -198,7 +198,7 @@ module top(
 		.rready(clint_rready)
 	);
 
-	uart my_uart(
+	ysyx_23060236_uart my_uart(
 		.clk(clk),
 		.reset(reset),
 		.awaddr(uart_awaddr),
@@ -213,7 +213,7 @@ module top(
 		.bready(uart_bready)
 	);
 
-	sram my_sram(
+	ysyx_23060236_sram my_sram(
 		.clk(clk),
 		.reset(reset),
 		.araddr(sram_araddr),
@@ -236,7 +236,7 @@ module top(
 		.random(random)
 	);
 
-	idu my_idu(
+	ysyx_23060236_idu my_idu(
 		.in(inst),
 		.opcode(opcode),
 		.funct3(funct3),
@@ -251,7 +251,7 @@ module top(
 		.idu_valid(idu_valid)
 	);
 
-	exu my_exu(
+	ysyx_23060236_exu my_exu(
 		.opcode(opcode),
 		.src1(src1),
 		.src2(src2),
@@ -266,7 +266,7 @@ module top(
 		.wmask(wmask)
 	);
 
-	MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
+	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
@@ -279,7 +279,7 @@ module top(
 		})
 	);
 
-	RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(5, 32) my_reg(
 		.clk(clk),
 		.wdata(val),
 		.waddr(rd),
@@ -293,7 +293,7 @@ module top(
 		.valid(wb_valid)
 	);
 
-	CSRFile #(32) my_CSRreg(
+	ysyx_23060236_CSRFile #(32) my_CSRreg(
 		.clk(clk),
 		.imm(imm[11:0]),
 		.wdata(csr_wdata),
@@ -318,7 +318,7 @@ module top(
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
 
-	Reg #(32, 0) reg_inst(
+	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clk(clk),
 		.rst(reset),
 		.din(ifu_rdata),
@@ -326,7 +326,7 @@ module top(
 		.wen(ifu_rvalid & ifu_rready)
 	);
 
-	Reg #(32, 0) reg_lsu_val(
+	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
 		.clk(clk),
 		.rst(reset),
 		.din(lsu_val_tmp & {32{~wb_valid}}),
@@ -334,7 +334,7 @@ module top(
 		.wen(lsu_rvalid & lsu_rready | wb_valid)
 	);
 
-	Reg #(1, 0) reg_idu_valid(
+	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clk(clk),
 		.rst(reset),
 		.din(~idu_valid & ifu_rvalid & ifu_rready),
@@ -342,7 +342,7 @@ module top(
 		.wen(1)
 	);
 
-	Reg #(1, 0) reg_lsu_arvalid(
+	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clk(clk),
 		.rst(reset),
 		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren),
@@ -350,7 +350,7 @@ module top(
 		.wen(1)
 	);
 
-	Reg #(1, 0) reg_lsu_awvalid(
+	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
 		.clk(clk),
 		.rst(reset),
 		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen),
@@ -358,7 +358,7 @@ module top(
 		.wen(1)
 	);
 
-	Reg #(1, 0) reg_lsu_wvalid(
+	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
 		.clk(clk),
 		.rst(reset),
 		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
@@ -366,7 +366,7 @@ module top(
 		.wen(1)
 	);
 
-	Reg #(1, 0) reg_wb_valid(
+	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clk(clk),
 		.rst(reset),
 		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
@@ -374,7 +374,7 @@ module top(
 		.wen(1)
 	);
 
-	Reg #(1, 1) reg_ifu_arvalid(
+	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
 		.clk(clk),
 		.rst(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & wb_valid),

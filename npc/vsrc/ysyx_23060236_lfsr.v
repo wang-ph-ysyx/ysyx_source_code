@@ -1,4 +1,4 @@
-module lfsr(
+module ysyx_23060236_lfsr(
 	input clk,
 	input reset,
 	input enable,

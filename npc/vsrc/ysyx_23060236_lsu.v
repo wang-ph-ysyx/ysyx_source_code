@@ -1,4 +1,4 @@
-module lsu(
+module ysyx_23060236_lsu(
 	input  clk,
 	input  [31:0] raddr,
 	input  ren,
@@ -30,7 +30,7 @@ module lsu(
 
 	assign valid = state_load;
 
-	MuxKeyInternal #(5, 10, 32, 1) calculate_val(
+	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) calculate_val(
 		.out(val),
 		.key({funct3, opcode}),
 		.default_out(32'b0),

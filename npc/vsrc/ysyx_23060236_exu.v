@@ -1,4 +1,4 @@
-module exu(
+module ysyx_23060236_exu(
 	input [6:0] opcode,
 	input [31:0] src1,
 	input [31:0] src2,
@@ -23,7 +23,7 @@ module exu(
 
 	reg [31:0] rdata;
 
-	MuxKeyInternal #(3, 7, 32, 1) calculate_val0(
+	ysyx_23060236_MuxKeyInternal #(3, 7, 32, 1) calculate_val0(
 		.out(val0),
 		.key(opcode),
 		.default_out(32'b0),
@@ -34,7 +34,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(6, 10, 32, 1) calculate_val1(
+	ysyx_23060236_MuxKeyInternal #(6, 10, 32, 1) calculate_val1(
 		.out(val1),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
@@ -48,7 +48,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(13, 17, 32, 1) calculate_val2(
+	ysyx_23060236_MuxKeyInternal #(13, 17, 32, 1) calculate_val2(
 		.out(val2),
 		.key({funct7, funct3, opcode}),
 		.default_out(32'b0),
@@ -70,7 +70,7 @@ module exu(
 	);
 
 
-	MuxKeyInternal #(1, 7, 32, 1) calculate_jump1(
+	ysyx_23060236_MuxKeyInternal #(1, 7, 32, 1) calculate_jump1(
 		.out(jump1),
 		.key(opcode),
 		.default_out(32'b0),
@@ -79,7 +79,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(7, 10, 32, 1) calculate_jump2(
+	ysyx_23060236_MuxKeyInternal #(7, 10, 32, 1) calculate_jump2(
 		.out(jump2),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
@@ -94,7 +94,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(3, 10, 8, 1) calculate_wmask(
+	ysyx_23060236_MuxKeyInternal #(3, 10, 8, 1) calculate_wmask(
 		.out(wmask),
 		.key({funct3, opcode}),
 		.default_out(8'b0),
@@ -105,7 +105,7 @@ module exu(
 		})
 	);
 
-	MuxKeyInternal #(2, 10, 32, 1) calculate_csr_wdata(
+	ysyx_23060236_MuxKeyInternal #(2, 10, 32, 1) calculate_csr_wdata(
 		.out(csr_wdata),
 		.key({funct3, opcode}),
 		.default_out(32'b0),

@@ -1,4 +1,4 @@
-module uart(
+module ysyx_23060236_uart(
 	input  clk,
 	input  reset,
 
@@ -16,7 +16,7 @@ module uart(
 	input  bready
 );
 
-	Reg #(1, 1) reg_awready(
+	ysyx_23060236_Reg #(1, 1) reg_awready(
 		.clk(clk),
 		.rst(reset),
 		.din(~awready & bvalid & bready | awready & ~awvalid),
@@ -25,7 +25,7 @@ module uart(
 	);
 
 	wire [31:0] stored_awaddr;
-	Reg #(32, 0) reg_stored_awaddr(
+	ysyx_23060236_Reg #(32, 0) reg_stored_awaddr(
 		.clk(clk),
 		.rst(reset),
 		.din(awaddr),
@@ -33,7 +33,7 @@ module uart(
 		.wen(awvalid & awready)
 	);
 
-	Reg #(1, 1) reg_wready(
+	ysyx_23060236_Reg #(1, 1) reg_wready(
 		.clk(clk),
 		.rst(reset),
 		.din(~wready & bvalid & bready | wready & ~wvalid),
@@ -42,7 +42,7 @@ module uart(
 	);
 
 	wire [31:0] stored_wdata;
-	Reg #(32, 0) reg_stored_wdata(
+	ysyx_23060236_Reg #(32, 0) reg_stored_wdata(
 		.clk(clk),
 		.rst(reset),
 		.din(wdata),
