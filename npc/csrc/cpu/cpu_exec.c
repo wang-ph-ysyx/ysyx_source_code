@@ -12,8 +12,8 @@ void difftest_step();
 void reg_display();
 
 static void one_cycle() {
-	top->clk = 0; top->eval();
-	top->clk = 1; top->eval();
+	top->clock = 0; top->eval();
+	top->clock = 1; top->eval();
 }
 
 void cpu_exec(unsigned n) {

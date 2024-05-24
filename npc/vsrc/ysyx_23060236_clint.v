@@ -1,5 +1,5 @@
 module ysyx_23060236_clint(
-	input  clk,
+	input  clock,
 	input  reset,
 
 	input  [31:0] araddr,
@@ -18,7 +18,7 @@ module ysyx_23060236_clint(
 	assign data_out = {32{araddr == 32'ha0000048}} & mtime[31:0] | {32{araddr == 32'ha000004c}} & mtime[63:32];
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(mtime + 1),
 		.dout(mtime),
@@ -26,7 +26,7 @@ module ysyx_23060236_clint(
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_arready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
@@ -34,7 +34,7 @@ module ysyx_23060236_clint(
 	);
 
 	ysyx_23060236_Reg #(32, 0) reg_rdata(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(data_out),
 		.dout(rdata),
@@ -42,7 +42,7 @@ module ysyx_23060236_clint(
 	);
 
 	ysyx_23060236_Reg #(2, 0) reg_rresp(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(0),
 		.dout(rresp),
@@ -50,7 +50,7 @@ module ysyx_23060236_clint(
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_rvalid(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~rvalid & arvalid & arready | rvalid & ~rready),
 		.dout(rvalid),

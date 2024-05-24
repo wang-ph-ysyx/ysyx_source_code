@@ -1,5 +1,5 @@
 module ysyx_23060236_uart(
-	input  clk,
+	input  clock,
 	input  reset,
 
 	input  [31:0] awaddr,
@@ -17,7 +17,7 @@ module ysyx_23060236_uart(
 );
 
 	ysyx_23060236_Reg #(1, 1) reg_awready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~awready & bvalid & bready | awready & ~awvalid),
 		.dout(awready),
@@ -26,7 +26,7 @@ module ysyx_23060236_uart(
 
 	wire [31:0] stored_awaddr;
 	ysyx_23060236_Reg #(32, 0) reg_stored_awaddr(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
@@ -34,7 +34,7 @@ module ysyx_23060236_uart(
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_wready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~wready & bvalid & bready | wready & ~wvalid),
 		.dout(wready),
@@ -43,7 +43,7 @@ module ysyx_23060236_uart(
 
 	wire [31:0] stored_wdata;
 	ysyx_23060236_Reg #(32, 0) reg_stored_wdata(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(wdata),
 		.dout(stored_wdata),
@@ -52,7 +52,7 @@ module ysyx_23060236_uart(
 
 	assign bvalid = ~awready & ~wready;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (~reset & bvalid & (stored_awaddr == 32'ha00003f8)) begin
 			$write("%c", stored_wdata[7:0]);
 			bresp <= 0;

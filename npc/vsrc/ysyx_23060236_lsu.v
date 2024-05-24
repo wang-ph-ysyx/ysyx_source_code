@@ -1,5 +1,5 @@
 module ysyx_23060236_lsu(
-	input  clk,
+	input  clock,
 	input  [31:0] raddr,
 	input  ren,
 	output [31:0] val,
@@ -15,7 +15,7 @@ module ysyx_23060236_lsu(
 	reg state_load;
 	reg [31:0] rdata;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (ren) begin
 			rdata <= pmem_read(raddr);
 			state_load <= 1;

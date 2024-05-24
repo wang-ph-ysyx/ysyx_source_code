@@ -1,5 +1,5 @@
 module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
-	input clk,
+	input clock,
 	input [11:0] imm,
 	input [DATA_WIDTH-1:0] wdata,
 	output [DATA_WIDTH-1:0] rdata,
@@ -27,7 +27,7 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 		})
 	);
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (valid) begin
 			if (enable) begin
 				csr[addr] <= wdata;

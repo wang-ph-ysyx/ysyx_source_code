@@ -1,5 +1,5 @@
 module ysyx_23060236_sram(
-	input clk,
+	input clock,
 	input reset,
 
 	input [31:0] araddr,
@@ -31,7 +31,7 @@ module ysyx_23060236_sram(
 	wire awaddr_valid;
 	wire wdata_valid;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (reset) begin
 			rdata <= 0;
 		end
@@ -41,7 +41,7 @@ module ysyx_23060236_sram(
 	end
 
 	ysyx_23060236_Reg #(2, 0) reg_rresp(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(0),
 		.dout(rresp),
@@ -49,7 +49,7 @@ module ysyx_23060236_sram(
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_araddr_valid(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~araddr_valid & arvalid & arready | araddr_valid & ~(rvalid & rready)),
 		.dout(araddr_valid),
@@ -57,7 +57,7 @@ module ysyx_23060236_sram(
 	);
 
 	/*ysyx_23060236_delay rvalid_delay(
-		.clk(clk),
+		.clock(clock),
 		.reset(reset),
 		.data_in(araddr_valid),
 		.data_out(rvalid),
@@ -66,7 +66,7 @@ module ysyx_23060236_sram(
 	assign rvalid = araddr_valid;
 
 	ysyx_23060236_Reg #(1, 1) reg_arready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
@@ -74,7 +74,7 @@ module ysyx_23060236_sram(
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_awaddr_valid(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~awaddr_valid & awvalid & awready | awaddr_valid & ~(bvalid & bready)),
 		.dout(awaddr_valid),
@@ -82,7 +82,7 @@ module ysyx_23060236_sram(
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_awready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(bvalid & bready | awready & ~awvalid),
 		.dout(awready),
@@ -91,7 +91,7 @@ module ysyx_23060236_sram(
 
 	reg [31:0] stored_awaddr;
 	ysyx_23060236_Reg #(32, 0) reg_awaddr(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
@@ -99,7 +99,7 @@ module ysyx_23060236_sram(
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wdata_valid(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~wdata_valid & wvalid & wready | wdata_valid & ~(bvalid & bready)),
 		.dout(wdata_valid),
@@ -107,7 +107,7 @@ module ysyx_23060236_sram(
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_wready(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(bvalid & bready | wready & ~wvalid),
 		.dout(wready),
@@ -116,7 +116,7 @@ module ysyx_23060236_sram(
 
 	reg [31:0] stored_wdata;
 	ysyx_23060236_Reg #(32, 0) reg_wdata(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(wdata),
 		.dout(stored_wdata),
@@ -125,7 +125,7 @@ module ysyx_23060236_sram(
 
 	reg [3:0] stored_wstrb;
 	ysyx_23060236_Reg #(4, 0) reg_wstrb(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(wstrb),
 		.dout(stored_wstrb),
@@ -133,7 +133,7 @@ module ysyx_23060236_sram(
 	);
 
 	/*ysyx_23060236_delay bvalid_delay(
-		.clk(clk),
+		.clock(clock),
 		.reset(reset),
 		.data_in(awaddr_valid & wdata_valid),
 		.data_out(bvalid),

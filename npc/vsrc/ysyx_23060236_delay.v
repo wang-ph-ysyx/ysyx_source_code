@@ -1,5 +1,5 @@
 module ysyx_23060236_delay #(DELAY = 15) (
-	input  clk,
+	input  clock,
 	input  reset,
 	input  data_in,
 	input  [2:0] random,
@@ -8,7 +8,7 @@ module ysyx_23060236_delay #(DELAY = 15) (
 
 	reg [DELAY-1:0] data_buf;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (reset) begin
 			data_buf <= 0;
 		end

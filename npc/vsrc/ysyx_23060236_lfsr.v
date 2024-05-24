@@ -1,5 +1,5 @@
 module ysyx_23060236_lfsr(
-	input clk,
+	input clock,
 	input reset,
 	input enable,
 	output [7:0] random
@@ -7,7 +7,7 @@ module ysyx_23060236_lfsr(
 
 reg [7:0] out;
 
-always @(posedge clk) begin
+always @(posedge clock) begin
 	if (reset) begin
 		out <= 8'b00000001;
 	end

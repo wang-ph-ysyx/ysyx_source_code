@@ -1,5 +1,5 @@
 module ysyx_23060236_xbar(
-	input  clk,
+	input  clock,
 	input  reset,
 
 	input  [31:0] ifu_araddr,
@@ -91,7 +91,7 @@ module ysyx_23060236_xbar(
 	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha000004c);
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
 		.dout(ifu_reading),
@@ -99,7 +99,7 @@ module ysyx_23060236_xbar(
 	);
 
 	ysyx_23060236_Reg #(1, 0) state_lsu_reading(
-		.clk(clk),
+		.clock(clock),
 		.rst(reset),
 		.din(~lsu_reading & ~ifu_arvalid & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),
 		.dout(lsu_reading),
