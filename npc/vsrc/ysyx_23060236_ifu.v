@@ -1,5 +1,5 @@
-module ifu(
-	input clk,
+module ysyx_23060236_ifu(
+	input clock,
 	input reset,
 	input [31:0] pc,
 	input ifu_arvalid,
@@ -9,7 +9,7 @@ module ifu(
 
 	reg [31:0] inst_reg;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (!reset) begin
 			if (ifu_arvalid) begin
 				inst_reg <= pmem_read(pc);

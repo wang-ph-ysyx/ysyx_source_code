@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <Vtop.h>
+#include <Vysyx_23060236.h>
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
 
-Vtop *top = NULL;
+Vysyx_23060236 *top = NULL;
 int trigger_difftest = 0;
 
 void difftest_step();
 void reg_display();
 
 static void one_cycle() {
-	top->clk = 0; top->eval();
-	top->clk = 1; top->eval();
+	top->clock = 0; top->eval();
+	top->clock = 1; top->eval();
 }
 
 void cpu_exec(unsigned n) {

@@ -1,5 +1,5 @@
-module xbar(
-	input  clk,
+module ysyx_23060236_xbar(
+	input  clock,
 	input  reset,
 
 	input  [31:0] ifu_araddr,
@@ -90,17 +90,17 @@ module xbar(
 	assign sram_reading = (araddr >= 32'h80000000) & (awaddr <= 32'h87ffffff);
 	assign clint_reading = (araddr == 32'ha0000048) | (araddr == 32'ha000004c);
 
-	Reg #(1, 0) state_ifu_reading(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
+		.clock(clock),
+		.reset(reset),
 		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
 		.dout(ifu_reading),
 		.wen(1)
 	);
 
-	Reg #(1, 0) state_lsu_reading(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 0) state_lsu_reading(
+		.clock(clock),
+		.reset(reset),
 		.din(~lsu_reading & ~ifu_arvalid & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),
 		.dout(lsu_reading),
 		.wen(1)

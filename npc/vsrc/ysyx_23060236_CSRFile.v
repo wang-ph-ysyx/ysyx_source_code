@@ -1,5 +1,5 @@
-module CSRFile #(DATA_WIDTH = 1) (
-	input clk,
+module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
+	input clock,
 	input [11:0] imm,
 	input [DATA_WIDTH-1:0] wdata,
 	output [DATA_WIDTH-1:0] rdata,
@@ -15,7 +15,7 @@ module CSRFile #(DATA_WIDTH = 1) (
 	wire [1:0] addr;
 	reg [DATA_WIDTH-1:0] csr [3:0];//0:mepc  1:mcause  2:mstatus  3:mtvec
 
-	MuxKeyInternal #(4, 12, 2, 1) choose_addr(
+	ysyx_23060236_MuxKeyInternal #(4, 12, 2, 1) choose_addr(
 		.out(addr),
 		.key(imm),
 		.default_out(2'b00),
@@ -27,7 +27,7 @@ module CSRFile #(DATA_WIDTH = 1) (
 		})
 	);
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (valid) begin
 			if (enable) begin
 				csr[addr] <= wdata;

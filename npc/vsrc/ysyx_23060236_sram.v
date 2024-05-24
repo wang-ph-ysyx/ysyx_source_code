@@ -1,5 +1,5 @@
-module sram(
-	input clk,
+module ysyx_23060236_sram(
+	input clock,
 	input reset,
 
 	input [31:0] araddr,
@@ -31,7 +31,7 @@ module sram(
 	wire awaddr_valid;
 	wire wdata_valid;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (reset) begin
 			rdata <= 0;
 		end
@@ -40,24 +40,24 @@ module sram(
 		end
 	end
 
-	Reg #(2, 0) reg_rresp(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(2, 0) reg_rresp(
+		.clock(clock),
+		.reset(reset),
 		.din(0),
 		.dout(rresp),
 		.wen(arvalid & arready)
 	);
 
-	Reg #(1, 0) reg_araddr_valid(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 0) reg_araddr_valid(
+		.clock(clock),
+		.reset(reset),
 		.din(~araddr_valid & arvalid & arready | araddr_valid & ~(rvalid & rready)),
 		.dout(araddr_valid),
 		.wen(1)
 	);
 
-	/*delay rvalid_delay(
-		.clk(clk),
+	/*ysyx_23060236_delay rvalid_delay(
+		.clock(clock),
 		.reset(reset),
 		.data_in(araddr_valid),
 		.data_out(rvalid),
@@ -65,75 +65,75 @@ module sram(
 	);*/
 	assign rvalid = araddr_valid;
 
-	Reg #(1, 1) reg_arready(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 1) reg_arready(
+		.clock(clock),
+		.reset(reset),
 		.din(~arready & rvalid & rready | arready & ~arvalid),
 		.dout(arready),
 		.wen(1)
 	);
 
-	Reg #(1, 0) reg_awaddr_valid(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 0) reg_awaddr_valid(
+		.clock(clock),
+		.reset(reset),
 		.din(~awaddr_valid & awvalid & awready | awaddr_valid & ~(bvalid & bready)),
 		.dout(awaddr_valid),
 		.wen(1)
 	);
 
-	Reg #(1, 1) reg_awready(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 1) reg_awready(
+		.clock(clock),
+		.reset(reset),
 		.din(bvalid & bready | awready & ~awvalid),
 		.dout(awready),
 		.wen(1)
 	);
 
 	reg [31:0] stored_awaddr;
-	Reg #(32, 0) reg_awaddr(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(32, 0) reg_awaddr(
+		.clock(clock),
+		.reset(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
 		.wen(awvalid & awready)
 	);
 
-	Reg #(1, 0) reg_wdata_valid(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 0) reg_wdata_valid(
+		.clock(clock),
+		.reset(reset),
 		.din(~wdata_valid & wvalid & wready | wdata_valid & ~(bvalid & bready)),
 		.dout(wdata_valid),
 		.wen(1)
 	);
 
-	Reg #(1, 1) reg_wready(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 1) reg_wready(
+		.clock(clock),
+		.reset(reset),
 		.din(bvalid & bready | wready & ~wvalid),
 		.dout(wready),
 		.wen(1)
 	);
 
 	reg [31:0] stored_wdata;
-	Reg #(32, 0) reg_wdata(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(32, 0) reg_wdata(
+		.clock(clock),
+		.reset(reset),
 		.din(wdata),
 		.dout(stored_wdata),
 		.wen(wvalid & wready)
 	);
 
 	reg [3:0] stored_wstrb;
-	Reg #(4, 0) reg_wstrb(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(4, 0) reg_wstrb(
+		.clock(clock),
+		.reset(reset),
 		.din(wstrb),
 		.dout(stored_wstrb),
 		.wen(wvalid & wready)
 	);
 
-	/*delay bvalid_delay(
-		.clk(clk),
+	/*ysyx_23060236_delay bvalid_delay(
+		.clock(clock),
 		.reset(reset),
 		.data_in(awaddr_valid & wdata_valid),
 		.data_out(bvalid),

@@ -1,5 +1,5 @@
-module uart(
-	input  clk,
+module ysyx_23060236_uart(
+	input  clock,
 	input  reset,
 
 	input  [31:0] awaddr,
@@ -16,35 +16,35 @@ module uart(
 	input  bready
 );
 
-	Reg #(1, 1) reg_awready(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 1) reg_awready(
+		.clock(clock),
+		.reset(reset),
 		.din(~awready & bvalid & bready | awready & ~awvalid),
 		.dout(awready),
 		.wen(1)
 	);
 
 	wire [31:0] stored_awaddr;
-	Reg #(32, 0) reg_stored_awaddr(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(32, 0) reg_stored_awaddr(
+		.clock(clock),
+		.reset(reset),
 		.din(awaddr),
 		.dout(stored_awaddr),
 		.wen(awvalid & awready)
 	);
 
-	Reg #(1, 1) reg_wready(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(1, 1) reg_wready(
+		.clock(clock),
+		.reset(reset),
 		.din(~wready & bvalid & bready | wready & ~wvalid),
 		.dout(wready),
 		.wen(1)
 	);
 
 	wire [31:0] stored_wdata;
-	Reg #(32, 0) reg_stored_wdata(
-		.clk(clk),
-		.rst(reset),
+	ysyx_23060236_Reg #(32, 0) reg_stored_wdata(
+		.clock(clock),
+		.reset(reset),
 		.din(wdata),
 		.dout(stored_wdata),
 		.wen(wvalid & wready)
@@ -52,7 +52,7 @@ module uart(
 
 	assign bvalid = ~awready & ~wready;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (~reset & bvalid & (stored_awaddr == 32'ha00003f8)) begin
 			$write("%c", stored_wdata[7:0]);
 			bresp <= 0;

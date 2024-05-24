@@ -2,14 +2,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <Vtop.h>
-#include <Vtop___024root.h>
+#include <Vysyx_23060236.h>
+#include <Vysyx_23060236___024root.h>
 #include <memory.h>
 #include <assert.h>
 #include <config.h>
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
-extern Vtop* top;
+extern Vysyx_23060236* top;
 extern int trigger_difftest;
 
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;

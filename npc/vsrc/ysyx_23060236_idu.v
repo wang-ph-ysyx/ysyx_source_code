@@ -1,4 +1,4 @@
-module idu(
+module ysyx_23060236_idu(
 	input [31:0] in,
 	output [6:0] opcode,
 	output [2:0] funct3,
@@ -23,7 +23,7 @@ module idu(
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 
-	MuxKeyInternal #(10, 7, 3, 1) choose_type(
+	ysyx_23060236_MuxKeyInternal #(10, 7, 3, 1) choose_type(
 		.out(Type),
 		.key(opcode),
 		.default_out(3'b0),
@@ -41,7 +41,7 @@ module idu(
 		})
 	);
 
-	MuxKeyInternal #(5, 3, 32, 1) choose_imm(
+	ysyx_23060236_MuxKeyInternal #(5, 3, 32, 1) choose_imm(
 		.out(imm),
 		.key(Type),
 		.default_out(32'b0),

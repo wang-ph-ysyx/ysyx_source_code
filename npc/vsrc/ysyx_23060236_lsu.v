@@ -1,5 +1,5 @@
-module lsu(
-	input  clk,
+module ysyx_23060236_lsu(
+	input  clock,
 	input  [31:0] raddr,
 	input  ren,
 	output [31:0] val,
@@ -15,7 +15,7 @@ module lsu(
 	reg state_load;
 	reg [31:0] rdata;
 
-	always @(posedge clk) begin
+	always @(posedge clock) begin
 		if (ren) begin
 			rdata <= pmem_read(raddr);
 			state_load <= 1;
@@ -30,7 +30,7 @@ module lsu(
 
 	assign valid = state_load;
 
-	MuxKeyInternal #(5, 10, 32, 1) calculate_val(
+	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) calculate_val(
 		.out(val),
 		.key({funct3, opcode}),
 		.default_out(32'b0),
