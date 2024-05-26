@@ -22,7 +22,6 @@ paddr_t vaddr2paddr(vaddr_t addr, int len) {
 		assert(0);
 	pg_addr = pg_addr & ~((1 << 12) - 1);
 	paddr_t paddr = pg_addr + (addr & ((1 << 12) - 1));
-	assert(paddr == addr);
 	return paddr;
 }
 
