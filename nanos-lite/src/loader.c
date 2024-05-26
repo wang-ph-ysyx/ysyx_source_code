@@ -62,7 +62,7 @@ void naive_uload(PCB *pcb, const char *filename) {
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
 	uintptr_t entry = loader(pcb, filename);
 	pcb->cp = ucontext(NULL, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
-	char *stack = (char *)new_page(8) + PGSIZE;
+	char *stack = (char *)new_page(8) + 8 * PGSIZE;
 	char *strptr = stack;
 	int argc = 0;
 	for (; argv != NULL && argv[argc] != NULL; ++argc) {
