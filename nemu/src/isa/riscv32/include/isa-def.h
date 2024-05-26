@@ -36,6 +36,6 @@ typedef struct {
   } inst;
 } MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
 
-#define isa_mmu_check(vaddr, len, type) ((cpu.csr.satp >> 31) & MMU_TRANSLATE)
+#define isa_mmu_check(vaddr, len, type) (MMU_TRANSLATE)
 
 #endif
