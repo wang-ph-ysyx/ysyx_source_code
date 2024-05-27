@@ -75,7 +75,7 @@ void *_sbrk(intptr_t increment) {
 	static uintptr_t pb = (uintptr_t)&end;
 	uintptr_t ret = pb;
 	uintptr_t pb_new = pb + increment;
-	if (_syscall_(SYS_brk, pb_new, increment, 0) == 0) {
+	if (_syscall_(SYS_brk, pb_new, 0, 0) == 0) {
 		pb = pb_new;
 		return (void *)ret;
 	}
