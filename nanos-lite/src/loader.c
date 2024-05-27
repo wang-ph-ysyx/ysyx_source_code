@@ -44,6 +44,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
+			Log("test");
 			void *va = (void *)phdr[i].p_vaddr;
 			void *va_start = (void *)ROUNDDOWN(va, PGSIZE);
 			void *va_file_end = va + phdr[i].p_filesz;
