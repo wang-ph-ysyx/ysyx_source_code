@@ -24,7 +24,10 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
-	if (current->max_brk == 0) current->max_brk = brk;
+	if (current->max_brk == 0) {
+		Log("brk: %#x", brk);
+		current->max_brk = brk;
+	}
 	for (void *va = (void*)ROUNDUP(current->max_brk, PGSIZE); (uintptr_t)va < brk; va += PGSIZE) {
 		void *pa = new_page(1);
 		map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
