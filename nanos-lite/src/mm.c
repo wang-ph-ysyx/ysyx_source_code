@@ -24,6 +24,7 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
+	Log("brk: %x", brk);
 	if (current->max_brk == 0) {
 		current->max_brk = brk;
 		void *va = (void *)ROUNDDOWN(brk, PGSIZE);
@@ -35,7 +36,6 @@ int mm_brk(uintptr_t brk) {
 		map(&current->as, va + PGSIZE, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
 	}
 	current->max_brk = brk;
-	Log("brk: %x", brk);
   return 0;
 }
 
