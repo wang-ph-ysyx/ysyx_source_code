@@ -42,9 +42,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 	Elf_Phdr phdr[ehdr.e_phnum];
 	fs_read(fd, &phdr, ehdr.e_phnum * sizeof(Elf_Phdr));
 
-	Log("test");
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
+	Log("test");
 			void *va = (void *)phdr[i].p_vaddr;
 			void *va_file_end = va + phdr[i].p_filesz;
 			void *va_end = va + phdr[i].p_memsz;
