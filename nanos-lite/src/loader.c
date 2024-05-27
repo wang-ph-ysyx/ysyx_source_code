@@ -57,11 +57,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 				fs_read(fd, pa, PGSIZE);
 			}
-			Log("test");
 			pa = new_page(1);
 			map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 			fs_read(fd, pa, va_file_end - va);
 			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
+			Log("test");
 		}
 	}
   return ehdr.e_entry;
