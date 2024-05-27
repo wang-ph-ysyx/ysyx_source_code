@@ -26,6 +26,7 @@ void free_page(void *p) {
 int mm_brk(uintptr_t brk) {
 	if (current->max_brk == 0) {
 		current->max_brk = brk;
+		Log("brk: %x", brk);
 		void *va = (void *)ROUNDDOWN(brk, PGSIZE);
 		void *pa = new_page(1);
 		map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
