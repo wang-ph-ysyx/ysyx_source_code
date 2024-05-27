@@ -60,14 +60,13 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 				fs_read(fd, pa, PGSIZE);
 			}
-			if (va_end >= va) {
-				pa = maped(&pcb->as, va);
-				if (pa == NULL) {
-					pa = new_page(1);
-					map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
-				}
-				fs_read(fd, pa, va_end - va);
+			pa = maped(&pcb->as, va);
+			if (pa == NULL) {
+				pa = new_page(1);
+				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 			}
+			if (va_end >= va)
+				fs_read(fd, pa, va_end - va);
 			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
 		}
 	}
