@@ -30,7 +30,7 @@ int mm_brk(uintptr_t brk) {
 		//void *pa = new_page(1);
 		//map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
 	}
-	for (void *va = (void*)ROUNDDOWN(current->max_brk, PGSIZE); (uintptr_t)va < brk; va += PGSIZE) {
+	for (void *va = (void*)ROUNDUP(current->max_brk, PGSIZE); (uintptr_t)va < brk; va += PGSIZE) {
 		void *pa = new_page(1);
 		map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
 	}
