@@ -44,7 +44,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
-			Log("test");
 			void *va = (void *)phdr[i].p_vaddr;
 			void *va_start = (void *)ROUNDDOWN(va, PGSIZE);
 			void *va_file_end = va + phdr[i].p_filesz;
@@ -62,6 +61,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 			fs_read(fd, pa, va_file_end - va);
 			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
+			Log("test");
 		}
 	}
   return ehdr.e_entry;
