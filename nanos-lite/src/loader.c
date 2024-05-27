@@ -42,6 +42,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 	Elf_Phdr phdr[ehdr.e_phnum];
 	fs_read(fd, &phdr, ehdr.e_phnum * sizeof(Elf_Phdr));
 
+	Log("test");
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
 			void *va = (void *)phdr[i].p_vaddr;
@@ -71,7 +72,6 @@ void naive_uload(PCB *pcb, const char *filename) {
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
 	protect(&pcb->as);
 	uintptr_t entry = loader(pcb, filename);
-	Log("test");
 	pcb->cp = ucontext(&pcb->as, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
 	void *va_end = pcb->as.area.end;
 	void *va = va_end - STACK_SIZE;
