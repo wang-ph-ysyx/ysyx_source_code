@@ -52,12 +52,12 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			void *pa = new_page(1);
 			map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 			fs_read(fd, pa + (va - va_start), PGSIZE - (va - va_start));
-			Log("test");
 			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
 				pa = new_page(1);
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 				fs_read(fd, pa, PGSIZE);
 			}
+			Log("test");
 			pa = new_page(1);
 			map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 			fs_read(fd, pa, va_file_end - va);
