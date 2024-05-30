@@ -39,6 +39,7 @@ int mm_brk(uintptr_t brk) {
 	}
 	current->max_brk = brk;
 	Log("brk: %x", brk);
+	Log("pf: %p", pf);
   return 0;
 }
 
