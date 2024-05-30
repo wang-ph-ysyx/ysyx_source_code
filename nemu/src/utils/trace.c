@@ -1,7 +1,7 @@
 #include <common.h>
 
 //code of iringbuf
-#define RINGBUF_SIZE 50
+#define RINGBUF_SIZE 10
 
 #ifdef CONFIG_ITRACE
 
