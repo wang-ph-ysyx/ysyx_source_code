@@ -18,7 +18,7 @@ void hello_fun(void *arg) {
   while (1) {
 		Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
     j ++;
-    //yield();
+    yield();
   }
 }
 
@@ -43,7 +43,7 @@ Context* schedule(Context *prev) {
 	current->cp = prev;
 	static int cnt = 0;
 	if (current == &pcb[1]) {
-		if (cnt == 1000) {
+		if (cnt == 100) {
 			current = &pcb[0];
 			cnt = 0;
 		}
