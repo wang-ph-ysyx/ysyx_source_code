@@ -37,7 +37,8 @@ int mm_brk(uintptr_t brk) {
 		void *pa = new_page(1);
 		map(&current->as, va + PGSIZE, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
 	}
-	current->max_brk = brk;
+	if (current->max_brk < brk)
+		current->max_brk = brk;
 	Log("brk: %x", brk);
 	Log("pf: %p", pf);
   return 0;
