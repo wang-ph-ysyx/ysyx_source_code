@@ -44,6 +44,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	cp->mstatus = 0x1808;
 	cp->gpr[10] = (uintptr_t)arg;
 	cp->pdir = NULL;
+	cp->np = 0;
 	return cp;
 }
 
