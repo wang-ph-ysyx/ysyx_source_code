@@ -19,7 +19,7 @@
 #include <common.h>
 
 typedef struct {
-	word_t mstatus, mcause, mtvec, satp;
+	word_t mscratch, mstatus, mcause, mtvec, satp;
 	vaddr_t mepc;
 } riscv_csr;
 

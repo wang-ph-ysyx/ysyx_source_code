@@ -30,6 +30,7 @@ static vaddr_t *get_csr(word_t imm) {
 		case 0x300: return &(cpu.csr.mstatus);
 		case 0x305: return &(cpu.csr.mtvec);
 		case 0x180: return &(cpu.csr.satp);
+		case 0x340: return &(cpu.csr.mscratch);
 	}
 	panic("Unknown csr");
 }
