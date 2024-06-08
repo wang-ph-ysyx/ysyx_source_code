@@ -8,6 +8,8 @@
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask);
 extern "C" int pmem_read(int raddr);
+extern "C" void flash_read(int32_t addr, int32_t *data);
+extern "C" void mrom_read(int32_t addr, int32_t *data);
 void init_memory();
 uint8_t *guest2host(uint32_t paddr);
 uint32_t host2guest(uint8_t *haddr);

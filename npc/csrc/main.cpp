@@ -1,16 +1,17 @@
-#include <Vysyx_23060236.h>
+#include <VysyxSoCFull.h>
 #include "verilated.h"
 
-extern Vysyx_23060236* top;
+extern VysyxSoCFull* top;
 
 void init_monitor(int argc, char **argv);
 void sdb_mainloop();
 void reset();
 
 int main(int argc, char **argv) {
+	Verilated::commandArgs(argc, argv);
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
-	top = new Vysyx_23060236{contextp};
+	top = new VysyxSoCFull{contextp};
 
 	reset();
 

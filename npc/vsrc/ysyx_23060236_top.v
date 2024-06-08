@@ -2,13 +2,81 @@ import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
 	  input int waddr, input int wdata, input byte wmask);
 module ysyx_23060236(
-	input clock,
-	input reset,
-	output [31:0] pc,
-	output finished,
-	output [31:0] halt_ret,
-	output wb_valid
+	input  clock,
+	input  reset,
+	input  io_interrupt,
+
+	input         io_master_awready,
+	output        io_master_awvalid,
+	output [31:0] io_master_awaddr,
+	output [3:0]  io_master_awid,
+	output [7:0]  io_master_awlen,
+	output [2:0]  io_master_awsize,
+	output [1:0]  io_master_awburst,
+
+	input         io_master_wready,
+	output        io_master_wvalid,
+	output [63:0] io_master_wdata,
+	output [7:0]  io_master_wstrb,
+	output        io_master_wlast,
+
+	output        io_master_bready,
+	input         io_master_bvalid,
+	input  [1:0]  io_master_bresp,
+	input  [3:0]  io_master_bid,
+
+	input         io_master_arready,
+	output        io_master_arvalid,
+	output [31:0] io_master_araddr,
+	output [3:0]  io_master_arid,
+	output [7:0]  io_master_arlen,
+	output [2:0]  io_master_arsize,
+	output [1:0]  io_master_arburst,
+
+	output        io_master_rready,
+	input         io_master_rvalid,
+	input  [1:0]  io_master_rresp,
+	input  [63:0] io_master_rdata,
+	input         io_master_rlast,
+	input  [3:0]  io_master_rid,
+
+	output        io_slave_awready,
+	input         io_slave_awvalid,
+	input  [31:0] io_slave_awaddr,
+	input  [3:0]  io_slave_awid,
+	input  [7:0]  io_slave_awlen,
+	input  [2:0]  io_slave_awsize,
+	input  [1:0]  io_slave_awburst,
+
+	output        io_slave_wready,
+	input         io_slave_wvalid,
+	input  [63:0] io_slave_wdata,
+	input  [7:0]  io_slave_wstrb,
+	input         io_slave_wlast,
+
+	input         io_slave_bready,
+	output        io_slave_bvalid,
+	output [1:0]  io_slave_bresp,
+	output [3:0]  io_slave_bid,
+
+	output        io_slave_arready,
+	input         io_slave_arvalid,
+	input  [31:0] io_slave_araddr,
+	input  [3:0]  io_slave_arid,
+	input  [7:0]  io_slave_arlen,
+	input  [2:0]  io_slave_arsize,
+	input  [1:0]  io_slave_arburst,
+
+	input         io_slave_rready,
+	output        io_slave_rvalid,
+	output [1:0]  io_slave_rresp,
+	output [63:0] io_slave_rdata,
+	output        io_slave_rlast,
+	output [3:0]  io_slave_rid     
 );
+
+	wire [31:0] pc;
+	wire wb_valid;
 
 	wire [31:0] inst;
 	wire [6:0] opcode;
@@ -59,35 +127,7 @@ module ysyx_23060236(
 	wire [1:0] lsu_bresp;
 	wire lsu_bvalid;
 	wire lsu_bready;
-
-	wire [31:0] sram_araddr;
-	wire sram_arvalid;
-	wire sram_arready;
-	wire [31:0] sram_rdata;
-	wire [1:0]  sram_rresp;
-	wire sram_rvalid;
-	wire sram_rready;
-	wire [31:0] sram_awaddr;
-	wire sram_awvalid;
-	wire sram_awready;
-	wire [31:0] sram_wdata;
-	wire [3:0]  sram_wstrb;
-	wire sram_wvalid;
-	wire sram_wready;
-	wire [1:0] sram_bresp;
-	wire sram_bvalid;
-	wire sram_bready;
-
-	wire [31:0] uart_awaddr;
-	wire uart_awvalid;
-	wire uart_awready;
-	wire [31:0] uart_wdata;
-	wire [3:0]  uart_wstrb;
-	wire uart_wvalid;
-	wire uart_wready;
-	wire [1:0] uart_bresp;
-	wire uart_bvalid;
-	wire uart_bready;
+	wire [2:0] lsu_arsize;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -107,7 +147,7 @@ module ysyx_23060236(
 	assign snpc = pc + 4;
 	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
 
-	ysyx_23060236_Reg #(32, 32'h80000000) pc_adder(
+	ysyx_23060236_Reg #(32, 32'h20000000) pc_adder(
 		.clock(clock),
 		.reset(reset),
 		.din(dnpc),
@@ -150,33 +190,36 @@ module ysyx_23060236(
 		.lsu_bresp(lsu_bresp),
 		.lsu_bvalid(lsu_bvalid),
 		.lsu_bready(lsu_bready),
-		.sram_araddr(sram_araddr),
-		.sram_arvalid(sram_arvalid),
-		.sram_arready(sram_arready),
-		.sram_rdata(sram_rdata),
-		.sram_rresp(sram_rresp),
-		.sram_rvalid(sram_rvalid),
-		.sram_rready(sram_rready),
-		.sram_awaddr(sram_awaddr),
-		.sram_awvalid(sram_awvalid),
-		.sram_awready(sram_awready),
-		.sram_wdata(sram_wdata),
-		.sram_wstrb(sram_wstrb),
-		.sram_wvalid(sram_wvalid),
-		.sram_wready(sram_wready),
-		.sram_bresp(sram_bresp),
-		.sram_bvalid(sram_bvalid),
-		.sram_bready(sram_bready),
-		.uart_awaddr(uart_awaddr),
-		.uart_awvalid(uart_awvalid),
-		.uart_awready(uart_awready),
-		.uart_wdata(uart_wdata),
-		.uart_wstrb(uart_wstrb),
-		.uart_wvalid(uart_wvalid),
-		.uart_wready(uart_wready),
-		.uart_bresp(uart_bresp),
-		.uart_bvalid(uart_bvalid),
-		.uart_bready(uart_bready),
+		.lsu_arsize(lsu_arsize),
+		.io_master_awready(io_master_awready),
+    .io_master_awvalid(io_master_awvalid),
+    .io_master_awaddr(io_master_awaddr),
+    .io_master_awid(io_master_awid),
+    .io_master_awlen(io_master_awlen),
+    .io_master_awsize(io_master_awsize),
+    .io_master_awburst(io_master_awburst),
+    .io_master_wready(io_master_wready),
+    .io_master_wvalid(io_master_wvalid),
+    .io_master_wdata(io_master_wdata),
+    .io_master_wstrb(io_master_wstrb),
+    .io_master_wlast(io_master_wlast),
+    .io_master_bready(io_master_bready),
+    .io_master_bvalid(io_master_bvalid),
+    .io_master_bresp(io_master_bresp),
+    .io_master_bid(io_master_bid),
+    .io_master_arready(io_master_arready),
+    .io_master_arvalid(io_master_arvalid),
+    .io_master_araddr(io_master_araddr),
+    .io_master_arid(io_master_arid),
+    .io_master_arlen(io_master_arlen),
+    .io_master_arsize(io_master_arsize),
+    .io_master_arburst(io_master_arburst),
+    .io_master_rready(io_master_rready),
+    .io_master_rvalid(io_master_rvalid),
+    .io_master_rresp(io_master_rresp),
+    .io_master_rdata(io_master_rdata),
+    .io_master_rlast(io_master_rlast),
+    .io_master_rid(io_master_rid),
 		.clint_araddr(clint_araddr),
 		.clint_arvalid(clint_arvalid),
 		.clint_arready(clint_arready),
@@ -196,44 +239,6 @@ module ysyx_23060236(
 		.rresp(clint_rresp),
 		.rvalid(clint_rvalid),
 		.rready(clint_rready)
-	);
-
-	ysyx_23060236_uart my_uart(
-		.clock(clock),
-		.reset(reset),
-		.awaddr(uart_awaddr),
-		.awvalid(uart_awvalid),
-		.awready(uart_awready),
-		.wdata(uart_wdata),
-		.wstrb(uart_wstrb),
-		.wvalid(uart_wvalid),
-		.wready(uart_wready),
-		.bresp(uart_bresp),
-		.bvalid(uart_bvalid),
-		.bready(uart_bready)
-	);
-
-	ysyx_23060236_sram my_sram(
-		.clock(clock),
-		.reset(reset),
-		.araddr(sram_araddr),
-		.arvalid(sram_arvalid),
-		.arready(sram_arready),
-		.rdata(sram_rdata),
-		.rresp(sram_rresp),
-		.rvalid(sram_rvalid),
-		.rready(sram_rready),
-		.awaddr(sram_awaddr),
-		.awvalid(sram_awvalid),
-		.awready(sram_awready),
-		.wdata(sram_wdata),
-		.wstrb(sram_wstrb),
-		.wvalid(sram_wvalid),
-		.wready(sram_wready),
-		.bresp(sram_bresp),
-		.bvalid(sram_bvalid),
-		.bready(sram_bready),
-		.random(random)
 	);
 
 	ysyx_23060236_idu my_idu(
@@ -266,6 +271,19 @@ module ysyx_23060236(
 		.wmask(wmask)
 	);
 
+	ysyx_23060236_MuxKeyInternal #(5, 10, 3, 1) caculate_lsu_arsize(
+		.out(lsu_arsize),
+		.key({funct3, opcode}),
+		.default_out(3'b0),
+		.lut({
+			10'b0000000011, 3'b000,   //lb
+			10'b0010000011, 3'b001,   //lh
+			10'b0100000011, 3'b010,   //lw
+			10'b1000000011, 3'b000,   //lbu
+			10'b1010000011, 3'b001    //lhu
+		})
+	);
+
 	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
 		.key({funct3, opcode}),
@@ -288,7 +306,6 @@ module ysyx_23060236(
 		.raddr1(rs1),
 		.raddr2(rs2),
 		.wen(reg_wen),
-		.halt_ret(halt_ret),
 		.cause(cause),
 		.valid(wb_valid)
 	);
@@ -307,7 +324,6 @@ module ysyx_23060236(
 		.valid(wb_valid)
 	);
 
-	assign finished = (inst == 32'h00100073);
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
 	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
@@ -381,5 +397,17 @@ module ysyx_23060236(
 		.dout(ifu_arvalid),
 		.wen(1)
 	);
+
+	assign io_slave_awready = 0;
+	assign io_slave_wready  = 0;
+	assign io_slave_bvalid  = 0;
+	assign io_slave_bresp   = 0;
+	assign io_slave_bid     = 0;
+	assign io_slave_arready = 0;
+	assign io_slave_rvalid  = 0;
+	assign io_slave_rresp   = 0;
+	assign io_slave_rdata   = 0;
+	assign io_slave_rlast   = 0;
+	assign io_slave_rid     = 0;
 
 endmodule
