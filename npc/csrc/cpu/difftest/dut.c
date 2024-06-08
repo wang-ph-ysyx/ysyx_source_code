@@ -2,14 +2,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <Vysyx_23060236.h>
-#include <Vysyx_23060236___024root.h>
+#include <VysyxSoCFull.h>
+#include <VysyxSoCFull___024root.h>
 #include <memory.h>
 #include <assert.h>
 #include <config.h>
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
-extern Vysyx_23060236* top;
+extern VysyxSoCFull* top;
 extern int trigger_difftest;
 
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;
@@ -45,12 +45,12 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(MEM_BASE, guest2host(MEM_BASE), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], &top->pc, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	for (int i = 0; i < 32; ++i) {
-		if (ref[i] != top->rootp->top__DOT__my_reg__DOT__rf[i])
+		if (ref[i] != top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
 		if (pc != ref_pc) trigger_difftest = 1;
 	}
@@ -63,7 +63,7 @@ void difftest_step() {
 	static bool skip = false;
 	static bool ret = false;
 	if (skip) {
-		ref_difftest_regcpy(&top->rootp->top__DOT__my_reg__DOT__rf[0], &top->pc, DIFFTEST_TO_REF);
+		ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
 		skip = false;
 		ret = true;
 	}
@@ -79,7 +79,7 @@ void difftest_step() {
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 
-  checkregs(ref_r, ref_pc, top->pc);
+  checkregs(ref_r, ref_pc, top->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) { }

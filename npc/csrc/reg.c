@@ -1,10 +1,10 @@
-#include <Vysyx_23060236___024root.h>
+#include <VysyxSoCFull___024root.h>
 #include <stdio.h>
-#include <Vysyx_23060236.h>
+#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <stdint.h>
 
-extern Vysyx_23060236* top;
+extern VysyxSoCFull* top;
 
 const char *regs[] = {
 	"$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -14,8 +14,10 @@ const char *regs[] = {
 };
 
 void reg_display() {
-	printf("pc\t%#x\t%d\n", top->pc, top->pc);
+	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+	printf("pc\t%#x\t%d\n", pc, pc);
 	for (int i = 0; i < 32; ++i) {
-		printf("%s\t%#x\t%d\n", regs[i], top->rootp->ysyx_23060236__DOT__my_reg__DOT__rf[i], top->rootp->ysyx_23060236__DOT__my_reg__DOT__rf[i]);
+		uint32_t reg_val = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i];
+		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
 }
