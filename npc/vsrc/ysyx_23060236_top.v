@@ -155,14 +155,6 @@ module ysyx_23060236(
 		.wen(wb_valid)
 	);
 
-	wire [7:0] random;
-	ysyx_23060236_lfsr gen_random(
-		.clock(clock),
-		.reset(reset),
-		.enable(wb_valid),
-		.random(random)
-	);
-
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
 		.reset(reset),
