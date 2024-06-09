@@ -147,11 +147,6 @@ module ysyx_23060236(
 	assign snpc = pc + 4;
 	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
 
-	always @(*) begin
-		if (lsu_bresp != 2'b00)
-			$display("error:", lsu_bresp);
-	end
-
 	ysyx_23060236_Reg #(32, 32'h20000000) pc_adder(
 		.clock(clock),
 		.reset(reset),
