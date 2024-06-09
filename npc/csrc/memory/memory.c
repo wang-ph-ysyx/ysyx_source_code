@@ -4,19 +4,22 @@
 #include <config.h>
 #include <assert.h>
 
-#define SERIAL 0xa00003f8
-#define RTC    0xa0000048
+#define SERIAL    0xa00003f8
+#define RTC       0xa0000048
 
 static uint8_t memory[MEM_SIZE];
 
 uint8_t *guest2host(uint32_t paddr) {return memory + paddr - MEM_BASE;}
 uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
+uint8_t *guest2host_mrom(uint32_t paddr) {return memory + paddr - MROM_BASE;}
+uint32_t host2guest_mrom(uint8_t *haddr) {return haddr - memory + MROM_BASE;}
 void difftest_skip_ref();
 void reg_display();
 
 extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	*data = 0x100073;
+	uint8_t *haddr = guest2host_mrom(addr);
+	*data = *(int32_t *)haddr;
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
