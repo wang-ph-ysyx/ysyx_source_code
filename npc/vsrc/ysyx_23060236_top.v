@@ -145,8 +145,10 @@ module ysyx_23060236(
 	wire [31:0] jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
+	wire error;
+	assign error = (|ifu_rresp) | (|lsu_rresp) | (|lsu_bresp);
 	assign snpc = pc + 4;
-	assign dnpc = ({32{|jump}} & jump) | (~{32{|jump}} & snpc);
+	assign dnpc = (({32{|jump}} & jump) | (~{32{|jump}} & snpc)) & {32{~error}};
 
 	ysyx_23060236_Reg #(32, 32'h20000000) pc_adder(
 		.clock(clock),
