@@ -128,6 +128,7 @@ module ysyx_23060236(
 	wire lsu_bvalid;
 	wire lsu_bready;
 	wire [2:0] lsu_arsize;
+	wire [2:0] lsu_awsize;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -183,6 +184,7 @@ module ysyx_23060236(
 		.lsu_bvalid(lsu_bvalid),
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
+		.lsu_awsize(lsu_awsize),
 		.io_master_awready(io_master_awready),
     .io_master_awvalid(io_master_awvalid),
     .io_master_awaddr(io_master_awaddr),
@@ -273,6 +275,17 @@ module ysyx_23060236(
 			10'b0100000011, 3'b010,   //lw
 			10'b1000000011, 3'b000,   //lbu
 			10'b1010000011, 3'b001    //lhu
+		})
+	);
+
+	ysyx_23060236_MuxKeyInternal #(3, 10, 3, 1) caculate_lsu_awsize(
+		.out(lsu_awsize),
+		.key({funct3, opcode}),
+		.default_out(3'b0),
+		.lut({
+			10'b0000100011, 3'b000,   //sb
+			10'b0010100011, 3'b001,   //sh
+			10'b0100100011, 3'b010    //sw
 		})
 	);
 

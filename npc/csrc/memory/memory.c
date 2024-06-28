@@ -55,9 +55,10 @@ extern "C" int pmem_read(int raddr) {
 }
 
 void init_memory() {
-	pmem_write(0x80000000, 0x00100093, 0xf);
-	pmem_write(0x80000004, 0x00100093, 0xf);
-	pmem_write(0x80000008, 0x00100093, 0xf);
-	pmem_write(0x8000000c, 0x00310113, 0xf);
-	pmem_write(0x80000014, 0x00100073, 0xf);
+	*(uint32_t *)(memory + 0x0)  = 0x100007b7;
+	*(uint32_t *)(memory + 0x4)  = 0x04100713;
+	*(uint32_t *)(memory + 0x8)  = 0x00e78023;
+	*(uint32_t *)(memory + 0xc)  = 0x00a00713;
+	*(uint32_t *)(memory + 0x10) = 0x00e78023;
+	*(uint32_t *)(memory + 0x14) = 0x0000006f;
 }
