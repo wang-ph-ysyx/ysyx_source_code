@@ -4,5 +4,5 @@
 
 _start:
 	mv s0, zero
-	li sp, 0x0f001006
+	li sp, 0x0f001007
 	jal _trm_init
