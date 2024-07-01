@@ -27,7 +27,7 @@ module ysyx_23060236_xbar(
 	output        lsu_awready,
 
 	input  [31:0] lsu_wdata,
-	input  [3:0]  lsu_wstrb,
+	input  [7:0]  lsu_wstrb,
 	input         lsu_wvalid,
 	output        lsu_wready,
 
@@ -137,7 +137,7 @@ module ysyx_23060236_xbar(
 	assign lsu_wready        = io_master_wready;
 	assign io_master_wvalid  = lsu_wvalid;
 	assign io_master_wdata   = {32'h0, lsu_wdata};
-	assign io_master_wstrb   = {4'b0, lsu_wstrb};
+	assign io_master_wstrb   = lsu_wstrb;
 	assign io_master_wlast   = io_master_wvalid;
 
 	assign io_master_bready  = lsu_bready;

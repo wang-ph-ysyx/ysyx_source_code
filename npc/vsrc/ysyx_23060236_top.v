@@ -129,6 +129,9 @@ module ysyx_23060236(
 	wire lsu_bready;
 	wire [2:0] lsu_arsize;
 	wire [2:0] lsu_awsize;
+	wire [7:0] lsu_wstrb;
+	wire [31:0] lsu_awaddr;
+	wire [31:0] lsu_araddr;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -168,18 +171,18 @@ module ysyx_23060236(
 		.ifu_rresp(ifu_rresp),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
-		.lsu_araddr(src1 + imm),
+		.lsu_araddr(lsu_araddr),
 		.lsu_arvalid(lsu_arvalid),
 		.lsu_arready(lsu_arready),
 		.lsu_rdata(lsu_rdata),
 		.lsu_rresp(lsu_rresp),
 		.lsu_rvalid(lsu_rvalid),
 		.lsu_rready(lsu_rready),
-		.lsu_awaddr(src1 + imm),
+		.lsu_awaddr(lsu_awaddr),
 		.lsu_awvalid(lsu_awvalid),
 		.lsu_awready(lsu_awready),
 		.lsu_wdata(src2),
-		.lsu_wstrb(wmask[3:0]),
+		.lsu_wstrb(lsu_wstrb),
 		.lsu_wvalid(lsu_wvalid),
 		.lsu_wready(lsu_wready),
 		.lsu_bresp(lsu_bresp),
@@ -304,6 +307,22 @@ module ysyx_23060236(
 		})
 	);
 
+	ysyx_23060236_MuxKeyInternal #(8, 3, 8, 1) caculate_lsu_wstrb(
+		.out(lsu_wstrb),
+		.key(lsu_awaddr[2:0]),
+		.default_out(8'b0),
+		.lut({
+			3'b000, wmask,
+			3'b001, {wmask[6:0], 1'b0},
+			3'b010, {wmask[5:0], 2'b0},
+			3'b011, {wmask[4:0], 3'b0},
+			3'b100, {wmask[3:0], 4'b0},
+			3'b101, {wmask[2:0], 5'b0},
+			3'b110, {wmask[1:0], 6'b0},
+			3'b111, {wmask[0:0], 7'b0}
+		})
+	);
+
 	ysyx_23060236_RegisterFile #(5, 32) my_reg(
 		.clock(clock),
 		.wdata(val),
@@ -340,6 +359,8 @@ module ysyx_23060236(
 	assign ifu_rready = 1;
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
+	assign lsu_araddr = src1 + imm;
+	assign lsu_awaddr = src1 + imm;
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
