@@ -101,6 +101,7 @@ module ysyx_23060236(
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
 	wire [31:0] lsu_val_tmp;
+	wire [31:0] lsu_val_shift;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
@@ -116,7 +117,7 @@ module ysyx_23060236(
 	wire ifu_rready;
 	wire lsu_arvalid;
 	wire lsu_arready;
-	wire [31:0] lsu_rdata;
+	wire [63:0] lsu_rdata;
 	wire [1:0] lsu_rresp;
 	wire lsu_rvalid;
 	wire lsu_rready;
@@ -299,11 +300,27 @@ module ysyx_23060236(
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0000000011, (lsu_rdata & 32'hff) | {{24{lsu_rdata[7]}}, 8'h0},     //lb
-			10'b0010000011, (lsu_rdata & 32'hffff) | {{16{lsu_rdata[15]}}, 16'h0}, //lh
-			10'b0100000011, lsu_rdata,                                             //lw
-			10'b1000000011, lsu_rdata & 32'hff,                                    //lbu
-			10'b1010000011, lsu_rdata & 32'hffff                                   //lhu
+			10'b0000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
+			10'b0010000011, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
+			10'b0100000011, lsu_val_shift,                                             //lw
+			10'b1000000011, lsu_val_shift & 32'hff,                                    //lbu
+			10'b1010000011, lsu_val_shift & 32'hffff                                   //lhu
+		})
+	);
+
+	ysyx_23060236_MuxKeyInternal #(8, 3, 32, 1) caculate_lsu_val_shift(
+		.out(lsu_val_shift),
+		.key(lsu_araddr[2:0]),
+		.default_out(32'b0),
+		.lut({
+			3'b000, lsu_rdata[31:0],
+			3'b001, lsu_rdata[39:8],
+			3'b010, lsu_rdata[47:16],
+			3'b011, lsu_rdata[55:24],
+			3'b100, lsu_rdata[63:32],
+			3'b101, {lsu_rdata[63:40], 8'b0},
+			3'b110, {lsu_rdata[63:48], 16'b0},
+			3'b111, {lsu_rdata[63:56], 24'b0}
 		})
 	);
 

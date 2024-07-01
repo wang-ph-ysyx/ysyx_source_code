@@ -16,7 +16,7 @@ module ysyx_23060236_xbar(
 	input  [2:0]  lsu_arsize,
 	output        lsu_arready,
 
-	output [31:0] lsu_rdata,
+	output [63:0] lsu_rdata,
 	output [1:0]  lsu_rresp,
 	output        lsu_rvalid,
 	input         lsu_rready,
@@ -124,7 +124,7 @@ module ysyx_23060236_xbar(
 	assign ifu_rresp         = {2{ifu_reading}} & io_master_rresp;
 	assign lsu_rresp         = {2{lsu_reading}} & ({2{soc_reading}} & io_master_rresp | {2{clint_reading}} & clint_rresp);
 	assign ifu_rdata         = {32{ifu_reading}} & io_master_rdata[31:0];
-	assign lsu_rdata         = {32{lsu_reading}} & ({32{soc_reading}} & io_master_rdata[31:0] | {32{clint_reading}} & clint_rdata);
+	assign lsu_rdata         = {64{lsu_reading}} & ({64{soc_reading}} & io_master_rdata | {64{clint_reading}} & {32'b0, clint_rdata});
 
 	assign lsu_awready       = io_master_awready;
 	assign io_master_awvalid = lsu_awvalid;
