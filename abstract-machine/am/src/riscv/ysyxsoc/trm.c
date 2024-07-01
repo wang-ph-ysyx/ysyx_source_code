@@ -6,7 +6,7 @@ static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)add
 
 int main(const char *args);
 
-Area heap = RANGE(0x0f000007, 0x0f001000);
+Area heap = RANGE(0x0f000006, 0x0f001000);
 #ifndef MAINARGS
 #define MAINARGS ""
 #endif
