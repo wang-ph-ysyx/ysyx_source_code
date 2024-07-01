@@ -101,7 +101,6 @@ module ysyx_23060236(
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
 	wire [31:0] lsu_val_tmp;
-	wire [31:0] lsu_val_shift;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
@@ -117,7 +116,7 @@ module ysyx_23060236(
 	wire ifu_rready;
 	wire lsu_arvalid;
 	wire lsu_arready;
-	wire [63:0] lsu_rdata;
+	wire [31:0] lsu_rdata;
 	wire [1:0] lsu_rresp;
 	wire lsu_rvalid;
 	wire lsu_rready;
@@ -130,9 +129,6 @@ module ysyx_23060236(
 	wire lsu_bready;
 	wire [2:0] lsu_arsize;
 	wire [2:0] lsu_awsize;
-	wire [7:0] lsu_wstrb;
-	wire [31:0] lsu_awaddr;
-	wire [31:0] lsu_araddr;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -172,18 +168,18 @@ module ysyx_23060236(
 		.ifu_rresp(ifu_rresp),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
-		.lsu_araddr(lsu_araddr),
+		.lsu_araddr(src1 + imm),
 		.lsu_arvalid(lsu_arvalid),
 		.lsu_arready(lsu_arready),
 		.lsu_rdata(lsu_rdata),
 		.lsu_rresp(lsu_rresp),
 		.lsu_rvalid(lsu_rvalid),
 		.lsu_rready(lsu_rready),
-		.lsu_awaddr(lsu_awaddr),
+		.lsu_awaddr(src1 + imm),
 		.lsu_awvalid(lsu_awvalid),
 		.lsu_awready(lsu_awready),
 		.lsu_wdata(src2),
-		.lsu_wstrb(lsu_wstrb),
+		.lsu_wstrb(wmask[3:0]),
 		.lsu_wvalid(lsu_wvalid),
 		.lsu_wready(lsu_wready),
 		.lsu_bresp(lsu_bresp),
@@ -300,43 +296,11 @@ module ysyx_23060236(
 		.key({funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
-			10'b0010000011, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
-			10'b0100000011, lsu_val_shift,                                             //lw
-			10'b1000000011, lsu_val_shift & 32'hff,                                    //lbu
-			10'b1010000011, lsu_val_shift & 32'hffff                                   //lhu
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(8, 3, 32, 1) caculate_lsu_val_shift(
-		.out(lsu_val_shift),
-		.key(lsu_araddr[2:0]),
-		.default_out(32'b0),
-		.lut({
-			3'b000, lsu_rdata[31:0],
-			3'b001, lsu_rdata[39:8],
-			3'b010, lsu_rdata[47:16],
-			3'b011, lsu_rdata[55:24],
-			3'b100, lsu_rdata[63:32],
-			3'b101, {lsu_rdata[63:40], 8'b0},
-			3'b110, {lsu_rdata[63:48], 16'b0},
-			3'b111, {lsu_rdata[63:56], 24'b0}
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(8, 3, 8, 1) caculate_lsu_wstrb(
-		.out(lsu_wstrb),
-		.key(lsu_awaddr[2:0]),
-		.default_out(8'b0),
-		.lut({
-			3'b000, wmask,
-			3'b001, {wmask[6:0], 1'b0},
-			3'b010, {wmask[5:0], 2'b0},
-			3'b011, {wmask[4:0], 3'b0},
-			3'b100, {wmask[3:0], 4'b0},
-			3'b101, {wmask[2:0], 5'b0},
-			3'b110, {wmask[1:0], 6'b0},
-			3'b111, {wmask[0:0], 7'b0}
+			10'b0000000011, (lsu_rdata & 32'hff) | {{24{lsu_rdata[7]}}, 8'h0},     //lb
+			10'b0010000011, (lsu_rdata & 32'hffff) | {{16{lsu_rdata[15]}}, 16'h0}, //lh
+			10'b0100000011, lsu_rdata,                                             //lw
+			10'b1000000011, lsu_rdata & 32'hff,                                    //lbu
+			10'b1010000011, lsu_rdata & 32'hffff                                   //lhu
 		})
 	);
 
@@ -376,8 +340,6 @@ module ysyx_23060236(
 	assign ifu_rready = 1;
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign lsu_araddr = src1 + imm;
-	assign lsu_awaddr = src1 + imm;
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
