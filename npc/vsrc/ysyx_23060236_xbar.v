@@ -131,7 +131,7 @@ module ysyx_23060236_xbar(
 	assign io_master_awaddr  = lsu_awaddr;
 	assign io_master_awid    = 0;
 	assign io_master_awlen   = 0;
-	assign io_master_awsize  = 3'b011;//lsu_awsize;
+	assign io_master_awsize  = lsu_awsize;
 	assign io_master_awburst = 0;
 
 	assign lsu_wready        = io_master_wready;
