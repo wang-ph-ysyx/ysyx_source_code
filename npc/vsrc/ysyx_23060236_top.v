@@ -318,9 +318,9 @@ module ysyx_23060236(
 			3'b010, lsu_rdata[47:16],
 			3'b011, lsu_rdata[55:24],
 			3'b100, lsu_rdata[63:32],
-			3'b101, {lsu_rdata[63:40], 8'b0},
-			3'b110, {lsu_rdata[63:48], 16'b0},
-			3'b111, {lsu_rdata[63:56], 24'b0}
+			3'b101, {8'b0, lsu_rdata[63:40]},
+			3'b110, {16'b0, lsu_rdata[63:48]},
+			3'b111, {24'b0, lsu_rdata[63:56]}
 		})
 	);
 
