@@ -114,7 +114,7 @@ module ysyx_23060236_xbar(
 	assign clint_araddr      = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
 	assign io_master_arid    = 0;
 	assign io_master_arlen   = 0;
-	assign io_master_arsize  = {3{ifu_reading}} & 3'b000 | {3{lsu_reading}} & lsu_arsize;
+	assign io_master_arsize  = {3{ifu_reading}} & 3'b010 | {3{lsu_reading}} & lsu_arsize;
 	assign io_master_arburst = 0;
 
 	assign io_master_rready  = ifu_reading & ifu_rready | lsu_reading & lsu_rready & soc_reading;
