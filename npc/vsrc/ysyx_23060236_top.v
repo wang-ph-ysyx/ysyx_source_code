@@ -133,6 +133,7 @@ module ysyx_23060236(
 	wire [7:0] lsu_wstrb;
 	wire [31:0] lsu_awaddr;
 	wire [31:0] lsu_araddr;
+	wire [63:0] lsu_wdata;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -182,7 +183,7 @@ module ysyx_23060236(
 		.lsu_awaddr(lsu_awaddr),
 		.lsu_awvalid(lsu_awvalid),
 		.lsu_awready(lsu_awready),
-		.lsu_wdata(src2),
+		.lsu_wdata(lsu_wdata),
 		.lsu_wstrb(lsu_wstrb),
 		.lsu_wvalid(lsu_wvalid),
 		.lsu_wready(lsu_wready),
@@ -337,6 +338,22 @@ module ysyx_23060236(
 			3'b101, {wmask[2:0], 5'b0},
 			3'b110, {wmask[1:0], 6'b0},
 			3'b111, {wmask[0:0], 7'b0}
+		})
+	);
+
+	ysyx_23060236_MuxKeyInternal #(8, 3, 64, 1) calculate_lsu_wdata(
+		.out(lsu_wdata),
+		.key(lsu_awaddr[2:0]),
+		.default_out(64'b0),
+		.lut({
+			3'b000, {32'b0, src2},
+			3'b001, {24'b0, src2, 8'b0},
+			3'b010, {16'b0, src2, 16'b0},
+			3'b011, {8'b0, src2, 24'b0},
+			3'b100, {src2, 32'b0},
+			3'b101, {src2[23:0], 40'b0},
+			3'b110, {src2[15:0], 48'b0},
+			3'b111, {src2[7:0], 56'b0}
 		})
 	);
 
