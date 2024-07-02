@@ -51,8 +51,5 @@ void cpu_exec(unsigned n) {
 void reset() {
 	top->reset = 1;
 	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
 	top->reset = 0;
 }
