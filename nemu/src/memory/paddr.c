@@ -24,8 +24,23 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
-uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
-paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
+static uint8_t mrom[MROM_SIZE];
+static uint8_t sram[SRAM_SIZE];
+
+uint8_t* guest_to_host(paddr_t paddr) { 
+	if (paddr >= MROM_BASE && paddr < MROM_BASE + MROM_SIZE) 
+		return mrom + paddr - MROM_BASE;
+	if (paddr >= SRAM_BASE && paddr < SRAM_BASE + SRAM_SIZE)
+		return sram + paddr - SRAM_BASE;
+	return pmem + paddr - CONFIG_MBASE; 
+}
+paddr_t host_to_guest(uint8_t *haddr) { 
+	if (haddr >= mrom && haddr < mrom + MROM_SIZE)
+		return haddr - mrom + MROM_BASE;
+	if (haddr >= sram && haddr < sram + SRAM_SIZE)
+		return haddr - sram + SRAM_BASE;
+	return haddr - pmem + CONFIG_MBASE; 
+}
 
 void mtrace_write(paddr_t addr, int len, word_t data);
 void mtrace_read(paddr_t addr, int len);

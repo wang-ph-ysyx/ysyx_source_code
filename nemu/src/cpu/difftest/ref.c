@@ -21,7 +21,7 @@
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 	uint8_t *_buf = (uint8_t *)buf;
 	if (direction == DIFFTEST_TO_REF) {
-		memcpy(guest_to_host(RESET_VECTOR), buf, n);
+		memcpy(guest_to_host(addr), buf, n);
 	}
 	else for (int i = 0; i < n; ++i) {
 		_buf[i] = paddr_read(addr, 1);
