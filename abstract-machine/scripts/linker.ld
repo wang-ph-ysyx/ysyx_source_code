@@ -22,8 +22,8 @@ SECTIONS {
   .data : {
 		_data_start = .;
     *(.data)
+		_data_end = .;
   } > sram AT> mrom : data
-	data_size = SIZEOF(.data);
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
@@ -32,8 +32,8 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+		_bss_end = .;
   } > sram AT> mrom
-	bss_size = SIZEOF(.bss);
 	bss_load_start = LOADADDR(.bss);
   _stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;

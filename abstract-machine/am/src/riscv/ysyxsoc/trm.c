@@ -24,15 +24,15 @@ void halt(int code) {
 }
 
 extern char _data_start [];
-extern char data_size [];
+extern char _data_end [];
 extern char data_load_start [];
 extern char _bss_start [];
-extern char bss_size [];
+extern char _bss_end [];
 extern char bss_load_start [];
 
 void _trm_init() {
-	memcpy(_data_start, data_load_start, (size_t) data_size);
-	memcpy(_bss_start, bss_load_start, (size_t) bss_size);
+	memcpy(_data_start, data_load_start, (size_t) (_data_end - _data_start));
+	memcpy(_bss_start, bss_load_start, (size_t) (_bss_end - _bss_start));
 	int ret = main(mainargs);
 	halt(ret);
 }
