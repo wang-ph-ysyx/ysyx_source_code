@@ -26,7 +26,6 @@ SECTIONS {
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
-	. = ORIGIN(sram);
   .bss : {
 		_bss_start = .;
     *(.bss*)
