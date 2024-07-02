@@ -24,10 +24,6 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
-#define MROM_SIZE 4096
-#define SRAM_SIZE 8192
-#define MROM_BASE 0x20000000
-#define SRAM_BASE 0x0f000000
 static uint8_t mrom[MROM_SIZE];
 static uint8_t sram[SRAM_SIZE];
 

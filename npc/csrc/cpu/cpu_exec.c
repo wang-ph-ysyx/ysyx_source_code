@@ -31,7 +31,7 @@ void cpu_exec(unsigned n) {
 		static int difftest = 0;
 		if (difftest)
 			difftest_step();
-		difftest = top->wb_valid;
+		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073 || trigger_difftest) break;
 	}
