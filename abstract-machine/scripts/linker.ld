@@ -32,7 +32,6 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
   } > sram AT> mrom
-	bss_load_start = LOADADDR(.bss);
   _stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
