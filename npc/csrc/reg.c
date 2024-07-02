@@ -22,4 +22,6 @@ void reg_display() {
 	}
 	printf("lsu_rdata\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rdata);
 	printf("wb_valid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid);
+	printf("lsu_rvalid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rvalid);
+	printf("idu_valid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__idu_valid);
 }
