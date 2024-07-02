@@ -31,7 +31,7 @@ extern char _bss_end [];
 extern char bss_load_start [];
 
 void _trm_init() {
-	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
+	memcpy(_data_start, data_load_start, (size_t) (_data_end - _data_start));
 	memcpy(_bss_start, bss_load_start, (size_t) (_bss_end - _bss_start));
 	int ret = main(mainargs);
 	halt(ret);

@@ -23,8 +23,8 @@ SECTIONS {
 		_data_start = .;
     *(.data)
   } > sram AT> mrom : data
-	_data_end = .;
 	data_load_start = LOADADDR(.data);
+	_data_end = .;
   edata = .;
   _data = .;
   .bss : {
