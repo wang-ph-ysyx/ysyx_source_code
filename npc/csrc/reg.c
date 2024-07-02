@@ -21,4 +21,5 @@ void reg_display() {
 		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
 	printf("lsu_rdata\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rdata);
+	printf("wb_valid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid);
 }
