@@ -134,6 +134,7 @@ module ysyx_23060236(
 	wire [31:0] lsu_awaddr;
 	wire [31:0] lsu_araddr;
 	wire [63:0] lsu_wdata;
+	wire aligned;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -296,16 +297,21 @@ module ysyx_23060236(
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
+	ysyx_23060236_MuxKeyInternal #(10, 11, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
-		.key({funct3, opcode}),
+		.key({aligned, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			10'b0000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
-			10'b0010000011, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
-			10'b0100000011, lsu_val_shift,                                             //lw
-			10'b1000000011, lsu_val_shift & 32'hff,                                    //lbu
-			10'b1010000011, lsu_val_shift & 32'hffff                                   //lhu
+			11'b10000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},         //lb
+			11'b10010000011, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0},     //lh
+			11'b10100000011, lsu_val_shift,                                                     //lw
+			11'b11000000011, lsu_val_shift & 32'hff,                                            //lbu
+			11'b11010000011, lsu_val_shift & 32'hffff,                                          //lhu
+			11'b00000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},     //lb
+			11'b00010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0}, //lh
+			11'b00100000011, lsu_rdata[31:0],                                                   //lw
+			11'b01000000011, lsu_rdata[31:0] & 32'hff,                                          //lbu
+			11'b01010000011, lsu_rdata[31:0] & 32'hffff                                         //lhu
 		})
 	);
 
@@ -395,6 +401,7 @@ module ysyx_23060236(
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
+	assign aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
