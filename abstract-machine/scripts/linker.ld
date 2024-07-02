@@ -13,18 +13,16 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-  } > mrom : text
+  } > mrom AT> mrom : text
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
-		rodata_end = .;
-  } > mrom 
-  .data : AT(rodata_end) {
+  } > mrom AT> mrom
+  .data : {
 		_data_start = .;
     *(.data)
-  } > sram : data
-	data_size = SIZEOF(.data);
+  } > sram AT> mrom : data
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
@@ -33,7 +31,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram 
+  } > sram AT> mrom
   /*_stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
