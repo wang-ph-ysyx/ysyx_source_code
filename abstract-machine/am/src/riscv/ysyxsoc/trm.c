@@ -25,13 +25,10 @@ void halt(int code) {
 
 extern char _data_start [];
 extern char data_load_start [];
-extern char _data_end [];
 extern char _bss_start [];
-extern char _bss_end[];
 
 void _trm_init() {
-	memcpy(_data_start, data_load_start, (size_t) (_data_end - _data_start));
-	memset(_bss_start, 0, (size_t) (_bss_end - _bss_start));
+	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	int ret = main(mainargs);
 	halt(ret);
 }
