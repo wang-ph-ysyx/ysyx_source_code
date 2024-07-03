@@ -28,8 +28,9 @@ extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
-	//outb(SERIAL_PORT + 3, 0x80);
-	//outb(SERIAL_PORT + 8, 10);
+	outb(SERIAL_PORT + 3, 0x80);
+	outb(SERIAL_PORT + 8, 0x10);
+	outb(SERIAL_PORT + 3, 0x00);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	int ret = main(mainargs);
 	halt(ret);
