@@ -21,6 +21,12 @@ SECTIONS {
   } > mrom 
 
 	. = ORIGIN(sram);
+  .bss : {
+		_bss_start = .;
+    *(.bss*)
+    *(.sbss*)
+    *(.scommon)
+  } > sram 
   .data : {
 		_data_start = .;
     *(.data)
@@ -28,12 +34,6 @@ SECTIONS {
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
-  .bss : {
-		_bss_start = .;
-    *(.bss*)
-    *(.sbss*)
-    *(.scommon)
-  } > sram 
   /*_stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
