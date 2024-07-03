@@ -13,12 +13,12 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-  } > mrom AT> mrom : text
+  } > mrom : text
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
-  } > mrom AT> mrom
+  } > mrom 
   .data : {
 		_data_start = .;
     *(.data)
@@ -31,7 +31,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram AT> mrom
+  } > sram 
   /*_stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
