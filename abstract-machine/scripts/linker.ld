@@ -19,12 +19,13 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   } > mrom 
+	emrom = .;
 
 	. = ORIGIN(sram);
-  .data : {
+  .data : AT(ORIGIN(mrom) + emrom) {
 		_data_start = .;
     *(.data)
-  } > sram AT> mrom : data
+  } > sram : data
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
