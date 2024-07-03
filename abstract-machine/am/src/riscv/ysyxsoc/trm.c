@@ -15,6 +15,7 @@ Area heap = RANGE(0x0f000000, 0x0f001000);
 static const char mainargs[] = MAINARGS;
 
 void putch(char ch) {
+	while (!(inb(SERIAL_PORT + 5) & 0x20));
 	outb(SERIAL_PORT, ch);
 }
 
