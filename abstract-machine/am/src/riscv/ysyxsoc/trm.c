@@ -29,7 +29,7 @@ extern char _bss_start [];
 
 void _trm_init() {
 	outb(SERIAL_PORT + 3, 0x87);
-	outb(SERIAL_PORT + 8, 0xf1);
+	outb(SERIAL_PORT + 8, 0x01);
 	outb(SERIAL_PORT + 3, 0x07);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	int ret = main(mainargs);
