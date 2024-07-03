@@ -4,6 +4,7 @@
 
 #define SERIAL_PORT 0x10000000
 static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)addr = data; }
+static inline uint8_t inb(uintptr_t addr) { return *(volatile uint8_t *)addr; }
 
 int main(const char *args);
 
@@ -28,9 +29,10 @@ extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
-	outb(SERIAL_PORT + 3, 0x87);
+	uint8_t lcr = inb(SERIAL_PORT + 3);
+	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);
-	outb(SERIAL_PORT + 3, 0x07);
+	outb(SERIAL_PORT + 3, 0x7f & lcr);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	int ret = main(mainargs);
 	halt(ret);
