@@ -14,14 +14,11 @@ uint8_t *guest2host(uint32_t paddr) {return memory + paddr - MEM_BASE;}
 uint32_t host2guest(uint8_t *haddr) {return haddr - memory + MEM_BASE;}
 uint8_t *guest2host_mrom(uint32_t paddr) {return memory + paddr - MROM_BASE;}
 uint32_t host2guest_mrom(uint8_t *haddr) {return haddr - memory + MROM_BASE;}
-uint8_t *guest2host_flash(uint32_t paddr) {return flash + paddr - FLASH_BASE;}
-uint32_t host2guest_flash(uint8_t *haddr) {return haddr - flash + FLASH_BASE;}
 void difftest_skip_ref();
 void reg_display();
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {
-	uint8_t *haddr = guest2host_flash(addr);
-	*data = *(int32_t *)haddr;
+	*data = *(int32_t *)(flash + addr);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	uint8_t *haddr = guest2host_mrom(addr);
