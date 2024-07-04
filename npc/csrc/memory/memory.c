@@ -18,6 +18,7 @@ void difftest_skip_ref();
 void reg_display();
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {
+	printf("read: %#x\n", addr);
 	*data = *(int32_t *)(flash + addr);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
