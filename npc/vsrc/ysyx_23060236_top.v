@@ -135,7 +135,8 @@ module ysyx_23060236(
 	wire [31:0] lsu_awaddr;
 	wire [31:0] lsu_araddr;
 	wire [63:0] lsu_wdata;
-	wire aligned;
+	wire lsu_aligned;
+	wire ifu_aligned;
 
 	wire [31:0] clint_araddr;
 	wire clint_arvalid;
@@ -300,7 +301,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_MuxKeyInternal #(10, 11, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
-		.key({aligned, funct3, opcode}),
+		.key({lsu_aligned, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
 			11'b10000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},         //lb
@@ -402,8 +403,9 @@ module ysyx_23060236(
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
-	assign aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
-	assign inst_tmp = {32{~aligned}} & ifu_rdata[31:0] | {32{aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0]);
+	assign lsu_aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
+	assign ifu_aligned = (pc         >= 32'h0f000000) & (pc         < 32'h0f002000);
+	assign inst_tmp = {32{~ifu_aligned}} & ifu_rdata[31:0] | {32{ifu_aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0]);
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
