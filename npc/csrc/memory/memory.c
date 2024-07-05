@@ -19,7 +19,7 @@ void reg_display();
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {
 	*data = *(int32_t *)(flash + addr);
-	printf("read: %#x, data:%d\n", addr, *data);
+	printf("read: %#x, data:%#x\n", addr, *data);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	uint8_t *haddr = guest2host_mrom(addr);
@@ -65,7 +65,13 @@ void init_memory() {
 	*(uint32_t *)(memory + 0xc)  = 0x00a00713;
 	*(uint32_t *)(memory + 0x10) = 0x00e78023;
 	*(uint32_t *)(memory + 0x14) = 0x0000006f;
-	for (int i = 0; i < 10000; ++i) {
+	*(uint32_t *)(flash + 0x0)  = 0x100007b7;
+	*(uint32_t *)(flash + 0x4)  = 0x04100713;
+	*(uint32_t *)(flash + 0x8)  = 0x00e78023;
+	*(uint32_t *)(flash + 0xc)  = 0x00a00713;
+	*(uint32_t *)(flash + 0x10) = 0x00e78023;
+	*(uint32_t *)(flash + 0x14) = 0x0000006f;
+	/*for (int i = 0; i < 10000; ++i) {
 		*((uint32_t *)flash + i) = (uint32_t)(i & 0xffff) << 16;
-	}
+	}*/
 }
