@@ -65,7 +65,7 @@ void init_memory() {
 	*(uint32_t *)(memory + 0xc)  = 0x00a00713;
 	*(uint32_t *)(memory + 0x10) = 0x00e78023;
 	*(uint32_t *)(memory + 0x14) = 0x0000006f;
-	for (int i = 0; i < 100000; ++i) {
-		*((uint32_t *)flash + i) = (uint32_t)(i & 0xffff);
+	for (int i = 0; i < 10000; ++i) {
+		*((uint32_t *)flash + i) = (uint32_t)(i & 0xffff) << 8;
 	}
 }
