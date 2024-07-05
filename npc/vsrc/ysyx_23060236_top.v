@@ -102,6 +102,7 @@ module ysyx_23060236(
 	wire [31:0] lsu_val;
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
+	wire [31:0] inst_tmp;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
@@ -110,7 +111,7 @@ module ysyx_23060236(
 	wire ifu_arvalid;
 	wire [7:0] wmask;
 
-	wire [31:0] ifu_rdata;
+	wire [63:0] ifu_rdata;
 	wire ifu_arready;
 	wire ifu_rvalid;
 	wire [1:0] ifu_rresp;
@@ -402,11 +403,12 @@ module ysyx_23060236(
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
 	assign aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
+	assign inst_tmp = {32{~aligned}} & ifu_rdata[31:0] | {32{aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0]);
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rdata),
+		.din(inst_tmp),
 		.dout(inst),
 		.wen(ifu_rvalid & ifu_rready)
 	);
