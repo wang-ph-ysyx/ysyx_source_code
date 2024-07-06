@@ -12,18 +12,20 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 	input valid
 );
 
-	wire [1:0] addr;
-	reg [DATA_WIDTH-1:0] csr [3:0];//0:mepc  1:mcause  2:mstatus  3:mtvec
+	wire [2:0] addr;
+	reg [DATA_WIDTH-1:0] csr [5:0];//0:mepc  1:mcause  2:mstatus  3:mtvec  4:mvendorid  5:marchid
 
-	ysyx_23060236_MuxKeyInternal #(4, 12, 2, 1) choose_addr(
+	ysyx_23060236_MuxKeyInternal #(6, 12, 3, 1) choose_addr(
 		.out(addr),
 		.key(imm),
-		.default_out(2'b00),
+		.default_out(3'b000),
 		.lut({
-			12'h341, 2'b00, //mepc
-			12'h342, 2'b01,	//mcause
-			12'h300, 2'b10, //mstatus
-			12'h305, 2'b11  //mtvec
+			12'h341, 3'b000, //mepc
+			12'h342, 3'b001, //mcause
+			12'h300, 3'b010, //mstatus
+			12'h305, 3'b011, //mtvec
+			12'hf11, 3'b100, //mvendorid
+			12'hf12, 3'b101  //marchid
 		})
 	);
 
@@ -35,6 +37,9 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 			else if (inst_ecall) begin
 				csr[0] <= epc + 4;
 				csr[1] <= cause;
+			end else begin
+				csr[4] <= 32'h79737978;
+				csr[5] <= 32'h015fdf0c;
 			end
 		end
 	end

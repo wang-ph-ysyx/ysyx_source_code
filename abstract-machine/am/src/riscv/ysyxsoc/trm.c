@@ -5,6 +5,8 @@
 #define SERIAL_PORT 0x10000000
 static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)addr = data; }
 static inline uint8_t inb(uintptr_t addr) { return *(volatile uint8_t *)addr; }
+uint32_t _read_csr_marchid();
+uint32_t _read_csr_mvendorid();
 
 int main(const char *args);
 
@@ -35,6 +37,15 @@ void _trm_init() {
 	outb(SERIAL_PORT + 8, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
+
+	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
+	char ysyx_s[4];
+	for (int i = 0; i < 4; ++i) {
+		ysyx_s[i] = (char)(ysyx & 0xff);
+		ysyx >>= 8;
+	}
+	printf("npc made by %s_%d", ysyx_s, ID);
+
 	int ret = main(mainargs);
 	halt(ret);
 }
