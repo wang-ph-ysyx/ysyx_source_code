@@ -18,5 +18,7 @@ uint8_t *guest2host(uint32_t paddr);
 uint32_t host2guest(uint8_t *haddr);
 uint8_t *guest2host_mrom(uint32_t paddr);
 uint32_t host2guest_mrom(uint8_t *haddr);
+uint8_t *guest2host_flash(uint32_t paddr);
+uint32_t host2guest_flash(uint8_t *haddr);
 
 #endif

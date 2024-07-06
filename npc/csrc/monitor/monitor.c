@@ -25,7 +25,7 @@ static long load_img() {
 	long size = ftell(fp);
 
 	fseek(fp, 0, SEEK_SET);
-	int ret = fread(guest2host(MEM_BASE), size, 1, fp);
+	int ret = fread(guest2host_flash(0), size, 1, fp);
 	assert(ret == 1);
 
 	fclose(fp);
