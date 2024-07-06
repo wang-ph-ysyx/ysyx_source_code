@@ -158,7 +158,7 @@ module ysyx_23060236(
 	assign snpc = pc + 4;
 	assign dnpc = (({32{|jump}} & jump) | (~{32{|jump}} & snpc)) & {32{~error}};
 
-	ysyx_23060236_Reg #(32, 32'h20000000) pc_adder(
+	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
 		.clock(clock),
 		.reset(reset),
 		.din(dnpc),
