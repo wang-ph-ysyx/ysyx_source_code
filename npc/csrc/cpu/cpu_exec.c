@@ -32,10 +32,6 @@ void cpu_exec(unsigned n) {
 		one_cycle();
 #ifdef DIFFTEST
 		static int difftest = 0;
-		if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc == 0x20000000) {
-			ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
-			difftest = 0;
-		}
 		if (difftest)
 			difftest_step();
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
