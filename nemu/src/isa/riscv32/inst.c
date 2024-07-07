@@ -24,6 +24,7 @@
 #define CSR(i) *get_csr(i)
 
 static vaddr_t *get_csr(word_t imm) {
+	printf("%#x\n", imm);
 	switch (imm){
 		case 0x341: return &(cpu.csr.mepc);
 		case 0x342: return &(cpu.csr.mcause);
