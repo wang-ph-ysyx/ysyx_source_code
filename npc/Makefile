@@ -23,7 +23,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 
 CXX_INCFLAGS = $(addprefix -I, $(CXX_INC_PATH))
 VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
-CXXFLAGS += $(CXX_INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" -DMAINARGS=\"123\"
+CXXFLAGS += $(CXX_INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" -DMAINARGS="\"123\""
 VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
