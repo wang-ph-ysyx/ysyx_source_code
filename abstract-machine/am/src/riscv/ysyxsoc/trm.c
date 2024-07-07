@@ -12,7 +12,7 @@ int main(const char *args);
 
 Area heap = RANGE(0x0f000000, 0x0f001000);
 #ifndef MAINARGS
-#define MAINARGS ""
+#define MAINARGS "test"
 #endif
 static const char mainargs[] = MAINARGS;
 
