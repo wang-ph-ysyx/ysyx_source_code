@@ -31,6 +31,8 @@ static vaddr_t *get_csr(word_t imm) {
 		case 0x305: return &(cpu.csr.mtvec);
 		case 0x180: return &(cpu.csr.satp);
 		case 0x340: return &(cpu.csr.mscratch);
+		case 0xf11: return &(cpu.csr.mvendorid);
+		case 0xf12: return &(cpu.csr.marchid);
 	}
 	panic("Unknown csr");
 }
@@ -139,6 +141,8 @@ static int decode_exec(Decode *s) {
   INSTPAT_END();
 
   R(0) = 0; // reset $zero to 0
+	CSR(0xf11) = 0x79737978;
+	CSR(0xf12) = 0x015fdf0c;
 
   return 0;
 }

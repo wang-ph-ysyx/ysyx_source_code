@@ -67,19 +67,9 @@ void difftest_step() {
 	uint32_t ref_r[32];
 	uint32_t ref_pc;
 
-	static bool skip = false;
-	static bool ret = false;
-	if (skip) {
-		ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
-		skip = false;
-		ret = true;
-	}
 	if (is_skip_ref) {
+		ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
 		is_skip_ref = false;
-		skip = true;
-	}
-	if (ret) {
-		ret = false;
 		return;
 	}
 

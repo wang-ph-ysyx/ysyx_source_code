@@ -20,6 +20,7 @@
 
 typedef struct {
 	word_t mscratch, mstatus, mcause, mtvec, satp;
+	word_t mvendorid, marchid;
 	vaddr_t mepc;
 } riscv_csr;
 

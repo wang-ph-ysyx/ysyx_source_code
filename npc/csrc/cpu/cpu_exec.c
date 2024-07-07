@@ -12,6 +12,7 @@ int trigger_difftest = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
+void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
 
@@ -37,7 +38,7 @@ void cpu_exec(unsigned n) {
 		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
 		printf("inst: %#x, addr: %#x\n", inst, addr);
 		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (addr >= UART_BASE) && (addr < UART_BASE + UART_SIZE)) {
-			difftest = 0;
+			difftest_skip_ref();
 			printf("test\n");
 		}
 		if (difftest)
