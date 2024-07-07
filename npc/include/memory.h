@@ -7,6 +7,7 @@
 #define MEM_SIZE   0x08000000
 #define MROM_BASE  0x20000000
 #define SRAM_BASE  0x0f000000
+#define FLASH_BASE 0x30000000
 #define FLASH_SIZE 0x10000000
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask);

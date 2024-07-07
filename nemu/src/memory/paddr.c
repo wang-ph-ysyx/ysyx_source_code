@@ -24,6 +24,7 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+static uint8_t flash[FLASH_SIZE];
 static uint8_t mrom[MROM_SIZE];
 static uint8_t sram[SRAM_SIZE];
 
@@ -32,6 +33,8 @@ uint8_t* guest_to_host(paddr_t paddr) {
 		return mrom + paddr - MROM_BASE;
 	if (paddr >= SRAM_BASE && paddr < SRAM_BASE + SRAM_SIZE)
 		return sram + paddr - SRAM_BASE;
+	if (paddr >= FLASH_BASE && paddr < FLASH_BASE + FLASH_SIZE)
+		return flash + paddr - FLASH_BASE;
 	return pmem + paddr - CONFIG_MBASE; 
 }
 paddr_t host_to_guest(uint8_t *haddr) { 
@@ -39,6 +42,8 @@ paddr_t host_to_guest(uint8_t *haddr) {
 		return haddr - mrom + MROM_BASE;
 	if (haddr >= sram && haddr < sram + SRAM_SIZE)
 		return haddr - sram + SRAM_BASE;
+	if (haddr >= flash && haddr < flash + FLASH_SIZE)
+		return haddr - flash + FLASH_BASE;
 	return haddr - pmem + CONFIG_MBASE; 
 }
 
