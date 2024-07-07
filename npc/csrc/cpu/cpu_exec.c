@@ -12,6 +12,7 @@ int trigger_difftest = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
+void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
 
@@ -27,16 +28,22 @@ void cpu_exec(unsigned n) {
 	}
 
 	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+	uint32_t inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 	for (; n > 0; --n) {
 		pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 		one_cycle();
 #ifdef DIFFTEST
+		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
+		if (((inst & 0x7f == 0x23) || (inst & 0x7f == 0x03)) && (addr >= UART_BASE) && (addr < UART_BASE + UART_SIZE)) {
+			difftest_skip_ref();
+		}
 		static int difftest = 0;
 		if (difftest)
 			difftest_step();
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
-		if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073 || trigger_difftest) break;
+		if (inst == 0x100073 || trigger_difftest) break;
 	}
 
 	if (trigger_difftest) {
