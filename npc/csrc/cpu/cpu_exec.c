@@ -36,10 +36,8 @@ void cpu_exec(unsigned n) {
 #ifdef DIFFTEST
 		static int difftest = 0;
 		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
-		printf("inst: %#x, addr: %#x\n", inst, addr);
 		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (addr >= UART_BASE) && (addr < UART_BASE + UART_SIZE)) {
 			difftest_skip_ref();
-			printf("test\n");
 		}
 		if (difftest)
 			difftest_step();
