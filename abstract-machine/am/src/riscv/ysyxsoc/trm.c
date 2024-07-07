@@ -32,19 +32,19 @@ extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
-	uint8_t lcr = inb(SERIAL_PORT + 3);
-	outb(SERIAL_PORT + 3, 0x80 | lcr);
-	outb(SERIAL_PORT + 8, 0x01);
-	outb(SERIAL_PORT + 3, 0x7f & lcr);
+	//uint8_t lcr = inb(SERIAL_PORT + 3);
+	//outb(SERIAL_PORT + 3, 0x80 | lcr);
+	//outb(SERIAL_PORT + 8, 0x01);
+	//outb(SERIAL_PORT + 3, 0x7f & lcr);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 
-	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
+	/*uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
 	char ysyx_s[4];
 	for (int i = 3; i >= 0; --i) {
 		ysyx_s[i] = (char)(ysyx & 0xff);
 		ysyx >>= 8;
 	}
-	printf("npc made by %s_%d\n", ysyx_s, ID);
+	printf("npc made by %s_%d\n", ysyx_s, ID);*/
 
 	int ret = main(mainargs);
 	halt(ret);
