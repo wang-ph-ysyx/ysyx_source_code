@@ -1,5 +1,5 @@
 ENTRY(_start)
-PHDRS { text PT_LOAD; data PT_LOAD; }
+/*PHDRS { text PT_LOAD; data PT_LOAD; }*/
 
 MEMORY {
 	mrom  : ORIGIN = 0x20000000, LENGTH = 4K
@@ -15,7 +15,7 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-  } > flash : text
+  } > flash /*: text*/
   etext = .;
   _etext = .;
   .rodata : {
@@ -26,7 +26,7 @@ SECTIONS {
   .data : {
 		_data_start = .;
     *(.data)
-  } > psram AT> flash : data
+  } > psram AT> flash /*: data*/
 	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
