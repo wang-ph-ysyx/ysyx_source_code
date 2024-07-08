@@ -22,7 +22,7 @@ SECTIONS {
     *(.rodata*)
   } > flash 
 
-	. = ORIGIN(sram);
+	. = ORIGIN(psram);
   .data : {
 		_data_start = .;
     *(.data)
