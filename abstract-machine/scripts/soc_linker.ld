@@ -13,8 +13,6 @@ SECTIONS {
     *(entry)
     *(.text*)
   } > flash 
-  etext = .;
-  _etext = .;
   .rodata : {
     *(.rodata*)
   } > flash 
@@ -25,8 +23,6 @@ SECTIONS {
     *(.data)
   } > psram AT> flash 
 	data_load_start = LOADADDR(.data);
-  edata = .;
-  _data = .;
   .bss : {
 		_bss_start = .;
     *(.bss*)
