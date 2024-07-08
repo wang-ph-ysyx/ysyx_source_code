@@ -306,8 +306,8 @@ module ysyx_23060236(
 		.key({lsu_aligned_64, lsu_aligned_32, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			12'b1 0 0000000011, (lsu_val_shift_64 & 32'hff) | {{24{lsu_val_shift_64[7]}}, 8'h0},      //lb
-			12'b1 0 0010000011, (lsu_val_shift_64 & 32'hffff) | {{16{lsu_val_shift_64[15]}}, 16'h0},  //lh
+			12'b100000000011, (lsu_val_shift_64 & 32'hff) | {{24{lsu_val_shift_64[7]}}, 8'h0},      //lb
+			12'b100010000011, (lsu_val_shift_64 & 32'hffff) | {{16{lsu_val_shift_64[15]}}, 16'h0},  //lh
 			12'b100100000011, lsu_val_shift_64,                                                     //lw
 			12'b101000000011, lsu_val_shift_64 & 32'hff,                                            //lbu
 			12'b101010000011, lsu_val_shift_64 & 32'hffff,                                          //lhu
