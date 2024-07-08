@@ -48,6 +48,7 @@ void _trm_init() {
 	}
 	printf("npc made by %s_%d\n", ysyx_s, ID);
 
-	int ret = main(mainargs);
+	int (*prog_start)(const char *) = (int (*)(const char *))0x80000000;
+	int ret = prog_start(mainargs);
 	halt(ret);
 }
