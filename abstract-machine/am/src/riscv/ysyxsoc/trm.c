@@ -2,6 +2,8 @@
 #include <klib-macros.h>
 #include <klib.h>
 
+extern char _heap_start [];
+
 #define SERIAL_PORT 0x10000000
 static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)addr = data; }
 static inline uint8_t inb(uintptr_t addr) { return *(volatile uint8_t *)addr; }
@@ -10,7 +12,7 @@ uint32_t _read_csr_mvendorid();
 
 int main(const char *args);
 
-Area heap = RANGE(0x0f000000, 0x0f001000);
+Area heap = RANGE(_heap_start, 0x803fffff);
 #ifndef MAINARGS
 #define MAINARGS "test"
 #endif
@@ -32,6 +34,7 @@ extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
+	printf("%p\n", _heap_start);
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);
