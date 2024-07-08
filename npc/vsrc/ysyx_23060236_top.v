@@ -101,7 +101,8 @@ module ysyx_23060236(
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
 	wire [31:0] lsu_val_tmp;
-	wire [31:0] lsu_val_shift;
+	wire [31:0] lsu_val_shift_64;
+	wire [31:0] lsu_val_shift_32;
 	wire [31:0] inst_tmp;
 	wire csr_wen;
 	wire lsu_wen;
@@ -135,7 +136,8 @@ module ysyx_23060236(
 	wire [31:0] lsu_awaddr;
 	wire [31:0] lsu_araddr;
 	wire [63:0] lsu_wdata;
-	wire lsu_aligned;
+	wire lsu_aligned_64;
+	wire lsu_aligned_32;
 	wire ifu_aligned;
 
 	wire [31:0] clint_araddr;
@@ -299,26 +301,31 @@ module ysyx_23060236(
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(10, 11, 32, 1) caculate_lsu_val_tmp(
+	ysyx_23060236_MuxKeyInternal #(15, 12, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
-		.key({lsu_aligned, funct3, opcode}),
+		.key({lsu_aligned_64, lsu_aligned_32, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			11'b10000000011, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},         //lb
-			11'b10010000011, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0},     //lh
-			11'b10100000011, lsu_val_shift,                                                     //lw
-			11'b11000000011, lsu_val_shift & 32'hff,                                            //lbu
-			11'b11010000011, lsu_val_shift & 32'hffff,                                          //lhu
-			11'b00000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},     //lb
-			11'b00010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0}, //lh
-			11'b00100000011, lsu_rdata[31:0],                                                   //lw
-			11'b01000000011, lsu_rdata[31:0] & 32'hff,                                          //lbu
-			11'b01010000011, lsu_rdata[31:0] & 32'hffff                                         //lhu
+			12'b100000000011, (lsu_val_shift_64 & 32'hff) | {{24{lsu_val_shift_64[7]}}, 8'h0},      //lb
+			12'b100010000011, (lsu_val_shift_64 & 32'hffff) | {{16{lsu_val_shift_64[15]}}, 16'h0},  //lh
+			12'b100100000011, lsu_val_shift_64,                                                     //lw
+			12'b101000000011, lsu_val_shift_64 & 32'hff,                                            //lbu
+			12'b101010000011, lsu_val_shift_64 & 32'hffff,                                          //lhu
+			12'b010000000011, (lsu_val_shift_32 & 32'hff) | {{24{lsu_val_shift_32[7]}}, 8'h0},      //lb
+			12'b010010000011, (lsu_val_shift_32 & 32'hffff) | {{16{lsu_val_shift_32[15]}}, 16'h0},  //lh
+			12'b010100000011, lsu_val_shift_32,                                                     //lw
+			12'b011000000011, lsu_val_shift_32 & 32'hff,                                            //lbu
+			12'b011010000011, lsu_val_shift_32 & 32'hffff,                                          //lhu
+			12'b000000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},        //lb
+			12'b000010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0},    //lh
+			12'b000100000011, lsu_rdata[31:0],                                                      //lw
+			12'b001000000011, lsu_rdata[31:0] & 32'hff,                                             //lbu
+			12'b001010000011, lsu_rdata[31:0] & 32'hffff                                            //lhu
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(8, 3, 32, 1) caculate_lsu_val_shift(
-		.out(lsu_val_shift),
+	ysyx_23060236_MuxKeyInternal #(8, 3, 32, 1) caculate_lsu_val_shift_64(
+		.out(lsu_val_shift_64),
 		.key(lsu_araddr[2:0]),
 		.default_out(32'b0),
 		.lut({
@@ -330,6 +337,18 @@ module ysyx_23060236(
 			3'b101, {8'b0, lsu_rdata[63:40]},
 			3'b110, {16'b0, lsu_rdata[63:48]},
 			3'b111, {24'b0, lsu_rdata[63:56]}
+		})
+	);
+
+	ysyx_23060236_MuxKeyInternal #(4, 2, 32, 1) caculate_lsu_val_shift_32(
+		.out(lsu_val_shift_32),
+		.key(lsu_araddr[1:0]),
+		.default_out(32'b0),
+		.lut({
+			2'b00, lsu_rdata[31:0],
+			2'b01, lsu_rdata[39:8],
+			2'b10, lsu_rdata[47:16],
+			2'b11, lsu_rdata[55:24]
 		})
 	);
 
@@ -403,7 +422,8 @@ module ysyx_23060236(
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
-	assign lsu_aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
+	assign lsu_aligned_64 = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
+	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'h80400000);
 	assign ifu_aligned = (pc         >= 32'h0f000000) & (pc         < 32'h0f002000);
 	assign inst_tmp = {32{~ifu_aligned}} & ifu_rdata[31:0] | {32{ifu_aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0]);
 
