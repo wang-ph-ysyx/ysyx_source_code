@@ -11,18 +11,19 @@ MEMORY {
 SECTIONS {
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   /*. = _pmem_start + _entry_offset;*/
-	. = ORIGIN(flash);
+	. = ORIGIN(psram);
   .text : {
+		_text_start = .;
     *(entry)
     *(.text*)
-  } > flash : text
+  } > psram AT > flash : text
+	text_load_start = LOADADDR(.text);
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
-  } > flash 
+  } >psram AT > flash 
 
-	. = ORIGIN(psram);
   .data : {
 		_data_start = .;
     *(.data)
