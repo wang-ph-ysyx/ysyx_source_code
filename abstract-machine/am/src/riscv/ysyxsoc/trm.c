@@ -39,6 +39,8 @@ void _trm_init() {
 	outb(SERIAL_PORT + 8, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
 	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
+	extern char edata;
+	printf("%p, %p, %p, %p\n", _data_start, edata, _bss_start, _heap_start);
 
 	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
 	char ysyx_s[4];
