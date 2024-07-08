@@ -36,7 +36,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
   _end = .;
-  } > psram 
+  } > psram AT> flash
   /*_stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
