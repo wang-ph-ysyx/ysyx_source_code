@@ -29,8 +29,8 @@ void halt(int code) {
 	while(1);
 }
 
-extern char _text_start [];
-extern char text_load_start [];
+extern char _data_start [];
+extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
@@ -38,7 +38,8 @@ void _trm_init() {
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
-	memcpy(_text_start, text_load_start, (size_t) (_bss_start - _text_start));
+	memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
+	printf("%p", _data_load_start);
 
 	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
 	char ysyx_s[4];
@@ -48,7 +49,6 @@ void _trm_init() {
 	}
 	printf("npc made by %s_%d\n", ysyx_s, ID);
 
-	int (*prog_start)(const char *) = (int (*)(const char *))0x80000000;
-	int ret = prog_start(mainargs);
+	int ret = main(mainargs);
 	halt(ret);
 }
