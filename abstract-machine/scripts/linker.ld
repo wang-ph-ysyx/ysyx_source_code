@@ -27,9 +27,9 @@ SECTIONS {
 		_data_start = .;
     *(.data)
   } > psram AT> flash : data
-	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
+	data_load_start = LOADADDR(.data);
   .bss : {
 		_bss_start = .;
     *(.bss*)
