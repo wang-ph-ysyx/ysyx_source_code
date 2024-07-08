@@ -27,19 +27,19 @@ SECTIONS {
 		_data_start = .;
     *(.data)
   } > psram AT> flash : data
+	data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
-	data_load_start = LOADADDR(.data);
   .bss : {
 		_bss_start = .;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+  _end = .;
   } > psram 
   /*_stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
   end = .;*/
-  _end = .;
   _heap_start = ALIGN(0x1000);
 }
