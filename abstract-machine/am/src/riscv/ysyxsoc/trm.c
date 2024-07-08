@@ -34,7 +34,6 @@ extern char data_load_start [];
 extern char _bss_start [];
 
 void _trm_init() {
-	printf("%p\n", _heap_start);
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);
