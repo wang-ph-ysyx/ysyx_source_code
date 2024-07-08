@@ -306,21 +306,21 @@ module ysyx_23060236(
 		.key({lsu_aligned_64, lsu_aligned_32, funct3, opcode}),
 		.default_out(32'b0),
 		.lut({
-			12'b10000000011, (lsu_val_shift_64 & 32'hff) | {{24{lsu_val_shift_64[7]}}, 8'h0},      //lb
-			12'b10010000011, (lsu_val_shift_64 & 32'hffff) | {{16{lsu_val_shift_64[15]}}, 16'h0},  //lh
-			12'b10100000011, lsu_val_shift_64,                                                     //lw
-			12'b11000000011, lsu_val_shift_64 & 32'hff,                                            //lbu
-			12'b11010000011, lsu_val_shift_64 & 32'hffff,                                          //lhu
-			12'b01000000011, (lsu_val_shift_32 & 32'hff) | {{24{lsu_val_shift_32[7]}}, 8'h0},      //lb
-			12'b01010000011, (lsu_val_shift_32 & 32'hffff) | {{16{lsu_val_shift_32[15]}}, 16'h0},  //lh
-			12'b01100000011, lsu_val_shift_32,                                                     //lw
-			12'b01000000011, lsu_val_shift_32 & 32'hff,                                            //lbu
-			12'b01010000011, lsu_val_shift_32 & 32'hffff,                                          //lhu
-			12'b00000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},        //lb
-			12'b00010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0},    //lh
-			12'b00100000011, lsu_rdata[31:0],                                                      //lw
-			12'b01000000011, lsu_rdata[31:0] & 32'hff,                                             //lbu
-			12'b01010000011, lsu_rdata[31:0] & 32'hffff                                            //lhu
+			12'b1 0 0000000011, (lsu_val_shift_64 & 32'hff) | {{24{lsu_val_shift_64[7]}}, 8'h0},      //lb
+			12'b1 0 0010000011, (lsu_val_shift_64 & 32'hffff) | {{16{lsu_val_shift_64[15]}}, 16'h0},  //lh
+			12'b100100000011, lsu_val_shift_64,                                                     //lw
+			12'b101000000011, lsu_val_shift_64 & 32'hff,                                            //lbu
+			12'b101010000011, lsu_val_shift_64 & 32'hffff,                                          //lhu
+			12'b010000000011, (lsu_val_shift_32 & 32'hff) | {{24{lsu_val_shift_32[7]}}, 8'h0},      //lb
+			12'b010010000011, (lsu_val_shift_32 & 32'hffff) | {{16{lsu_val_shift_32[15]}}, 16'h0},  //lh
+			12'b010100000011, lsu_val_shift_32,                                                     //lw
+			12'b011000000011, lsu_val_shift_32 & 32'hff,                                            //lbu
+			12'b011010000011, lsu_val_shift_32 & 32'hffff,                                          //lhu
+			12'b000000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},        //lb
+			12'b000010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0},    //lh
+			12'b000100000011, lsu_rdata[31:0],                                                      //lw
+			12'b001000000011, lsu_rdata[31:0] & 32'hff,                                             //lbu
+			12'b001010000011, lsu_rdata[31:0] & 32'hffff                                            //lhu
 		})
 	);
 
