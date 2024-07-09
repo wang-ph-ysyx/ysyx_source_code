@@ -8,14 +8,14 @@ MEMORY {
 }
 
 SECTIONS {
-	. = ORIGIN(flash);
+	. = ORIGIN(psram);
   .text : {
     *(entry)
     *(.text*)
-  } > flash 
+  } > psram AT> flash 
   .rodata : {
     *(.rodata*)
-  } > flash 
+  } > psram AT> flash 
 
 	. = ORIGIN(psram);
   .data : {
