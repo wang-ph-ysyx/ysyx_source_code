@@ -21,8 +21,8 @@ _boot_loader:
 	la t1, _data_start
 	la t2, _bss_start
   _data_copy:
-	lw a1, 0(t0)
-	sw a1, 0(t1)
+	lbu a1, 0(t0)
+	sb a1, 0(t1)
 	addi t0, t0, 4
 	addi t1, t1, 4
 	blt t1, t2, _data_copy
