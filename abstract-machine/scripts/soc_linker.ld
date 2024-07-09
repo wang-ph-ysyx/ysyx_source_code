@@ -22,7 +22,9 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   } > psram AT> flash 
+
   .data : {
+		. = ALIGN(0x4);
 		_data_start = .;
     *(.data)
   } > psram AT> flash 
