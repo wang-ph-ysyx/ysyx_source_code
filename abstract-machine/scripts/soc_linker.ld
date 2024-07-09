@@ -9,8 +9,8 @@ MEMORY {
 
 SECTIONS {
 	. = ORIGIN(psram);
-		_text_start = .;
   .text : {
+		_text_start = .;
     *(entry)
     *(.text*)
   } > psram AT> flash 
