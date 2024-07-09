@@ -30,6 +30,7 @@ SECTIONS {
   } > psram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
+		. = ALIGN(0x4);
 		_bss_start = .;
     *(.bss*)
     *(.sbss*)
