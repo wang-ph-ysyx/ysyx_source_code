@@ -10,10 +10,10 @@ MEMORY {
 SECTIONS {
 	. = ORIGIN(psram);
   .text : {
-		_text_start = .;
     *(entry)
     *(.text*)
   } > psram AT> flash 
+		_text_start = .;
 	text_load_start = LOADADDR(.text);
   .rodata : {
     *(.rodata*)
