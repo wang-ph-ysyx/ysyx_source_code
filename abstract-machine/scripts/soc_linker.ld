@@ -13,7 +13,7 @@ SECTIONS {
     *(entry)
 		_text_start = .;
     *(.text*)
-  } > psram AT> flash 
+  } > flash 
 	text_load_start = LOADADDR(.text);
   .rodata : {
     *(.rodata*)
