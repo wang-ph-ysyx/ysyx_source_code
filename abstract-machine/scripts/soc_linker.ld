@@ -18,11 +18,11 @@ SECTIONS {
   } > flash 
 
 	. = ORIGIN(psram);
-		_text_start = .;
   .data : {
 		_data_start = .;
     *(.data)
   } > psram AT> flash 
+		_text_start = .;
 	data_load_start = LOADADDR(.data);
   .bss : {
 		_bss_start = .;
