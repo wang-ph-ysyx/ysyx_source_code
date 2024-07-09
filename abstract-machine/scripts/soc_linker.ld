@@ -10,6 +10,7 @@ MEMORY {
 SECTIONS {
 	. = ORIGIN(psram);
 		_text_start = .;
+	. = ORIGIN(psram);
   .text : {
     *(entry)
     *(.text*)
