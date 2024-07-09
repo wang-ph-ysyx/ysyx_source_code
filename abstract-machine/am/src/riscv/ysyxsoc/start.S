@@ -1,10 +1,8 @@
 .section entry, "ax"
 .global _start
-.global _read_csr_mvendorid
-.global _read_csr_marchid
+.global _boot_loader
 .type _start, @function
-.type _read_csr_mvendorid, @function
-.type _read_csr_marchid, @function
+.type _boot_loader, @function
 
 _start:
 	mv s0, zero
@@ -23,6 +21,12 @@ _mem_copy:
 	bne t1, t2, _mem_copy
 	la a2, _trm_init
 	jalr x0, 0(a2)
+
+.section .text, "ax"
+.global _read_csr_mvendorid
+.global _read_csr_marchid
+.type _read_csr_mvendorid, @function
+.type _read_csr_marchid, @function
 
 _read_csr_mvendorid:
 	csrr a0, mvendorid
