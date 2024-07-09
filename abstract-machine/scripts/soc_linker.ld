@@ -13,14 +13,6 @@ SECTIONS {
 		*(entry)
 	} > flash
 
-	. = ORIGIN(sram);
-	.ssbl : {
-		_ssbl_start = .;
-		*(ssbl);
-	} > sram AT> flash
-	ssbl_load_start = LOADADDR(.ssbl);
-	_ssbl_end = .;
-
 	. = ORIGIN(psram);
   .text : {
 		_text_start = .;
