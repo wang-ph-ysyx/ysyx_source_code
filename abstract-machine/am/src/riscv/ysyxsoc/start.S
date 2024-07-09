@@ -18,7 +18,7 @@ _mem_copy:
 	sw a1, 0(t1)
 	addi t0, t0, 4
 	addi t1, t1, 4
-	bge t1, t2, _mem_copy
+	bne t1, t2, _mem_copy
 	la a2, _trm_init
 	jalr x0, 0(a2)
 
