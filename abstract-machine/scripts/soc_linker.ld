@@ -9,9 +9,9 @@ MEMORY {
 
 SECTIONS {
 	. = ORIGIN(psram);
+		_text_start = .;
   .text : {
     *(entry)
-		_text_start = .;
     *(.text*)
   } > psram AT> flash 
 	text_load_start = LOADADDR(.text);
