@@ -8,16 +8,16 @@ MEMORY {
 }
 
 SECTIONS {
-	. = ORIGIN(psram);
+	. = ORIGIN(flash);
   .text : {
     *(entry)
     *(.text*)
-  } > psram AT> flash 
-		_text_start = .;
-	text_load_start = LOADADDR(.text);
+  } > flash 
   .rodata : {
     *(.rodata*)
-  } > psram AT> flash 
+  } > flash 
+
+	. = ORIGIN(psram);
   .data : {
 		_data_start = .;
     *(.data)
