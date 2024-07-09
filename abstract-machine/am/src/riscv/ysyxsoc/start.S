@@ -14,10 +14,10 @@ _boot_loader:
 	la t1, _text_start
 	la t2, _bss_start
 _mem_copy:
-	lbu a1, 0(t0)
-	sb a1, 0(t1)
-	addi t0, t0, 1
-	addi t1, t1, 1
+	lw a1, 0(t0)
+	sw a1, 0(t1)
+	addi t0, t0, 4
+	addi t1, t1, 4
 	bne t1, t2, _mem_copy
 	la a2, _trm_init
 	jalr x0, 0(a2)
