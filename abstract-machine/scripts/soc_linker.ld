@@ -10,14 +10,14 @@ MEMORY {
 SECTIONS {
 	. = ORIGIN(psram);
   .text : {
-    *(entry)
 		_text_start = .;
+    *(entry)
     *(.text*)
-  } > flash 
+  } > psram AT> flash 
 	text_load_start = LOADADDR(.text);
   .rodata : {
     *(.rodata*)
-  } > flash 
+  } > psram AT> flash 
   .data : {
 		_data_start = .;
     *(.data)
