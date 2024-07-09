@@ -2,11 +2,9 @@
 .global _start
 .global _read_csr_mvendorid
 .global _read_csr_marchid
-.global _trm_init
 .type _start, @function
 .type _read_csr_mvendorid, @function
 .type _read_csr_marchid, @function
-.type _trm_init, @function
 
 _start:
 	mv s0, zero

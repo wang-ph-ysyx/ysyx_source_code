@@ -42,8 +42,9 @@ void _trm_init() {
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
-	memcpy(_text_start, text_load_start, (size_t) (_bss_start - _text_start));
-	memset(_bss_start, 0, (size_t)(end - _bss_start));
+	printf("%p\n", _text_start);
+	//memcpy(_text_start, text_load_start, (size_t) (_bss_start - _text_start));
+	//memset(_bss_start, 0, (size_t)(end - _bss_start));
 
 	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
 	char ysyx_s[4];
