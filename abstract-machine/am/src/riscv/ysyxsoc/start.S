@@ -18,6 +18,7 @@ _fboot_loader:
 	blt t1, t2, _bootloader_copy
 
 .section ssbl, "ax"
+.global _sboot_loader
 .type _sboot_loader, @function
 
 _sboot_loader:
