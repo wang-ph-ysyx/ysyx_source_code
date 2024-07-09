@@ -11,8 +11,8 @@ SECTIONS {
 	. = ORIGIN(flash);
   .text : {
     *(entry)
-		_text_start = .;
     *(.text*)
+		_text_start = .;
   } > flash 
   .rodata : {
     *(.rodata*)
