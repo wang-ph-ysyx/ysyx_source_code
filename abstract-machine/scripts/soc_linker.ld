@@ -12,11 +12,11 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-		_text_start = .;
   } > flash 
   .rodata : {
     *(.rodata*)
   } > flash 
+		_text_start = .;
 
 	. = ORIGIN(psram);
   .data : {
