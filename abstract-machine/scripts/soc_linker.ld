@@ -22,10 +22,12 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   } > psram AT> flash 
+	rodata_load_start = LOADADDR(.rodata);
   .data : {
 		_data_start = .;
     *(.data)
   } > psram AT> flash 
+	data_load_start = LOADADDR(.data);
   .bss : {
 		_bss_start = .;
     *(.bss*)
