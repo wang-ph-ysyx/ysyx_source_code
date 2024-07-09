@@ -23,8 +23,8 @@ _boot_loader:
   _data_copy:
 	lbu a1, 0(t0)
 	sb a1, 0(t1)
-	addi t0, t0, 4
-	addi t1, t1, 4
+	addi t0, t0, 1
+	addi t1, t1, 1
 	blt t1, t2, _data_copy
 
 	la a2, _trm_init
