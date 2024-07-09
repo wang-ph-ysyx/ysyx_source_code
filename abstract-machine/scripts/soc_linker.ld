@@ -19,9 +19,7 @@ SECTIONS {
 		*(ssbl);
 	} > sram AT> flash
 	ssbl_load_start = LOADADDR(.ssbl);
-	.fill : {
-		_ssbl_end = .;
-	}
+	_ssbl_end = .;
 
 	. = ORIGIN(psram);
   .text : {
