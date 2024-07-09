@@ -16,9 +16,9 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   } > flash 
-		_text_start = .;
 
 	. = ORIGIN(psram);
+		_text_start = .;
   .data : {
 		_data_start = .;
     *(.data)
