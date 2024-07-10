@@ -1,7 +1,7 @@
 AM_SRCS := riscv/ysyxsoc/start.S \
            riscv/ysyxsoc/trm.c \
            riscv/npc/ioe.c \
-           riscv/npc/timer.c \
+           riscv/ysyxsoc/timer.c \
            riscv/npc/input.c \
            riscv/npc/cte.c \
            riscv/npc/trap.S \

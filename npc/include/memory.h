@@ -3,14 +3,16 @@
 
 #include <stdint.h>
 
-#define MEM_BASE   0x80000000
-#define MEM_SIZE   0x08000000
-#define MROM_BASE  0x20000000
-#define SRAM_BASE  0x0f000000
-#define FLASH_BASE 0x30000000
-#define FLASH_SIZE 0x10000000
-#define UART_BASE  0x10000000
-#define UART_SIZE  0x00001000
+#define MEM_BASE    0x80000000
+#define MEM_SIZE    0x08000000
+#define MROM_BASE   0x20000000
+#define SRAM_BASE   0x0f000000
+#define FLASH_BASE  0x30000000
+#define FLASH_SIZE  0x10000000
+#define UART_BASE   0x10000000
+#define UART_SIZE   0x00001000
+#define CLINT_BASE  0x02000000
+#define CLINT_SIZE  0x00010000
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask);
 extern "C" int pmem_read(int raddr);
