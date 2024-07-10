@@ -10,7 +10,7 @@ AM_SRCS := riscv/ysyxsoc/start.S \
 
 CXXFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld
-LDFLAGS   += --gc-sections -e _start
+LDFLAGS   += --gc-sections -e _start 
 CXXFLAGS += -DMAINARGS=\"$(mainargs)\"
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
