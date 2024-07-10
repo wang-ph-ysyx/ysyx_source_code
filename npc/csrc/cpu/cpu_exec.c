@@ -36,7 +36,9 @@ void cpu_exec(unsigned n) {
 #ifdef DIFFTEST
 		static int difftest = 0;
 		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
-		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (addr >= UART_BASE) && (addr < UART_BASE + UART_SIZE)) {
+		bool in_uart = (addr >= UART_BASE) && (addr < UART_BASE + UART_SIZE);
+		bool in_clint = (addr >= CLINT_BASE) && (addr < CLINT_BASE + CLINT_SIZE);
+		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (in_uart || in_clint)) {
 			difftest_skip_ref();
 		}
 		if (difftest)
