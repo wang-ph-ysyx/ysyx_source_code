@@ -20,7 +20,7 @@ static const char mainargs[] = MAINARGS;
 
 void putch(char ch) {
 	while (!(inb(SERIAL_PORT + 5) & 0x20));
-	for (volatile int i = 0; i < 1000; ++i);
+	for (volatile int i = 0; i < 2000; ++i);
 	outb(SERIAL_PORT, ch);
 }
 
