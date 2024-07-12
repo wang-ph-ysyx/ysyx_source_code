@@ -20,7 +20,7 @@ static const char mainargs[] = MAINARGS;
 
 void putch(char ch) {
 	while (!(inb(SERIAL_PORT + 5) & 0x20));
-	for (volatile int i = 0; i < 1000; ++i);
+	for (volatile int i = 0; i < 100; ++i);
 	outb(SERIAL_PORT, ch);
 }
 
@@ -39,7 +39,7 @@ void _trm_init() {
 	//set uart divisor
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
-	outb(SERIAL_PORT + 1, 0x01);
+	outb(SERIAL_PORT, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
 	//memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	//memset(_bss_start, 0, (size_t)(end - _bss_start));
