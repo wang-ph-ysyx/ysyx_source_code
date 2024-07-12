@@ -1,12 +1,10 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <klib.h>
+#include <ysyxsoc.h>
 
 extern char _heap_start [];
 
-#define SERIAL_PORT 0x10000000
-static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)addr = data; }
-static inline uint8_t inb(uintptr_t addr) { return *(volatile uint8_t *)addr; }
 uint32_t _read_csr_marchid();
 uint32_t _read_csr_mvendorid();
 
