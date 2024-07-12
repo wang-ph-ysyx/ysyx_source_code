@@ -1,4 +1,6 @@
 TOPNAME = ysyxSoCFull
+NXDC_FILES = constr/top.nxdc
+INC_PATH ?= 
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
@@ -9,17 +11,24 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
-CXX_INC_PATH = $(abspath ./include)
+CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
 VER_INC_PATH = $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
 
 default: $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
 
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
 VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS += $(SRC_AUTO_BIND)
+
+include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 CXX_INCFLAGS = $(addprefix -I, $(CXX_INC_PATH))
 VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
@@ -36,7 +45,7 @@ endif
 # 批处理
 #NPC_FLAGS += -b
 
-$(BIN): $(VSRCS) $(CSRCS) 
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \

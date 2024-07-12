@@ -6,6 +6,7 @@
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
+#include <nvboard.h>
 
 VysyxSoCFull *top = NULL;
 int trigger_difftest = 0;
@@ -15,6 +16,7 @@ void difftest_step();
 void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
+void nvboard_update();
 
 static void one_cycle() {
 	top->clock = 0; top->eval();
@@ -32,6 +34,7 @@ void cpu_exec(unsigned n) {
 	for (; n > 0; --n) {
 		pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
 		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
+		nvboard_update();
 		one_cycle();
 #ifdef DIFFTEST
 		static int difftest = 0;
