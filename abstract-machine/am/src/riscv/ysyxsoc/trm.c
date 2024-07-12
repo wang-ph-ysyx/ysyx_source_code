@@ -12,7 +12,7 @@ uint32_t _read_csr_mvendorid();
 
 int main(const char *args);
 
-Area heap = RANGE(_heap_start, 0x80400000);
+Area heap = RANGE(_heap_start, 0xa2000000);
 #ifndef MAINARGS
 #define MAINARGS "test"
 #endif
