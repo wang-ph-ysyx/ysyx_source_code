@@ -12,9 +12,9 @@ uint32_t _read_csr_mvendorid();
 
 int main(const char *args);
 
-Area heap = RANGE(_heap_start, 0x803fffff);
+Area heap = RANGE(_heap_start, 0xa2000000);
 #ifndef MAINARGS
-#define MAINARGS "test"
+#define MAINARGS ""
 #endif
 static const char mainargs[] = MAINARGS;
 
@@ -35,6 +35,7 @@ extern char _bss_start [];
 extern char end[];
 
 void _trm_init() {
+	//set uart
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT + 8, 0x01);

@@ -5,6 +5,7 @@ MEMORY {
 	flash : ORIGIN = 0x30000000, LENGTH = 128M
 	sram  : ORIGIN = 0x0f000000, LENGTH = 8K
 	psram : ORIGIN = 0x80000000, LENGTH = 4M
+	sdram : ORIGIN = 0xa0000000, LENGTH = 32M
 }
 
 SECTIONS {
@@ -13,21 +14,21 @@ SECTIONS {
 		*(entry)
 	} > flash
 
-	. = ORIGIN(psram);
+	. = ORIGIN(sdram);
   .text : {
 		_text_start = .;
     *(.text*)
-  } > psram AT> flash 
+  } > sdram AT> flash 
 	text_load_start = LOADADDR(.text);
   .rodata : {
     *(.rodata*)
-  } > psram AT> flash 
+  } > sdram AT> flash 
 
   .data : {
 		. = ALIGN(0x4);
 		_data_start = .;
     *(.data)
-  } > psram AT> flash 
+  } > sdram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
 		. = ALIGN(0x4);
@@ -35,7 +36,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > psram 
+  } > sdram 
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);

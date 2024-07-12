@@ -423,7 +423,7 @@ module ysyx_23060236(
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
 	assign lsu_aligned_64 = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
-	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'h80400000);
+	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
 	assign ifu_aligned = (pc         >= 32'h0f000000) & (pc         < 32'h0f002000);
 	assign inst_tmp = {32{~ifu_aligned}} & ifu_rdata[31:0] | {32{ifu_aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0]);
 
