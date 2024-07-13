@@ -23,7 +23,6 @@ static long load_img() {
 
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
-	printf("size: %lx\n", size);
 
 	fseek(fp, 0, SEEK_SET);
 	int ret = fread(guest2host_flash(0), size, 1, fp);
