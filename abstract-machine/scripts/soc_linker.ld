@@ -31,7 +31,7 @@ SECTIONS {
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
-		. = ALIGN(0x4);
+		. = ALIGN(0x8);
 		_bss_start = .;
     *(.bss*)
     *(.sbss*)
