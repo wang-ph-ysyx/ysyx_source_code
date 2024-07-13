@@ -14,15 +14,14 @@ SECTIONS {
 		*(entry)
 	} > flash
 
-	. = ORIGIN(sram);
+	. = ORIGIN(sdram);
 	.sbtl : {
 		_sbtl_start = .;
 		*(sbtl)
 		_sbtl_end = .;
-	} > sram AT> flash
+	} > sdram AT> flash
 	sbtl_load_start = LOADADDR(.sbtl);
 
-	. = ORIGIN(sdram);
   .text : {
 		_text_start = .;
     *(.text*)
