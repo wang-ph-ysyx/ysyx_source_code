@@ -15,13 +15,6 @@ SECTIONS {
 	} > flash
 
 	. = ORIGIN(sdram);
-	.sbtl : {
-		_sbtl_start = .;
-		*(sbtl)
-		_sbtl_end = .;
-	} > sdram AT> flash
-	sbtl_load_start = LOADADDR(.sbtl);
-
   .text : {
 		_text_start = .;
     *(.text*)
