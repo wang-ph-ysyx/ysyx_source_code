@@ -27,7 +27,7 @@ SECTIONS {
   .data : {
 		. = ALIGN(0x8);
 		_data_start = .;
-    *(.data*)
+    *(.data)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
@@ -36,7 +36,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sdram AT> flash
+  } > sdram
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
