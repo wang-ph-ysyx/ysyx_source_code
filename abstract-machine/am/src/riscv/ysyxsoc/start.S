@@ -6,7 +6,21 @@ _start:
 	mv s0, zero
 	li sp, 0x0f002000
 
-_boot_loader:
+_fbootloader:
+	la t0, sbtl_load_start
+	la t1, _sbtl_start
+	la t2, _sbtl_end
+  _sbtl_copy:
+	lw a1, 0(t0)
+	sw a1, 0(t1)
+	addi t0, t0, 4
+	addi t1, t1, 4
+	blt t1, t2, _sbtl_copy
+
+.section sbtl, "ax"
+.type _sboot_loader, @function
+
+_sboot_loader:
 	la t0, text_load_start
 	la t1, _text_start
 	la t2, _data_start
