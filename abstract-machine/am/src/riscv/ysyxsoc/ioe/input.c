@@ -113,6 +113,6 @@ int scan_to_keycode(int scancode) {
 		case 0xe069: return AM_KEY_END;
 		case 0xe07d: return AM_KEY_PAGEUP;
 		case 0xe07a: return AM_KEY_PAGEDOWN;
-		default: return AM_KEY_NONE;
+		default: halt(1);
 	}
 }
