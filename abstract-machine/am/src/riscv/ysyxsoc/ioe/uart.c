@@ -6,6 +6,6 @@ void __am_uart_config(AM_UART_CONFIG_T *cfg) {
 }
 
 void __am_uart_rx(AM_UART_RX_T *rx) {
-	if ((inl(SERIAL_PORT + 5) & 0x1) == 0) rx->data = 0xff;
-	else rx->data = (char)inl(SERIAL_PORT);
+	if ((inb(SERIAL_PORT + 5) & 0x1) == 0) rx->data = 0xff;
+	else rx->data = inb(SERIAL_PORT);
 }
