@@ -7,5 +7,5 @@ void __am_uart_config(AM_UART_CONFIG_T *cfg) {
 
 void __am_uart_rx(AM_UART_RX_T *rx) {
 	if ((inl(SERIAL_PORT + 5) & 0x1) == 0) rx->data = 0xff;
-	else while ((rx->data = (char)inl(SERIAL_PORT)) == 0x00);
+	else rx->data = (char)inl(SERIAL_PORT);
 }
