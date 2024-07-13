@@ -18,7 +18,6 @@ _fbootloader:
 	blt t1, t2, _sbtl_copy
 
 .section sbtl, "ax"
-.type _sboot_loader, @function
 
 _sboot_loader:
 	la t0, text_load_start
