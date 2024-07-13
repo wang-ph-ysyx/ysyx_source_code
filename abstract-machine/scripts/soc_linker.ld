@@ -59,10 +59,11 @@ SECTIONS {
 		_data_start = .;
     *(.data)
   } > sdram AT> flash 
-	data_load_start = LOADADDR(.data);
+	data_load_start = LOADADDR(.data.extra);
 
   .bss.extra : {
     . = ALIGN(8);
+		_bss_start = .;
     __am_apps_bss_start = .;
     *(__am_apps.bss*)
     *(__am_apps.sbss*)
@@ -73,7 +74,6 @@ SECTIONS {
 
   .bss : {
 		. = ALIGN(0x8);
-		_bss_start = .;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
