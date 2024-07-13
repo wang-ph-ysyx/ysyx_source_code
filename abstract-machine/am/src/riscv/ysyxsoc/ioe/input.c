@@ -14,19 +14,19 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 
 	kbd->keycode = 0;
 	if (scancode == 0xe0) {
-		scancode = inb(KEYBOARD_ADDR);
+		while ((scancode = inb(KEYBOARD_ADDR)) == 0);
 		kbd->keycode = 0xe000;
 	}
 
 	if (scancode == 0xf0) {
 		kbd->keydown = 0;
-	 	kbd->keycode |= inb(KEYBOARD_ADDR);
+		while ((scancode = inb(KEYBOARD_ADDR)) == 0);
 	}
 	else {
 		kbd->keydown = 1;
-		kbd->keycode |= scancode;
 	}
 
+	kbd->keycode |= scancode;
 	kbd->keycode = scan_to_keycode(kbd->keycode);
 }
 
