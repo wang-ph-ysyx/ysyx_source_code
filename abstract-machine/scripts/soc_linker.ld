@@ -14,21 +14,21 @@ SECTIONS {
 		*(entry)
 	} > flash
 
-	. = ORIGIN(sdram);
+	. = ORIGIN(psram);
   .text : {
 		_text_start = .;
     *(.text*)
-  } > sdram AT> flash 
+  } > psram AT> flash 
 	text_load_start = LOADADDR(.text);
   .rodata : {
     *(.rodata*)
-  } > sdram AT> flash 
+  } > psram AT> flash 
 
   .data : {
 		. = ALIGN(0x4);
 		_data_start = .;
     *(.data)
-  } > sdram AT> flash 
+  } > psram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
 		. = ALIGN(0x4);
@@ -36,7 +36,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sdram AT> flash
+  } > psram AT> flash
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
