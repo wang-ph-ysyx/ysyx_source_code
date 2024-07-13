@@ -27,7 +27,7 @@ SECTIONS {
   .data : {
 		. = ALIGN(0x8);
 		_data_start = .;
-    *(.data)
+    *(.data*)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data);
   .bss : {
