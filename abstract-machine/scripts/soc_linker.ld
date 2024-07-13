@@ -26,6 +26,8 @@ SECTIONS {
 
   .data.extra : {
     /* section information for finsh shell */
+    . = ALIGN(8);
+		_data_start = .;
     __fsymtab_start = .;
     KEEP(*(FSymTab))
     __fsymtab_end = .;
@@ -56,7 +58,6 @@ SECTIONS {
 
   .data : {
 		. = ALIGN(0x8);
-		_data_start = .;
     *(.data)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data.extra);
