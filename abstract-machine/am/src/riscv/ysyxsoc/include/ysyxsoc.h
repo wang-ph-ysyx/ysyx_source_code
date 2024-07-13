@@ -5,6 +5,7 @@
 
 #include <riscv/riscv.h>
 
-#define SERIAL_PORT 0x10000000
+#define SERIAL_PORT   0x10000000
+#define KEYBOARD_ADDR 0x10011000
 
 #endif
