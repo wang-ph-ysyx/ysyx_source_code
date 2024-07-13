@@ -1,12 +1,10 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <klib.h>
+#include <ysyxsoc.h>
 
 extern char _heap_start [];
 
-#define SERIAL_PORT 0x10000000
-static inline void outb(uintptr_t addr, uint8_t data) { *(volatile uint8_t *)addr = data; }
-static inline uint8_t inb(uintptr_t addr) { return *(volatile uint8_t *)addr; }
 uint32_t _read_csr_marchid();
 uint32_t _read_csr_mvendorid();
 
@@ -35,10 +33,10 @@ extern char _bss_start [];
 extern char end[];
 
 void _trm_init() {
-	//set uart
+	//set uart divisor
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
-	outb(SERIAL_PORT + 8, 0x01);
+	outb(SERIAL_PORT, 0x01);
 	outb(SERIAL_PORT + 3, 0x7f & lcr);
 	//memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	//memset(_bss_start, 0, (size_t)(end - _bss_start));

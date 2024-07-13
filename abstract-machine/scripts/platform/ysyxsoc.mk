@@ -1,8 +1,9 @@
 AM_SRCS := riscv/ysyxsoc/start.S \
            riscv/ysyxsoc/trm.c \
-           riscv/npc/ioe.c \
-           riscv/ysyxsoc/timer.c \
-           riscv/npc/input.c \
+           riscv/ysyxsoc/ioe/ioe.c \
+           riscv/ysyxsoc/ioe/timer.c \
+           riscv/ysyxsoc/ioe/input.c \
+           riscv/ysyxsoc/ioe/uart.c \
            riscv/npc/cte.c \
            riscv/npc/trap.S \
            platform/dummy/vme.c \
@@ -12,6 +13,7 @@ CFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld
 LDFLAGS   += --gc-sections -e _start 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
+CFLAGS += -I$(AM_HOME)/am/src/riscv/ysyxsoc/include
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
 image: $(IMAGE).elf
