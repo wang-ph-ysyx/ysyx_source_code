@@ -4,7 +4,7 @@
 
 _start:
 	mv s0, zero
-	li sp, 0xa0000000
+	li sp, 0x80400000
 
 _boot_loader:
 	la t0, text_load_start
