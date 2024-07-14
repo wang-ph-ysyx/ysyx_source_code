@@ -2,9 +2,6 @@
 #include <ysyxsoc.h>
 
 void __am_gpu_init() {
-	int w = 640, h = 480;
-	uint32_t *fb = (uint32_t *)FB_ADDR;
-	for (int i = 0; i < w * h; ++i) fb[i] = i;
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
