@@ -26,7 +26,7 @@ _boot_loader:
 	addi t0, t0, 1
 	addi t1, t1, 1
 	blt t1, t2, _data_copy
-
+/*
 	la t0, _bss_start
 	la t1, _end
 	li t2, 0
@@ -34,7 +34,7 @@ _boot_loader:
 	sb t2, 0(t0)
 	addi t0, t0, 1
 	blt t0, t1, _bss_clear
-
+*/
 	la a2, _trm_init
 	jalr x0, 0(a2)
 
