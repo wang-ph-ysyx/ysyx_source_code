@@ -12,15 +12,21 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 		return;
 	}
 
+	kbd->keycode = 0;
+	if (scancode == 0xe0) {
+		while ((scancode = inb(KEYBOARD_ADDR)) == 0);
+		kbd->keycode = 0xe000;
+	}
+
 	if (scancode == 0xf0) {
 		kbd->keydown = 0;
-		scancode = inb(KEYBOARD_ADDR);
+		while ((scancode = inb(KEYBOARD_ADDR)) == 0);
 	}
-	else kbd->keydown = 1;
+	else {
+		kbd->keydown = 1;
+	}
 
-	if (scancode == 0xe0) kbd->keycode = (scancode << 8) | inb(KEYBOARD_ADDR);
-	else kbd->keycode = scancode;
-
+	kbd->keycode |= scancode;
 	kbd->keycode = scan_to_keycode(kbd->keycode);
 }
 
@@ -107,6 +113,6 @@ int scan_to_keycode(int scancode) {
 		case 0xe069: return AM_KEY_END;
 		case 0xe07d: return AM_KEY_PAGEUP;
 		case 0xe07a: return AM_KEY_PAGEDOWN;
-		default: return AM_KEY_NONE;
+		default: halt(1);
 	}
 }
