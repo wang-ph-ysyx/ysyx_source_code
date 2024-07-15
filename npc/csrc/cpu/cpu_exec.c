@@ -67,8 +67,8 @@ void cpu_exec(unsigned n) {
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
-	printf("total_cycle: %d, total_inst: %d\n", total_cycle, total_inst);
-	printf("IPC: %f", (double)total_inst / total_cycle);
+	printf("total_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
+	printf("IPC: %f\n", (double)total_inst / total_cycle);
 }
 
 void reset() {
