@@ -11,6 +11,9 @@
 VysyxSoCFull *top = NULL;
 int trigger_difftest = 0;
 
+static int total_inst = 0;
+static int total_cycle = 0;
+
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
 void difftest_skip_ref();
@@ -36,6 +39,7 @@ void cpu_exec(unsigned n) {
 		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 		nvboard_update();
 		one_cycle();
+		++total_cycle;
 #ifdef DIFFTEST
 		static int difftest = 0;
 		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
@@ -48,6 +52,8 @@ void cpu_exec(unsigned n) {
 			difftest_step();
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
+		if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid) 
+			++total_inst;
 		if (inst == 0x100073 || trigger_difftest) break;
 	}
 
@@ -61,6 +67,8 @@ void cpu_exec(unsigned n) {
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
+	printf("total_cycle: %d, total_inst: %d\n", total_cycle, total_inst);
+	printf("IPC: %f", (double)total_inst / total_cycle);
 }
 
 void reset() {
