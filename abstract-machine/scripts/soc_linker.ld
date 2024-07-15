@@ -15,16 +15,16 @@ SECTIONS {
 	} > flash
 
 	. = ORIGIN(sdram);
-  .text : AT(ADDR(.entry) + SIZEOF(.entry)) {
+  .text : {
 		_text_start = .;
     *(.text*)
-  } > sdram 
+  } > sdram AT> flash 
 	text_load_start = LOADADDR(.text);
-  .rodata : AT(LOADADDR(.text) + SIZEOF(.text)) {
+  .rodata : {
     *(.rodata*)
-  } > sdram 
+  } > sdram AT> flash 
 
-  .data.extra : AT(LOADADDR(.rodata) + SIZEOF(.rodata) + ALIGN(8)) {
+  .data.extra : {
     /* section information for finsh shell */
     . = ALIGN(8);
 		_data_start = .;
@@ -54,12 +54,12 @@ SECTIONS {
     *(__am_apps.sdata*)
     __am_apps_data_end = .;
     . = ALIGN(8);
-  } > sdram 
+  } > sdram AT> flash
 
-  .data : AT(LOADADDR(.data.extra) + SIZEOF(.data.extra) + ALIGN(8)) {
-		. = ALIGN(8);
+  .data : {
+		. = ALIGN(0x8);
     *(.data)
-  } > sdram 
+  } > sdram AT> flash 
 	data_load_start = LOADADDR(.data.extra);
 
   .bss.extra : {
