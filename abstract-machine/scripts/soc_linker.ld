@@ -24,7 +24,7 @@ SECTIONS {
     *(.rodata*)
   } > sdram 
 
-  .data.extra : {
+  .data.extra : AT(LOADADDR(.rodata) + SIZEOF(.rodata) + ALIGN(8)) {
     /* section information for finsh shell */
     . = ALIGN(8);
 		_data_start = .;
@@ -54,12 +54,12 @@ SECTIONS {
     *(__am_apps.sdata*)
     __am_apps_data_end = .;
     . = ALIGN(8);
-  } > sdram AT> flash
+  } > sdram 
 
-  .data : {
-		. = ALIGN(0x8);
+  .data : AT(LOADADDR(.data.extra) + SIZEOF(.data.extra) + ALIGN(8)) {
+		. = ALIGN(8);
     *(.data)
-  } > sdram AT> flash 
+  } > sdram 
 	data_load_start = LOADADDR(.data.extra);
 
   .bss.extra : {
