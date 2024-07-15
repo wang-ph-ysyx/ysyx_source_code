@@ -503,4 +503,14 @@ module ysyx_23060236(
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
 
+import "DPI-C" function void add_ifu_getinst();
+import "DPI-C" function void add_total_inst();
+import "DPI-C" function void add_total_cycle();
+
+	always @(posedge clock) begin
+		add_total_cycle();
+		if (ifu_rvalid & ifu_rready) add_ifu_getinst();
+		if (wb_valid) add_total_inst();
+	end
+
 endmodule

@@ -13,6 +13,7 @@ int trigger_difftest = 0;
 
 static int total_inst = 0;
 static int total_cycle = 0;
+static int total_ifu_getinst = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -20,6 +21,17 @@ void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
 void nvboard_update();
+
+void print_statistic() {
+	printf("total_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
+	printf("IPC: %f\n", (double)total_inst / total_cycle);
+	printf("performance counter:\n");
+	printf("total_ifu_getinst: %d\n", total_ifu_getinst);
+}
+
+extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
+extern "C" void add_total_inst() { ++total_inst; }
+extern "C" void add_total_cycle() { ++total_cycle; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval();
@@ -39,7 +51,6 @@ void cpu_exec(unsigned n) {
 		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 		nvboard_update();
 		one_cycle();
-		++total_cycle;
 #ifdef DIFFTEST
 		static int difftest = 0;
 		uint32_t addr = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awaddr;
@@ -52,8 +63,6 @@ void cpu_exec(unsigned n) {
 			difftest_step();
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
-		if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid) 
-			++total_inst;
 		if (inst == 0x100073 || trigger_difftest) break;
 	}
 
@@ -67,8 +76,7 @@ void cpu_exec(unsigned n) {
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
-	printf("total_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
-	printf("IPC: %f\n", (double)total_inst / total_cycle);
+	print_statistic();
 }
 
 void reset() {
