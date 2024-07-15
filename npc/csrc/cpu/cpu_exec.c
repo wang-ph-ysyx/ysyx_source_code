@@ -14,6 +14,7 @@ int trigger_difftest = 0;
 static int total_inst = 0;
 static int total_cycle = 0;
 static int total_ifu_getinst = 0;
+static int total_lsu_getdata = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -27,11 +28,13 @@ void print_statistic() {
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
 	printf("performance counter:\n");
 	printf("total_ifu_getinst: %d\n", total_ifu_getinst);
+	printf("total_lsu_getdata: %d\n", total_lsu_getdata);
 }
 
 extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_total_inst() { ++total_inst; }
 extern "C" void add_total_cycle() { ++total_cycle; }
+extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval();
