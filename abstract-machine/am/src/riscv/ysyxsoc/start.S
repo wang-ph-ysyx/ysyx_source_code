@@ -21,7 +21,7 @@ _fsbl_loader:
 	la a2, _trm_init
 	jalr ra, 0(a2)
 
-.section ssbl
+.section ssbl, "ax"
 .global _ssbl_loader
 .type _ssbl_loader, @function
 
