@@ -14,7 +14,9 @@ SECTIONS {
 		*(entry)
 	} > flash
 
+	. = ORIGIN(sram);
 	.ssbl : {
+		_ssbl_start = .;
 		*(ssbl)
 	} > sram AT> flash
 
