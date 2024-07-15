@@ -14,6 +14,10 @@ SECTIONS {
 		*(entry)
 	} > flash
 
+	.ssbl : {
+		*(ssbl)
+	} > sram AT> flash
+
 	. = ORIGIN(sdram);
   .text : {
 		_text_start = .;
