@@ -512,7 +512,7 @@ import "DPI-C" function void add_lsu_getdata();
 		add_total_cycle();
 		if (ifu_rvalid & ifu_rready) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
-		if (lsu_rvalid & lsu_rready) $display("test");//add_lsu_getdata();
+		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 	end
 
 endmodule
