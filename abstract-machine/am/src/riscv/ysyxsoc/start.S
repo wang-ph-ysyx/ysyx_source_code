@@ -4,7 +4,7 @@
 
 _start:
 	mv s0, zero
-	li sp, 0x80400000
+	li sp, 0x0f002000
 
 _fsbl_loader:
 	la t0, ssbl_load_start
