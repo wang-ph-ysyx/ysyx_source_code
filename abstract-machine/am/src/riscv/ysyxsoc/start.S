@@ -25,7 +25,7 @@ _fsbl_loader:
 .global _ssbl_loader
 .type _ssbl_loader, @function
 
-_ssbl_loader:
+_ssbl_loaderl:
 	la t0, text_load_start
 	la t1, _text_start
 	la t2, _data_start
