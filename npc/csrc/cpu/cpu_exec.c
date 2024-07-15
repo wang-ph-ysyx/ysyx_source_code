@@ -11,10 +11,10 @@
 VysyxSoCFull *top = NULL;
 int trigger_difftest = 0;
 
-static int total_inst = 0;
-static int total_cycle = 0;
-static int total_ifu_getinst = 0;
-static int total_lsu_getdata = 0;
+static long total_inst = 0;
+static long total_cycle = 0;
+static long total_ifu_getinst = 0;
+static long total_lsu_getdata = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -24,11 +24,11 @@ void reg_display();
 void nvboard_update();
 
 void print_statistic() {
-	printf("\ntotal_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
+	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
 	printf("\nperformance counter:\n");
-	printf("total_ifu_getinst: %d\n", total_ifu_getinst);
-	printf("total_lsu_getdata: %d\n", total_lsu_getdata);
+	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
+	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
 }
 
 extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
