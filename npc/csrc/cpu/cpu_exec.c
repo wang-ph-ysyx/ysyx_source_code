@@ -24,9 +24,9 @@ void reg_display();
 void nvboard_update();
 
 void print_statistic() {
-	printf("total_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
+	printf("\ntotal_cycle: %d\ntotal_inst: %d\n", total_cycle, total_inst);
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
-	printf("performance counter:\n");
+	printf("\nperformance counter:\n");
 	printf("total_ifu_getinst: %d\n", total_ifu_getinst);
 	printf("total_lsu_getdata: %d\n", total_lsu_getdata);
 }
