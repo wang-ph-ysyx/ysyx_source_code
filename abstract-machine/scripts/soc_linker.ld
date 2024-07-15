@@ -19,6 +19,8 @@ SECTIONS {
 		_ssbl_start = .;
 		*(ssbl)
 	} > sram AT> flash
+	_ssbl_end = ADDR(.ssbl) + 4K;
+	ssbl_load_start = LOADADDR(.ssbl);
 
 	. = ORIGIN(sdram);
   .text : {
