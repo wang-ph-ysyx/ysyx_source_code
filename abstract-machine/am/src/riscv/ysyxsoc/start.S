@@ -18,8 +18,6 @@ _fsbl_loader:
 	blt t1, t2, _ssbl_copy
 	la t0, _ssbl_loader
 	jalr ra, 0(t0)
-	la a2, _trm_init
-	jalr ra, 0(a2)
 
 .section ssbl, "ax"
 .global _ssbl_loader
@@ -54,7 +52,8 @@ _ssbl_loader:
 	addi t0, t0, 1
 	blt t0, t1, _bss_clear
 
-	ret
+	la a2, _trm_init
+	jalr ra, 0(a2)
 
 .section .text, "ax"
 .global _read_csr_mvendorid
