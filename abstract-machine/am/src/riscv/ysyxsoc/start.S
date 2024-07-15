@@ -16,7 +16,7 @@ _fsbl_loader:
 	addi t0, t0, 4
 	addi t1, t1, 4
 	blt t1, t2, _ssbl_copy
-	la t0, _ssbl_start
+	la t0, _ssbl_loader
 	jalr ra, 0(t0)
 	la a2, _trm_init
 	jalr ra, 0(a2)
@@ -25,7 +25,7 @@ _fsbl_loader:
 .global _ssbl_loader
 .type _ssbl_loader, @function
 
-_ssbl_loaderl:
+_ssbl_loader:
 	la t0, text_load_start
 	la t1, _text_start
 	la t2, _data_start

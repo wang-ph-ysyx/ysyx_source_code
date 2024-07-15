@@ -52,14 +52,3 @@ void _trm_init() {
 	int ret = main(mainargs);
 	halt(ret);
 }
-
-void _ssbl_loader() __attribute__((section("ssbl")));
-void _ssbl_loader() {
-	extern char text_load_start [];
-	extern char _text_start [];
-	extern char _data_start [];
-	char *src = text_load_start;
-	char *dst = _text_start;
-	for (; dst < _data_start; ++dst, ++src)
-		*dst = *src;
-}
