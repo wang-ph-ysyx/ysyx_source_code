@@ -15,14 +15,14 @@ SECTIONS {
 	} > flash
 
 	. = ORIGIN(sdram);
-  .text : {
+  .text : AT(ADDR(.entry) + SIZEOF(.entry)) {
 		_text_start = .;
     *(.text*)
-  } > sdram AT> flash 
+  } > sdram 
 	text_load_start = LOADADDR(.text);
-  .rodata : {
+  .rodata : AT(LOADADDR(.text) + SIZEOF(.text)) {
     *(.rodata*)
-  } > sdram AT> flash 
+  } > sdram 
 
   .data.extra : {
     /* section information for finsh shell */
