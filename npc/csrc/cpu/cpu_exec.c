@@ -11,10 +11,13 @@
 VysyxSoCFull *top = NULL;
 int trigger_difftest = 0;
 
+//performance register
 static long total_inst = 0;
 static long total_cycle = 0;
 static long total_ifu_getinst = 0;
 static long total_lsu_getdata = 0;
+static long total_lsu_readingcycle = 0;
+static long total_ifu_readingcycle = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -28,7 +31,11 @@ void print_statistic() {
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
 	printf("\nperformance counter:\n");
 	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
+	printf("total_ifu_readingcycle: %ld\n", total_ifu_readingcycle);
+	printf("average ifu reading delay: %f\n", (double)total_ifu_readingcycle / total_ifu_getinst);
 	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
+	printf("total_lsu_readingcycle: %ld\n", total_lsu_readingcycle);
+	printf("average lsu reading delay: %f\n", (double)total_lsu_readingcycle / total_lsu_getdata);
 	printf("\n");
 }
 
@@ -36,6 +43,8 @@ extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_total_inst() { ++total_inst; }
 extern "C" void add_total_cycle() { ++total_cycle; }
 extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
+extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
+extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval();
