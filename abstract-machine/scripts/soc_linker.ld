@@ -14,6 +14,14 @@ SECTIONS {
 		*(entry)
 	} > flash
 
+	. = ORIGIN(sram);
+	.ssbl : {
+		_ssbl_start = .;
+		*(ssbl)
+		_ssbl_end = .;
+	} > sram AT> flash
+	ssbl_load_start = LOADADDR(.ssbl);
+
 	. = ORIGIN(sdram);
   .text : {
 		_text_start = .;
@@ -57,7 +65,7 @@ SECTIONS {
   } > sdram AT> flash
 
   .data : {
-		. = ALIGN(0x8);
+		. = ALIGN(8);
     *(.data)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data.extra);

@@ -21,8 +21,6 @@ module ysyx_23060236_exu(
 
 	wire [31:0] compare;
 
-	reg [31:0] rdata;
-
 	ysyx_23060236_MuxKeyInternal #(3, 7, 32, 1) calculate_val0(
 		.out(val0),
 		.key(opcode),
