@@ -34,8 +34,8 @@ SECTIONS {
 
   .data.extra : {
     /* section information for finsh shell */
-		_data_start = .;
     . = ALIGN(8);
+		_data_start = .;
     __fsymtab_start = .;
     KEEP(*(FSymTab))
     __fsymtab_end = .;
@@ -71,8 +71,8 @@ SECTIONS {
 	data_load_start = LOADADDR(.data.extra);
 
   .bss.extra : {
-		_bss_start = .;
     . = ALIGN(8);
+		_bss_start = .;
     __am_apps_bss_start = .;
     *(__am_apps.bss*)
     *(__am_apps.sbss*)
