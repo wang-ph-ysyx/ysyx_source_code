@@ -34,8 +34,8 @@ SECTIONS {
 
   .data.extra : {
     /* section information for finsh shell */
-    . = ALIGN(8);
 		_data_start = .;
+    . = ALIGN(8);
     __fsymtab_start = .;
     KEEP(*(FSymTab))
     __fsymtab_end = .;
@@ -65,14 +65,14 @@ SECTIONS {
   } > sdram AT> flash
 
   .data : {
-		. = ALIGN(0x8);
+		. = ALIGN(8);
     *(.data)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data.extra);
 
   .bss.extra : {
-    . = ALIGN(8);
 		_bss_start = .;
+    . = ALIGN(8);
     __am_apps_bss_start = .;
     *(__am_apps.bss*)
     *(__am_apps.sbss*)
