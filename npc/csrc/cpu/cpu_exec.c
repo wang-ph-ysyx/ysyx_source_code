@@ -67,7 +67,6 @@ void cpu_exec(unsigned n) {
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (inst == 0x100073 || trigger_difftest) break;
-		if (pc == 0xa0000e5c) break;
 	}
 
 	if (trigger_difftest) {
