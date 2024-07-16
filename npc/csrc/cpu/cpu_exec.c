@@ -29,6 +29,7 @@ void print_statistic() {
 	printf("\nperformance counter:\n");
 	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
 	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
+	printf("\n");
 }
 
 extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
@@ -67,7 +68,6 @@ void cpu_exec(unsigned n) {
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (inst == 0x100073 || trigger_difftest) break;
-		if (pc == 0xa0016d10) break;
 	}
 
 	if (trigger_difftest) {
