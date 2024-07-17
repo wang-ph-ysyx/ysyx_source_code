@@ -11,7 +11,7 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-			case 11: ev.event = EVENT_SYSCALL; break;
+			case 11: ev.event = EVENT_SYSCALL; c->mepc += 4; break;
 			case 0x80000007: ev.event = EVENT_IRQ_TIMER; break;
       default: ev.event = EVENT_ERROR;   break;
     }
