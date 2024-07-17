@@ -97,9 +97,6 @@ module ysyx_23060236(
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
-	wire [31:0] lsu_val_tmp;
-	wire [31:0] lsu_val_shift_64;
-	wire [31:0] lsu_val_shift_32;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
@@ -313,6 +310,18 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
+		.opcode(opcode),
+		.funct3(funct3),
+		.src1(src1),
+		.src2(src2),
+		.imm(imm),
+		.wmask(wmask),
+		.wb_valid(wb_valid),
+		.lsu_ren(lsu_ren),
+		.lsu_wen(lsu_wen),
+		.lsu_aligned_64(lsu_aligned_64),
+		.lsu_aligned_32(lsu_aligned_32),
+		.lsu_val(lsu_val)
 	);
 
 	ysyx_23060236_RegisterFile #(5, 32) my_reg(
@@ -348,44 +357,6 @@ module ysyx_23060236(
 	assign val = (exu_val | csr_val | lsu_val);
 	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 	assign jump = exu_jump | csr_jump;
-	assign lsu_rready = 1;
-	assign lsu_bready = 1;
-	assign lsu_araddr = src1 + imm;
-	assign lsu_awaddr = src1 + imm;
-	assign lsu_aligned_64 = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
-	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
-
-	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_val_tmp & {32{~wb_valid}}),
-		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready | wb_valid)
-	);
-
-	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren),
-		.dout(lsu_arvalid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen),
-		.dout(lsu_awvalid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
-		.dout(lsu_wvalid),
-		.wen(1)
-	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
