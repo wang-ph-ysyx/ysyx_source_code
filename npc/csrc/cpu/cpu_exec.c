@@ -51,7 +51,7 @@ static void one_cycle() {
 	top->clock = 1; top->eval();
 }
 
-void cpu_exec(unsigned n) {
+void cpu_exec(unsigned long n) {
 	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073 || trigger_difftest) {
 		printf("the program is ended.\n");
 		return;
