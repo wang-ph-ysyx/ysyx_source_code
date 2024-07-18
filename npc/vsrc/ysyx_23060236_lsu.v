@@ -80,8 +80,8 @@ module ysyx_23060236_lsu(
 			12'b010100000011, lsu_val_shift_32,                                                     //lw
 			12'b011000000011, lsu_val_shift_32 & 32'hff,                                            //lbu
 			12'b011010000011, lsu_val_shift_32 & 32'hffff,                                          //lhu
-			12'b000000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[31:0][7]}}, 8'h0},        //lb
-			12'b000010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[31:0][15]}}, 16'h0},    //lh
+			12'b000000000011, (lsu_rdata[31:0] & 32'hff) | {{24{lsu_rdata[7]}}, 8'h0},              //lb
+			12'b000010000011, (lsu_rdata[31:0] & 32'hffff) | {{16{lsu_rdata[15]}}, 16'h0},          //lh
 			12'b000100000011, lsu_rdata[31:0],                                                      //lw
 			12'b001000000011, lsu_rdata[31:0] & 32'hff,                                             //lbu
 			12'b001010000011, lsu_rdata[31:0] & 32'hffff                                            //lhu
