@@ -70,3 +70,6 @@ count:
 
 countNoblank:
 	find ./csrc ./vsrc -name *.[cvh] | xargs grep -v '^$$' | wc -l
+
+perf:
+	make -C ../am-kernels/benchmarks/microbench ARCH=riscv32e-ysyxsoc run mainargs=train
