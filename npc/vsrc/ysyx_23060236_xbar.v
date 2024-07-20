@@ -138,7 +138,7 @@ module ysyx_23060236_xbar(
 				if (~(icache_bvalid & icache_bready)) next_state = STATE_CACHE_WRITING;
 				else next_state = STATE_IFU_REPLY;
 			STATE_LSU_READING:
-				if (~(io_master_rvalid & io_master_rready)) next_state = STATE_LSU_READING;
+				if (~(io_master_rvalid & io_master_rready) & ~(clint_rvalid & clint_rready)) next_state = STATE_LSU_READING;
 				else next_state = STATE_LSU_REPLY;
 			STATE_LSU_REPLY:
 				if (~(lsu_rvalid & lsu_rready)) next_state = STATE_LSU_REPLY;
