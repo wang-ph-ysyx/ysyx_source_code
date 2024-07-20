@@ -129,7 +129,7 @@ module ysyx_23060236_xbar(
 				else next_state = STATE_IFU_REPLY;
 			STATE_IFU_READING:
 				if (~(io_master_rvalid & io_master_rready)) next_state = STATE_IFU_READING;
-				else if (reg_need_icache) next_state = STATE_IFU_REPLY;
+				else if (~reg_need_icache) next_state = STATE_IFU_REPLY;
 				else next_state = STATE_CACHE_WRITING;
 			STATE_IFU_REPLY:
 				if (~(ifu_rvalid & ifu_rready)) next_state = STATE_IFU_REPLY;
