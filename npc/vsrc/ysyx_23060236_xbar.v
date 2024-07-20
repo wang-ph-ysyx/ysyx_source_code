@@ -118,7 +118,7 @@ module ysyx_23060236_xbar(
 		case (state)
 			STATE_IDLE: 
 				if (ifu_arvalid) begin
-					if (addr_in_sram) next_state = STATE_IFU_READING;
+					if (~need_icache) next_state = STATE_IFU_READING;
 					else next_state = STATE_IFU_READING_CACHE;
 				end
 				else if (lsu_arvalid) next_state = STATE_LSU_READING;
@@ -129,7 +129,7 @@ module ysyx_23060236_xbar(
 				else next_state = STATE_IFU_REPLY;
 			STATE_IFU_READING:
 				if (~(io_master_rvalid & io_master_rready)) next_state = STATE_IFU_READING;
-				else if (reg_addr_in_sram) next_state = STATE_IFU_REPLY;
+				else if (reg_need_icache) next_state = STATE_IFU_REPLY;
 				else next_state = STATE_CACHE_WRITING;
 			STATE_IFU_REPLY:
 				if (~(ifu_rvalid & ifu_rready)) next_state = STATE_IFU_REPLY;
@@ -147,8 +147,14 @@ module ysyx_23060236_xbar(
 		endcase
 	end
 
-	wire reg_addr_in_sram = (ifu_addr >= 32'h0f000000) & (ifu_addr < 32'h0f002000);
-	wire addr_in_sram = (ifu_araddr >= 32'h0f000000) & (ifu_araddr < 32'h0f002000);
+	wire reg_addr_in_flash = (ifu_addr >= 32'h30000000) & (ifu_addr < 32'h40000000);
+	wire reg_addr_in_psram = (ifu_addr >= 32'h80000000) & (ifu_addr < 32'ha0000000);
+	wire reg_addr_in_sdram = (ifu_addr >= 32'ha0000000) & (ifu_addr < 32'hc0000000);
+	wire addr_in_flash = (ifu_araddr >= 32'h30000000) & (ifu_araddr < 32'h40000000);
+	wire addr_in_param = (ifu_araddr >= 32'h80000000) & (ifu_araddr < 32'ha0000000);
+	wire addr_in_sdram = (ifu_araddr >= 32'ha0000000) & (ifu_araddr < 32'hc0000000);
+	wire reg_need_icache = reg_addr_in_flash | reg_addr_in_psram | reg_addr_in_sdram;
+	wire need_icache = addr_in_flash | addr_in_param | addr_in_sdram;
 	wire soc_reading, clint_reading;
 	wire master_arvalid;
 	wire [31:0] araddr;
@@ -207,7 +213,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & ifu_arvalid & ifu_arready & ~addr_in_sram),
+		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & ifu_arvalid & ifu_arready & need_icache),
 		.dout(icache_arvalid),
 		.wen(1)
 	);
@@ -215,7 +221,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_awvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_awvalid & ~icache_awready | ~icache_awvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & ~reg_addr_in_sram),
+		.din(icache_awvalid & ~icache_awready | ~icache_awvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & reg_need_icache),
 		.dout(icache_awvalid),
 		.wen(1)
 	);
@@ -231,7 +237,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & ~reg_addr_in_sram),
+		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & reg_need_icache),
 		.dout(icache_wvalid),
 		.wen(1)
 	);
@@ -286,7 +292,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_ifu_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rvalid & ~ifu_rready | ~ifu_rvalid & ((state == STATE_CACHE_WRITING) & icache_bvalid & icache_bready | (state == STATE_IFU_READING_CACHE) & icache_rvalid & icache_rready & ~icache_rresp[1] | (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & reg_addr_in_sram)),
+		.din(ifu_rvalid & ~ifu_rready | ~ifu_rvalid & ((state == STATE_CACHE_WRITING) & icache_bvalid & icache_bready | (state == STATE_IFU_READING_CACHE) & icache_rvalid & icache_rready & ~icache_rresp[1] | (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & ~reg_need_icache)),
 		.dout(ifu_rvalid),
 		.wen(1)
 	);
