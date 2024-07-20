@@ -1,2 +1,2 @@
-//#define DIFFTEST
+#define DIFFTEST
 //#define WAVE_TRACE
