@@ -207,7 +207,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & ifu_arvalid & ifu_arready),
+		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & ifu_arvalid & ifu_arready & ~addr_in_sram),
 		.dout(icache_arvalid),
 		.wen(1)
 	);
@@ -215,7 +215,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_awvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_awvalid & ~icache_awready | ~icache_awvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready),
+		.din(icache_awvalid & ~icache_awready | ~icache_awvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & reg_addr_in_sram),
 		.dout(icache_awvalid),
 		.wen(1)
 	);
