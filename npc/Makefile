@@ -5,7 +5,7 @@ INC_PATH ?=
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
-										--timescale "1ns/1ns" --no-timing --trace
+										--timescale "1ns/1ns" --no-timing
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -43,7 +43,7 @@ ifneq ($(DIFF_SO),)
   NPC_FLAGS += -d $(DIFF_SO)
 endif
 # 批处理
-#NPC_FLAGS += -b
+NPC_FLAGS += -b
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rm -rf $(OBJ_DIR)
