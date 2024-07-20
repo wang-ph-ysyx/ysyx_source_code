@@ -150,6 +150,7 @@ module ysyx_23060236_xbar(
 	wire [31:0] lsu_addr;
 	wire [2:0]  lsu_size;
 	wire [63:0] master_rdata_reg;
+	wire [63:0] master_rdata;
 	wire [1:0]  master_rresp_reg;
 	wire [31:0] clint_rdata_reg;
 	wire [1:0]  clint_rresp_reg;
@@ -229,6 +230,7 @@ module ysyx_23060236_xbar(
 		.wen(1)
 	);
 
+	assign master_rdata  = {64{io_master_rvalid & io_master_rready}} & io_master_rdata | {64{icache_rvalid & icache_rready}} & {32'b0, icache_rdata};
 	assign icache_wstrb  = 8'h0f;
 	assign icache_araddr = ifu_addr;
 	assign icache_awaddr = ifu_addr;
@@ -246,9 +248,9 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(64, 0) calculate_master_rdata_reg(
 		.clock(clock),
 		.reset(reset),
-		.din(io_master_rdata),
+		.din(master_rdata),
 		.dout(master_rdata_reg),
-		.wen(io_master_rvalid & io_master_rready)
+		.wen(io_master_rvalid & io_master_rready | icache_rvalid & icache_rready)
 	);
 
 	ysyx_23060236_Reg #(2, 0) calculate_master_rresp_reg(
