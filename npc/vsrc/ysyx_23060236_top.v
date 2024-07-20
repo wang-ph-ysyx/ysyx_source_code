@@ -100,7 +100,6 @@ module ysyx_23060236(
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
-	wire lsu_valid;
 	wire idu_valid;
 	wire [7:0] wmask;
 
@@ -111,14 +110,19 @@ module ysyx_23060236(
 	wire ifu_rvalid;
 	wire [1:0] ifu_rresp;
 	wire ifu_rready;
+
+	wire [31:0] lsu_araddr;
 	wire lsu_arvalid;
 	wire lsu_arready;
 	wire [63:0] lsu_rdata;
 	wire [1:0] lsu_rresp;
 	wire lsu_rvalid;
 	wire lsu_rready;
+	wire [31:0] lsu_awaddr;
 	wire lsu_awvalid;
 	wire lsu_awready;
+	wire [63:0] lsu_wdata;
+	wire [7:0] lsu_wstrb;
 	wire lsu_wvalid;
 	wire lsu_wready;
 	wire [1:0] lsu_bresp;
@@ -126,10 +130,7 @@ module ysyx_23060236(
 	wire lsu_bready;
 	wire [2:0] lsu_arsize;
 	wire [2:0] lsu_awsize;
-	wire [7:0] lsu_wstrb;
-	wire [31:0] lsu_awaddr;
-	wire [31:0] lsu_araddr;
-	wire [63:0] lsu_wdata;
+
 	wire lsu_aligned_64;
 	wire lsu_aligned_32;
 	wire ifu_aligned;
@@ -141,6 +142,24 @@ module ysyx_23060236(
 	wire [1:0]  clint_rresp;
 	wire clint_rvalid;
 	wire clint_rready;
+
+	wire [31:0] icache_araddr;
+	wire icache_arvalid;
+	wire icache_arready;
+	wire [31:0] icache_rdata;
+	wire [1:0] icache_rresp;
+	wire icache_rvalid;
+	wire icache_rready;
+	wire [31:0] icache_awaddr;
+	wire icache_awvalid;
+	wire icache_awready;
+	wire [31:0] icache_wdata;
+	wire [7:0] icache_wstrb;
+	wire icache_wvalid;
+	wire icache_wready;
+	wire [1:0] icache_bresp;
+	wire icache_bvalid;
+	wire icache_bready;
 
 	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
 
@@ -226,7 +245,24 @@ module ysyx_23060236(
 		.clint_rdata(clint_rdata),
 		.clint_rresp(clint_rresp),
 		.clint_rvalid(clint_rvalid),
-		.clint_rready(clint_rready)
+		.clint_rready(clint_rready),
+		.icache_araddr(icache_araddr),
+		.icache_arvalid(icache_arvalid),
+		.icache_arready(icache_arready),
+		.icache_rdata(icache_rdata),
+		.icache_rresp(icache_rresp),
+		.icache_rvalid(icache_rvalid),
+		.icache_rready(icache_rready),
+		.icache_awaddr(icache_awaddr),
+		.icache_awvalid(icache_awvalid),
+		.icache_awready(icache_awready),
+		.icache_wdata(icache_wdata),
+		.icache_wstrb(icache_wstrb),
+		.icache_wvalid(icache_wvalid),
+		.icache_wready(icache_wready),
+		.icache_bresp(icache_bresp),
+		.icache_bvalid(icache_bvalid),
+		.icache_bready(icache_bready)
 	);
 
 	ysyx_23060236_clint my_clint(
@@ -239,6 +275,28 @@ module ysyx_23060236(
 		.rresp(clint_rresp),
 		.rvalid(clint_rvalid),
 		.rready(clint_rready)
+	);
+
+	ysyx_23060236_icache my_icache(
+		.clock(clock),
+		.reset(reset),
+		.icache_araddr(icache_araddr),
+		.icache_arvalid(icache_arvalid),
+		.icache_arready(icache_arready),
+		.icache_rdata(icache_rdata),
+		.icache_rresp(icache_rresp),
+		.icache_rvalid(icache_rvalid),
+		.icache_rready(icache_rready),
+		.icache_awaddr(icache_awaddr),
+		.icache_awvalid(icache_awvalid),
+		.icache_awready(icache_awready),
+		.icache_wdata(icache_wdata),
+		.icache_wstrb(icache_wstrb),
+		.icache_wvalid(icache_wvalid),
+		.icache_wready(icache_wready),
+		.icache_bresp(icache_bresp),
+		.icache_bvalid(icache_bvalid),
+		.icache_bready(icache_bready)
 	);
 
 	ysyx_23060236_ifu my_ifu(

@@ -7,8 +7,11 @@
 #include <memory.h>
 #include <config.h>
 #include <nvboard.h>
+#include "verilated_vcd_c.h"
 
 VysyxSoCFull *top = NULL;
+VerilatedVcdC *tfp = NULL;
+VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
 
 //performance register
@@ -47,8 +50,8 @@ extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
 extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 
 static void one_cycle() {
-	top->clock = 0; top->eval();
-	top->clock = 1; top->eval();
+	top->clock = 0; top->eval(); tfp->dump(contextp->time()); contextp->timeInc(1);
+	top->clock = 1; top->eval(); tfp->dump(contextp->time()); contextp->timeInc(1);
 }
 
 void cpu_exec(unsigned long n) {
