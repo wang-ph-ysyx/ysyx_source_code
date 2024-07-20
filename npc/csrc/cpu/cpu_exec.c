@@ -53,13 +53,13 @@ extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
-#ifdef WAVE_TRACE
+/*#ifdef WAVE_TRACE
 	tfp->dump(contextp->time()); contextp->timeInc(1);
 #endif
 	top->clock = 1; top->eval(); 
 #ifdef WAVE_TRACE
 	tfp->dump(contextp->time()); contextp->timeInc(1);
-#endif
+#endif*/
 }
 
 void cpu_exec(unsigned long n) {
