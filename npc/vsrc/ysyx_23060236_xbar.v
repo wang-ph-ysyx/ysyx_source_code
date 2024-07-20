@@ -278,7 +278,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_ifu_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rvalid & ~ifu_rready | ~ifu_rvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready),
+		.din(ifu_rvalid & ~ifu_rready | ~ifu_rvalid & (state == STATE_CACHE_WRITING) & icache_bvalid & icache_bready),
 		.dout(ifu_rvalid),
 		.wen(1)
 	);
