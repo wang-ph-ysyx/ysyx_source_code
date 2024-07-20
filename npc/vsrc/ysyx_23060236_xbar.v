@@ -300,7 +300,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_lsu_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_rvalid & ~lsu_rready | ~lsu_rvalid & (state == STATE_LSU_READING) & (io_master_rvalid & io_master_rready | clint_rvalid | clint_rready)),
+		.din(lsu_rvalid & ~lsu_rready | ~lsu_rvalid & (state == STATE_LSU_READING) & (io_master_rvalid & io_master_rready | clint_rvalid & clint_rready)),
 		.dout(lsu_rvalid),
 		.wen(1)
 	);
