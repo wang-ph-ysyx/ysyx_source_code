@@ -2,6 +2,7 @@
 #include "verilated.h"
 #include <nvboard.h>
 #include "verilated_vcd_c.h"
+#include <config.h>
 
 extern VysyxSoCFull *top;
 extern VerilatedVcdC *tfp;
