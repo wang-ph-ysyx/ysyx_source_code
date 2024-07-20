@@ -121,7 +121,7 @@ module ysyx_23060236_icache(
 		.clock(clock),
 		.reset(reset),
 		.din(wdata_valid & ~(icache_bvalid & icache_bready) | ~wdata_valid & icache_wvalid & icache_wready),
-		.dout(awaddr_valid),
+		.dout(wdata_valid),
 		.wen(1)
 	);
 

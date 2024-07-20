@@ -225,7 +225,7 @@ module ysyx_23060236_xbar(
 		.clock(clock),
 		.reset(reset),
 		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready),
-		.dout(icache_awvalid),
+		.dout(icache_wvalid),
 		.wen(1)
 	);
 
