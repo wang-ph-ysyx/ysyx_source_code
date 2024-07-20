@@ -231,7 +231,7 @@ module ysyx_23060236_xbar(
 	ysyx_23060236_Reg #(1, 0) calculate_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready),
+		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & (state == STATE_IFU_READING) & io_master_rvalid & io_master_rready & ~reg_addr_in_sram),
 		.dout(icache_wvalid),
 		.wen(1)
 	);
