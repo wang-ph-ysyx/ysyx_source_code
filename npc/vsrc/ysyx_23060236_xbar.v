@@ -287,7 +287,7 @@ module ysyx_23060236_xbar(
 		.clock(clock),
 		.reset(reset),
 		.din(lsu_rvalid & ~lsu_rready | ~lsu_rvalid & (state == STATE_LSU_READING) & io_master_rvalid & io_master_rready),
-		.dout(ifu_rvalid),
+		.dout(lsu_rvalid),
 		.wen(1)
 	);
 
