@@ -18,11 +18,12 @@ int main(int argc, char **argv) {
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
 	top = new VysyxSoCFull{contextp};
+#ifdef WAVE_TRACE
 	tfp = new VerilatedVcdC;
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
 	tfp->open("wave.vcd");
-
+#endif
 	nvboard_bind_all_pins(top);
 	nvboard_init();
 
