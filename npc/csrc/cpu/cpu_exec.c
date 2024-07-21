@@ -47,8 +47,6 @@ void print_statistic() {
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
 	printf("icache_reading_cycle: %ld\nicache_writing_cycle: %ld\n", icache_reading_cycle, icache_writing_cycle);
-	printf("average icache reading delay: %f\n", (double)icache_reading_cycle / (hit_icache + miss_icache));
-	printf("average icache writing delay: %f\n", (double)icache_writing_cycle / miss_icache);
 	printf("\n");
 }
 
