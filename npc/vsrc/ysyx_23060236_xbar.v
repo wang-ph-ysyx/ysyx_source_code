@@ -343,10 +343,20 @@ module ysyx_23060236_xbar(
 
 import "DPI-C" function void add_lsu_readingcycle();
 import "DPI-C" function void add_ifu_readingcycle();
+import "DPI-C" function void add_miss_icache();
+import "DPI-C" function void add_hit_icache();
+import "DPI-C" function void add_icache_reading_cycle();
+import "DPI-C" function void add_icache_writing_cycle();
 
 	always @(posedge clock) begin
 		if ((state == STATE_LSU_READING) | (state == STATE_LSU_REPLY)) add_lsu_readingcycle();
 		if ((state == STATE_IFU_READING) | (state == STATE_IFU_READING_CACHE) | (state == STATE_IFU_REPLY) | (state == STATE_CACHE_WRITING)) add_ifu_readingcycle();
+		if (icache_rvalid & icache_rready) begin
+			if (icache_rresp[1]) add_miss_icache();
+			else add_hit_icache();
+		end
+		if (state == STATE_IFU_READING_CACHE) add_icache_reading_cycle();
+		if (state == STATE_CACHE_WRITING) add_icache_writing_cycle();
 	end
 
 endmodule
