@@ -77,9 +77,9 @@ module ysyx_23060236(
 
 	wire [31:0] inst;
 	wire [6:0] opcode;
-	wire [4:0] rs1;
-	wire [4:0] rs2;
-	wire [4:0] rd;
+	wire [3:0] rs1;
+	wire [3:0] rs2;
+	wire [3:0] rd;
 	wire [2:0] funct3;
 	wire [6:0] funct7;
 	wire [31:0] imm;
@@ -382,7 +382,7 @@ module ysyx_23060236(
 		.lsu_val(lsu_val)
 	);
 
-	ysyx_23060236_RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
 		.wdata(val),
 		.waddr(rd),
