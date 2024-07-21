@@ -23,8 +23,6 @@ static long total_lsu_readingcycle = 0;
 static long total_ifu_readingcycle = 0;
 static long hit_icache = 0;
 static long miss_icache = 0;
-static long icache_reading_cycle = 0;
-static long icache_writing_cycle = 0;
 static int lsu_awaddr = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
@@ -46,7 +44,6 @@ void print_statistic() {
 	printf("average lsu reading delay: %f\n", (double)total_lsu_readingcycle / total_lsu_getdata);
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
-	printf("icache_reading_cycle: %ld\nicache_writing_cycle: %ld\n", icache_reading_cycle, icache_writing_cycle);
 	printf("\n");
 }
 
@@ -58,8 +55,6 @@ extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
 extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 extern "C" void add_hit_icache() { ++hit_icache; }
 extern "C" void add_miss_icache() { ++miss_icache; }
-extern "C" void add_icache_reading_cycle() { ++icache_reading_cycle; }
-extern "C" void add_icache_writing_cycle() { ++icache_writing_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {
