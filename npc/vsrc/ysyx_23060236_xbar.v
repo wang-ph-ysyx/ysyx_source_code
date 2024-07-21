@@ -340,7 +340,7 @@ module ysyx_23060236_xbar(
 	assign io_master_bready  = lsu_bready;
 	assign lsu_bvalid        = io_master_bvalid;
 	assign lsu_bresp         = io_master_bresp;
-
+/*
 import "DPI-C" function void add_lsu_readingcycle();
 import "DPI-C" function void add_ifu_readingcycle();
 import "DPI-C" function void add_miss_icache();
@@ -354,5 +354,5 @@ import "DPI-C" function void add_hit_icache();
 			else add_hit_icache();
 		end
 	end
-
+*/
 endmodule
