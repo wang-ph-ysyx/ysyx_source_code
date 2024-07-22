@@ -20,6 +20,7 @@ module ysyx_23060236_exu(
 	wire [31:0] jump2;
 
 	wire [31:0] compare;
+	wire overflow;
 	wire less;
 	wire unequal;
 	wire uless;
@@ -147,10 +148,10 @@ module ysyx_23060236_exu(
 	assign jroperand = imm;
 	assign jump = {jloperand + jroperand} & {32{jump_en}};
 	assign jump_en = (opcode == 7'b1101111) | (opcode == 7'b1100111) | (opcode == 7'b1100011) & jump_cond;
-	assign compare = src1 - src2;
+	assign {overflow, compare} = src1 + {1'b1, ~src2} + 1;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
-	assign uless = src1 < src2;
+	assign uless = overflow;
 
 	ysyx_23060236_MuxKeyInternal #(6, 3, 1, 1) calculate_jump_cond(
 		.out(jump_cond),
