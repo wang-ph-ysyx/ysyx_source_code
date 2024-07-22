@@ -328,6 +328,8 @@ module ysyx_23060236(
 		.Type(Type),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
+		.reg_wen(reg_wen),
+		.csr_enable(csr_enable),
 		.idu_valid(idu_valid)
 	);
 
@@ -411,9 +413,7 @@ module ysyx_23060236(
 
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
-	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
 	assign val = (exu_val | csr_val | lsu_val);
-	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 	assign jump = exu_jump | csr_jump;
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(

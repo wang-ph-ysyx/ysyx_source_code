@@ -10,6 +10,8 @@ module ysyx_23060236_idu(
 	output [2:0] Type,
 	output lsu_wen,
 	output lsu_ren,
+	output reg_wen,
+	output csr_enable,
 	input  idu_valid);
 
 	assign opcode = in[6:0];
@@ -20,6 +22,8 @@ module ysyx_23060236_idu(
 	assign funct7 = in[31:25];
 	assign lsu_ren = (opcode == 7'b0000011) & idu_valid;
 	assign lsu_wen = (opcode == 7'b0100011) & idu_valid;
+	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
+	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 
 	parameter TYPE_R = 3'd0, TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5; 
 
