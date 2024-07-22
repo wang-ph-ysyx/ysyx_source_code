@@ -121,7 +121,7 @@ module ysyx_23060236_exu(
 		})
 	);
 
-	assign {op_overflow, op_compare} = loperand + ((operator == OP_ADD) ? {1'b0, roperand} : ({1'b1, ~roperand} + 1));
+	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
@@ -129,7 +129,7 @@ module ysyx_23060236_exu(
 		.key(operator),
 		.default_out(32'b0),
 		.lut({
-			OP_ADD,   op_compare,
+			OP_ADD,   loperand + roperand,
 			OP_SUB,   op_compare,
 			OP_AND,   loperand & roperand,
 			OP_XOR,   loperand ^ roperand,
@@ -148,7 +148,7 @@ module ysyx_23060236_exu(
 	assign jroperand = imm;
 	assign jump = {jloperand + jroperand} & {32{jump_en}};
 	assign jump_en = (opcode == 7'b1101111) | (opcode == 7'b1100111) | (opcode == 7'b1100011) & jump_cond;
-	assign {overflow, compare} = src1 + {1'b1, ~src2} + 1;
+	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
 	assign uless = overflow;
