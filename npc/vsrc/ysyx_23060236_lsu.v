@@ -42,40 +42,19 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_val_shift;
 	wire [31:0] lsu_rdata_32;
 
-	ysyx_23060236_MuxKeyInternal #(5, 10, 3, 1) caculate_lsu_arsize(
-		.out(lsu_arsize),
-		.key({funct3, opcode}),
-		.default_out(3'b0),
-		.lut({
-			10'b0000000011, 3'b000,   //lb
-			10'b0010000011, 3'b001,   //lh
-			10'b0100000011, 3'b010,   //lw
-			10'b1000000011, 3'b000,   //lbu
-			10'b1010000011, 3'b001    //lhu
-		})
-	);
+	assign lsu_arsize = {1'b0, funct3[1:0]};
+	assign lsu_awsize = {1'b0, funct3[1:0]};
 
-	ysyx_23060236_MuxKeyInternal #(3, 10, 3, 1) caculate_lsu_awsize(
-		.out(lsu_awsize),
-		.key({funct3, opcode}),
-		.default_out(3'b0),
-		.lut({
-			10'b0000100011, 3'b000,   //sb
-			10'b0010100011, 3'b001,   //sh
-			10'b0100100011, 3'b010    //sw
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(5, 10, 32, 1) caculate_lsu_val_tmp(
+	ysyx_23060236_MuxKeyInternal #(5, 3, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
-		.key({funct3, opcode}),
+		.key(funct3),
 		.default_out(32'b0),
 		.lut({
-			10'b0000000011, (lsu_val_raw & 32'hff) | {{24{lsu_val_raw[7]}}, 8'h0},      //lb
-			10'b0010000011, (lsu_val_raw & 32'hffff) | {{16{lsu_val_raw[15]}}, 16'h0},  //lh
-			10'b0100000011, lsu_val_raw,                                                //lw
-			10'b1000000011, lsu_val_raw & 32'hff,                                       //lbu
-			10'b1010000011, lsu_val_raw & 32'hffff                                      //lhu
+			3'b000, (lsu_val_raw & 32'hff) | {{24{lsu_val_raw[7]}}, 8'h0},      //lb
+			3'b001, (lsu_val_raw & 32'hffff) | {{16{lsu_val_raw[15]}}, 16'h0},  //lh
+			3'b010, lsu_val_raw,                                                //lw
+			3'b100, lsu_val_raw & 32'hff,                                       //lbu
+			3'b101, lsu_val_raw & 32'hffff                                      //lhu
 		})
 	);
 
