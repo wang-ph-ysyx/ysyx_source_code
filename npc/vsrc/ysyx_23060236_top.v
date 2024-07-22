@@ -77,9 +77,9 @@ module ysyx_23060236(
 
 	wire [31:0] inst;
 	wire [6:0] opcode;
-	wire [4:0] rs1;
-	wire [4:0] rs2;
-	wire [4:0] rd;
+	wire [3:0] rs1;
+	wire [3:0] rs2;
+	wire [3:0] rd;
 	wire [2:0] funct3;
 	wire [6:0] funct7;
 	wire [31:0] imm;
@@ -161,7 +161,12 @@ module ysyx_23060236(
 	wire icache_bvalid;
 	wire icache_bready;
 
-	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
+	parameter TYPE_R = 3'd0;
+	parameter TYPE_I = 3'd1;
+	parameter TYPE_S = 3'd2;
+	parameter TYPE_B = 3'd3;
+	parameter TYPE_U = 3'd4;
+	parameter TYPE_J = 3'd5;
 
 	wire [31:0] csr_jump;
 	wire [31:0] exu_jump;
@@ -328,6 +333,8 @@ module ysyx_23060236(
 		.Type(Type),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
+		.reg_wen(reg_wen),
+		.csr_enable(csr_enable),
 		.idu_valid(idu_valid)
 	);
 
@@ -382,7 +389,7 @@ module ysyx_23060236(
 		.lsu_val(lsu_val)
 	);
 
-	ysyx_23060236_RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
 		.wdata(val),
 		.waddr(rd),
@@ -397,6 +404,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_CSRFile #(32) my_CSRreg(
 		.clock(clock),
+		.reset(reset),
 		.imm(imm[11:0]),
 		.wdata(csr_wdata),
 		.rdata(csr_val),
@@ -411,9 +419,7 @@ module ysyx_23060236(
 
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
-	assign reg_wen = ((Type == TYPE_I) & {funct3, opcode} != 10'b0001110011) || (Type == TYPE_U) || (Type == TYPE_J) || (Type == TYPE_R);
 	assign val = (exu_val | csr_val | lsu_val);
-	assign csr_enable = (opcode == 7'b1110011) & (funct3 != 3'b000);
 	assign jump = exu_jump | csr_jump;
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
@@ -435,7 +441,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-
+/*
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -453,5 +459,5 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-
+*/
 endmodule

@@ -8,9 +8,11 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-			case -1: ev.event = EVENT_YIELD; break;
+			case 11: ev.event = EVENT_SYSCALL; c->mepc += 4; break;
       default: ev.event = EVENT_ERROR; break;
     }
+
+		if (ev.event == EVENT_SYSCALL && c->GPR1 == -1) {ev.event = EVENT_YIELD;}
 
     c = user_handler(ev, c);
     assert(c != NULL);
