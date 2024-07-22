@@ -42,7 +42,7 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 			end
 			else if (inst_ecall) begin
 				mepc   <= epc;
-				mcause <= 32'h11;
+				mcause <= 32'd11;
 			end
 		end
 	end
