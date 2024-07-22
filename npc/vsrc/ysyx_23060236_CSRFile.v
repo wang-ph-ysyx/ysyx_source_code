@@ -12,39 +12,42 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 	input valid
 );
 
-	wire [2:0] addr;
-	reg [DATA_WIDTH-1:0] csr [5:0];//0:mepc  1:mcause  2:mstatus  3:mtvec  4:mvendorid  5:marchid
+	wire [31:0] rdata_tmp;
+	reg [DATA_WIDTH-1:0] mepc;
+	reg [DATA_WIDTH-1:0] mcause;
+	reg [DATA_WIDTH-1:0] mstatus;
+	reg [DATA_WIDTH-1:0] mtvec;
 
-	ysyx_23060236_MuxKeyInternal #(6, 12, 3, 1) choose_addr(
-		.out(addr),
+	ysyx_23060236_MuxKeyInternal #(6, 12, 32, 1) calculate_rdata_tmp(
+		.out(rdata_tmp),
 		.key(imm),
-		.default_out(3'b000),
+		.default_out(32'b0),
 		.lut({
-			12'h341, 3'b000, //mepc
-			12'h342, 3'b001, //mcause
-			12'h300, 3'b010, //mstatus
-			12'h305, 3'b011, //mtvec
-			12'hf11, 3'b100, //mvendorid
-			12'hf12, 3'b101  //marchid
+			12'h341, mepc,
+			12'h342, mcause,
+			12'h300, mstatus,
+			12'h305, mtvec,
+			12'hf11, 32'h79737978,
+			12'hf12, 32'h015fdf0c
 		})
 	);
 
 	always @(posedge clock) begin
 		if (valid) begin
 			if (enable) begin
-				csr[addr] <= wdata;
+				if (imm == 12'h341) mepc    <= wdata;
+				if (imm == 12'h342) mcause  <= wdata;
+				if (imm == 12'h300) mstatus <= wdata;
+				if (imm == 12'h305) mtvec   <= wdata;
 			end
 			else if (inst_ecall) begin
-				csr[0] <= epc + 4;
-				csr[1] <= cause;
-			end else begin
-				csr[4] <= 32'h79737978;
-				csr[5] <= 32'h015fdf0c;
+				mepc   <= epc;
+				mcause <= 32'h11;
 			end
 		end
 	end
 
-	assign rdata = {32{enable}} & csr[addr];
-	assign jump = {32{inst_ecall}} & csr[3] | {32{inst_mret}} & csr[0];
+	assign rdata = enable ? rdata_tmp : 32'b0;
+	assign jump = {32{inst_ecall}} & mtvec | {32{inst_mret}} & mepc;
 
 endmodule
