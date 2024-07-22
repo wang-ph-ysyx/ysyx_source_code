@@ -404,6 +404,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_CSRFile #(32) my_CSRreg(
 		.clock(clock),
+		.reset(reset),
 		.imm(imm[11:0]),
 		.wdata(csr_wdata),
 		.rdata(csr_val),

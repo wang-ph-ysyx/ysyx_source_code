@@ -1,5 +1,6 @@
 module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 	input clock,
+	input reset,
 	input [11:0] imm,
 	input [DATA_WIDTH-1:0] wdata,
 	output [DATA_WIDTH-1:0] rdata,
@@ -33,7 +34,13 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 	);
 
 	always @(posedge clock) begin
-		if (valid) begin
+		if (reset) begin
+			mepc    <= 32'h0;
+			mcause  <= 32'h0;
+			mstatus <= 32'h0;
+			mstatus <= 32'h1800;
+		end
+		else if (valid) begin
 			if (enable) begin
 				if (imm == 12'h341) mepc    <= wdata;
 				if (imm == 12'h342) mcause  <= wdata;
