@@ -39,10 +39,7 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 
 	always @(posedge clock) begin
 		if (reset) begin
-			csr[ADDR_MEPC]      <= 0;
-			csr[ADDR_MCAUSE]    <= 0;
 			csr[ADDR_MSTATUS]   <= 32'h1800;
-			csr[ADDR_MTVEC]     <= 0;
 			csr[ADDR_MVENDORID] <= 32'h79737978;
 			csr[ADDR_MARCHID]   <= 32'h015fdf0c;
 		end

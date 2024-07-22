@@ -250,8 +250,8 @@ module ysyx_23060236(
 		.clint_rdata(clint_rdata),
 		.clint_rresp(clint_rresp),
 		.clint_rvalid(clint_rvalid),
-		.clint_rready(clint_rready),
-		.icache_araddr(icache_araddr),
+		.clint_rready(clint_rready)
+/*		.icache_araddr(icache_araddr),
 		.icache_arvalid(icache_arvalid),
 		.icache_arready(icache_arready),
 		.icache_rdata(icache_rdata),
@@ -267,7 +267,7 @@ module ysyx_23060236(
 		.icache_wready(icache_wready),
 		.icache_bresp(icache_bresp),
 		.icache_bvalid(icache_bvalid),
-		.icache_bready(icache_bready)
+		.icache_bready(icache_bready)*/
 	);
 
 	ysyx_23060236_clint my_clint(

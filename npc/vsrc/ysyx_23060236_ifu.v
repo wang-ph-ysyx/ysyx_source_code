@@ -40,7 +40,7 @@ module ysyx_23060236_ifu(
 		.wen(ifu_rvalid & ifu_rready)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_ifu_valid(
+	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
 		.din(~idu_valid & ifu_rvalid & ifu_rready),
