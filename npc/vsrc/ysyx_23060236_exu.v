@@ -25,7 +25,9 @@ module ysyx_23060236_exu(
 	wire uless;
 
 	wire [31:0] op_compare;
+	wire op_overflow;
 	wire op_less;
+	wire op_uless;
 
 	wire [31:0] loperand;
 	wire [31:0] roperand;
@@ -118,14 +120,15 @@ module ysyx_23060236_exu(
 		})
 	);
 
-	assign op_compare = loperand - roperand;
+	assign {op_overflow, op_compare} = loperand + ((operator == OP_ADD) ? {1'b0, roperand} : ({1'b1, ~roperand} + 1));
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
+	assign op_uless = op_overflow;
 	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
 		.out(val),
 		.key(operator),
 		.default_out(32'b0),
 		.lut({
-			OP_ADD,   loperand + roperand,
+			OP_ADD,   op_compare,
 			OP_SUB,   op_compare,
 			OP_AND,   loperand & roperand,
 			OP_XOR,   loperand ^ roperand,
@@ -134,7 +137,7 @@ module ysyx_23060236_exu(
 			OP_SRA,   ($signed(loperand)) >>> (roperand & 32'h1f),
 			OP_SLL,   loperand << (roperand & 32'h1f),
 			OP_LESS,  {31'b0, op_less},
-			OP_ULESS, {31'b0, {loperand < roperand}}
+			OP_ULESS, {31'b0, op_uless}
 		})
 	);
 
