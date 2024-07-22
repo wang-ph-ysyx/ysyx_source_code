@@ -161,7 +161,12 @@ module ysyx_23060236(
 	wire icache_bvalid;
 	wire icache_bready;
 
-	parameter TYPE_R = 3'd0,  TYPE_I = 3'd1, TYPE_S = 3'd2, TYPE_B = 3'd3, TYPE_U = 3'd4, TYPE_J = 3'd5;
+	parameter TYPE_R = 3'd0;
+	parameter TYPE_I = 3'd1;
+	parameter TYPE_S = 3'd2;
+	parameter TYPE_B = 3'd3;
+	parameter TYPE_U = 3'd4;
+	parameter TYPE_J = 3'd5;
 
 	wire [31:0] csr_jump;
 	wire [31:0] exu_jump;
