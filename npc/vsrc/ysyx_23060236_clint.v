@@ -15,7 +15,7 @@ module ysyx_23060236_clint(
 	wire [63:0] mtime;
 	wire [31:0] data_out;
 	
-	assign data_out = {32{araddr == 32'h02000000}} & mtime[31:0] | {32{araddr == 32'h02000004}} & mtime[63:32];
+	assign data_out = araddr[2] ? mtime[63:32] : mtime[31:0];
 	assign rresp = 0;
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
