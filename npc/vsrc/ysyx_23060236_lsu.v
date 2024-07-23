@@ -89,9 +89,9 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_val_tmp),
+		.din(lsu_val_tmp & {32{~wb_valid}}),
 		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready)
+		.wen(lsu_rvalid & lsu_rready | wb_valid)
 	);
 
 	assign lsu_rready = 1;
