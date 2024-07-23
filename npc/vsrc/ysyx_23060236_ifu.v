@@ -56,7 +56,7 @@ module ysyx_23060236_ifu(
 	assign inst_icache_tmp = icache_rdata & {32{icache_rvalid & icache_rready & ~icache_rresp[1]}};
 	assign inst_tmp = inst_ifu_tmp | inst_icache_tmp;
 
-	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
+	ysyx_23060236_Reg #(1, 1) reg_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & wb_valid & ~ifu_in_sram),
@@ -80,7 +80,7 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
+	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & icache_rready & icache_rresp[1] | wb_valid & ifu_in_sram)),
