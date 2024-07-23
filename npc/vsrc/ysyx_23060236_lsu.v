@@ -58,18 +58,7 @@ module ysyx_23060236_lsu(
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(4, 2, 32, 1) calculate_lsu_val_shift(
-		.out(lsu_val_shift),
-		.key(lsu_araddr[1:0]),
-		.default_out(32'b0),
-		.lut({
-			2'b00, lsu_rdata_32[31:0],
-			2'b01, {8'b0,  lsu_rdata_32[31:8]},
-			2'b10, {16'b0, lsu_rdata_32[31:16]},
-			2'b11, {24'b0, lsu_rdata_32[31:24]}
-		})
-	);
-
+	assign lsu_val_shift = lsu_rdata_32 >> {lsu_araddr[1:0], 3'b0};
 	assign lsu_wstrb = wmask << lsu_awaddr[2:0];
 	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
 
