@@ -16,6 +16,7 @@ module ysyx_23060236_clint(
 	wire [31:0] data_out;
 	
 	assign data_out = {32{araddr == 32'h02000000}} & mtime[31:0] | {32{araddr == 32'h02000004}} & mtime[63:32];
+	assign rresp = 0;
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
@@ -38,14 +39,6 @@ module ysyx_23060236_clint(
 		.reset(reset),
 		.din(data_out),
 		.dout(rdata),
-		.wen(arvalid & arready)
-	);
-
-	ysyx_23060236_Reg #(2, 0) reg_rresp(
-		.clock(clock),
-		.reset(reset),
-		.din(0),
-		.dout(rresp),
 		.wen(arvalid & arready)
 	);
 
