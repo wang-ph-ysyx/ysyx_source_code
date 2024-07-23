@@ -62,14 +62,6 @@ module ysyx_23060236_lsu(
 	assign lsu_wstrb = wmask << lsu_awaddr[2:0];
 	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
 
-	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_val_tmp & {32{~wb_valid}}),
-		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready | wb_valid)
-	);
-
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
 		.reset(reset),
@@ -94,7 +86,15 @@ module ysyx_23060236_lsu(
 		.wen(1)
 	);
 
-	assign lsu_rready = 1;
+	ysyx_23060236_Reg #(1, 0) reg_lsu_rready(
+		.clock(clock),
+		.reset(reset),
+		.din(~lsu_rready & lsu_rvalid),
+		.dout(lsu_rready),
+		.wen(1)
+	);
+
+	assign lsu_val = lsu_rvalid ? lsu_val_tmp : 32'h0;
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = src1 + imm;
