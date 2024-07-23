@@ -425,7 +425,7 @@ module ysyx_23060236(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
+		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
 		.dout(wb_valid),
 		.wen(1)
 	);
@@ -453,11 +453,11 @@ import "DPI-C" function void add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 	end
-
+*/
 import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule
