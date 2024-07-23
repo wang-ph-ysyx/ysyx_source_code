@@ -31,13 +31,13 @@ module ysyx_23060236_ifu(
 
 
 	input         wb_valid,
-	input         ifu_valid,
 	input  [31:0] pc,
 	output [31:0] inst,
 	output        ifu_aligned,
 	output        idu_valid
 );
 
+	wire ifu_valid;
 	wire ifu_over;
 	wire pc_in_sram;
 	wire dnpc_in_sram;
@@ -59,6 +59,14 @@ module ysyx_23060236_ifu(
 	assign inst_icache_tmp = icache_rdata & {32{icache_rvalid & icache_rready & ~icache_rresp[1]}};
 	assign inst_tmp = inst_ifu_tmp | inst_icache_tmp;
 	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & pc_in_sram);
+
+	ysyx_23060236_Reg #(1, 1) reg_ifu_valid(
+		.clock(clock),
+		.reset(reset),
+		.din(~ifu_valid & wb_valid),
+		.dout(ifu_valid),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
 		.clock(clock),

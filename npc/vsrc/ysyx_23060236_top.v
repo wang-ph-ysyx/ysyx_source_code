@@ -73,7 +73,6 @@ module ysyx_23060236(
 );
 
 	wire [31:0] pc;
-	wire ifu_valid;
 	wire wb_valid;
 
 	wire [31:0] inst;
@@ -184,7 +183,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.din(dnpc),
 		.dout(pc),
-		.wen(lsu_bvalid & lsu_bready | wb_valid)
+		.wen(wb_valid)
 	);
 
 	ysyx_23060236_xbar my_xbar(
@@ -316,7 +315,6 @@ module ysyx_23060236(
 		.icache_bvalid(icache_bvalid),
 		.icache_bready(icache_bready),
 		.wb_valid(wb_valid),
-		.ifu_valid(ifu_valid),
 		.pc(pc),
 		.inst(inst),
 		.ifu_aligned(ifu_aligned),
@@ -427,16 +425,8 @@ module ysyx_23060236(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
+		.din(~wb_valid & (lsu_rvalid | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
 		.dout(wb_valid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 1) reg_ifu_valid(
-		.clock(clock),
-		.reset(reset),
-		.din(~ifu_valid & (wb_valid | lsu_bready & lsu_bvalid)),
-		.dout(ifu_valid),
 		.wen(1)
 	);
 
