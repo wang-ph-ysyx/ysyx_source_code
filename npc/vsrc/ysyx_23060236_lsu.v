@@ -58,57 +58,9 @@ module ysyx_23060236_lsu(
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(4, 2, 32, 1) calculate_lsu_val_shift(
-		.out(lsu_val_shift),
-		.key(lsu_araddr[1:0]),
-		.default_out(32'b0),
-		.lut({
-			2'b00, lsu_rdata_32[31:0],
-			2'b01, {8'b0,  lsu_rdata_32[31:8]},
-			2'b10, {16'b0, lsu_rdata_32[31:16]},
-			2'b11, {24'b0, lsu_rdata_32[31:24]}
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(8, 3, 8, 1) calculate_lsu_wstrb(
-		.out(lsu_wstrb),
-		.key(lsu_awaddr[2:0]),
-		.default_out(8'b0),
-		.lut({
-			3'b000, wmask,
-			3'b001, {wmask[6:0], 1'b0},
-			3'b010, {wmask[5:0], 2'b0},
-			3'b011, {wmask[4:0], 3'b0},
-			3'b100, {wmask[3:0], 4'b0},
-			3'b101, {wmask[2:0], 5'b0},
-			3'b110, {wmask[1:0], 6'b0},
-			3'b111, {wmask[0:0], 7'b0}
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(8, 3, 64, 1) calculate_lsu_wdata(
-		.out(lsu_wdata),
-		.key(lsu_awaddr[2:0]),
-		.default_out(64'b0),
-		.lut({
-			3'b000, {32'b0, src2},
-			3'b001, {24'b0, src2, 8'b0},
-			3'b010, {16'b0, src2, 16'b0},
-			3'b011, {8'b0, src2, 24'b0},
-			3'b100, {src2, 32'b0},
-			3'b101, {src2[23:0], 40'b0},
-			3'b110, {src2[15:0], 48'b0},
-			3'b111, {src2[7:0], 56'b0}
-		})
-	);
-
-	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_val_tmp & {32{~wb_valid}}),
-		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready | wb_valid)
-	);
+	assign lsu_val_shift = lsu_rdata_32 >> {lsu_araddr[1:0], 3'b0};
+	assign lsu_wstrb = wmask << lsu_awaddr[2:0];
+	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
@@ -132,6 +84,14 @@ module ysyx_23060236_lsu(
 		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
 		.dout(lsu_wvalid),
 		.wen(1)
+	);
+
+	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
+		.clock(clock),
+		.reset(reset),
+		.din(lsu_val_tmp & {32{~wb_valid}}),
+		.dout(lsu_val),
+		.wen(lsu_rvalid & lsu_rready | wb_valid)
 	);
 
 	assign lsu_rready = 1;

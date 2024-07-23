@@ -250,24 +250,7 @@ module ysyx_23060236(
 		.clint_rdata(clint_rdata),
 		.clint_rresp(clint_rresp),
 		.clint_rvalid(clint_rvalid),
-		.clint_rready(clint_rready),
-		.icache_araddr(icache_araddr),
-		.icache_arvalid(icache_arvalid),
-		.icache_arready(icache_arready),
-		.icache_rdata(icache_rdata),
-		.icache_rresp(icache_rresp),
-		.icache_rvalid(icache_rvalid),
-		.icache_rready(icache_rready),
-		.icache_awaddr(icache_awaddr),
-		.icache_awvalid(icache_awvalid),
-		.icache_awready(icache_awready),
-		.icache_wdata(icache_wdata),
-		.icache_wstrb(icache_wstrb),
-		.icache_wvalid(icache_wvalid),
-		.icache_wready(icache_wready),
-		.icache_bresp(icache_bresp),
-		.icache_bvalid(icache_bvalid),
-		.icache_bready(icache_bready)
+		.clint_rready(clint_rready)
 	);
 
 	ysyx_23060236_clint my_clint(
@@ -314,6 +297,23 @@ module ysyx_23060236(
 		.ifu_rresp(ifu_rresp),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
+		.icache_araddr(icache_araddr),
+		.icache_arvalid(icache_arvalid),
+		.icache_arready(icache_arready),
+		.icache_rdata(icache_rdata),
+		.icache_rresp(icache_rresp),
+		.icache_rvalid(icache_rvalid),
+		.icache_rready(icache_rready),
+		.icache_awaddr(icache_awaddr),
+		.icache_awvalid(icache_awvalid),
+		.icache_awready(icache_awready),
+		.icache_wdata(icache_wdata),
+		.icache_wstrb(icache_wstrb),
+		.icache_wvalid(icache_wvalid),
+		.icache_wready(icache_wready),
+		.icache_bresp(icache_bresp),
+		.icache_bvalid(icache_bvalid),
+		.icache_bready(icache_bready),
 		.wb_valid(wb_valid),
 		.pc(pc),
 		.inst(inst),
@@ -453,11 +453,11 @@ import "DPI-C" function void add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 	end
-
+*/
 import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule
