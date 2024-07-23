@@ -83,10 +83,9 @@ module ysyx_23060236_xbar(
 
 	wire ifu_reading, lsu_reading;
 	wire soc_reading, clint_reading;
-	wire [31:0] araddr;
 
 	assign soc_reading = ~clint_reading;
-	assign clint_reading = (araddr >= 32'h02000000) & (araddr <= 32'h0200ffff);
+	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr <= 32'h0200ffff);
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
 		.clock(clock),
@@ -103,8 +102,6 @@ module ysyx_23060236_xbar(
 		.dout(lsu_reading),
 		.wen(1)
 	);
-
-	assign araddr = lsu_araddr;
 
 	assign ifu_arready       = ifu_reading & io_master_arready;
 	assign lsu_arready       = lsu_reading & (soc_reading & io_master_arready | clint_reading & clint_arready);
