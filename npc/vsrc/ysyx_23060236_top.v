@@ -316,7 +316,6 @@ module ysyx_23060236(
 		.icache_bready(icache_bready),
 		.wb_valid(wb_valid),
 		.pc(pc),
-		.dnpc(dnpc),
 		.inst(inst),
 		.ifu_aligned(ifu_aligned),
 		.idu_valid(idu_valid)
