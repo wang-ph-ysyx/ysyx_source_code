@@ -37,6 +37,8 @@ module ysyx_23060236_ifu(
 	output        idu_valid
 );
 
+	wire ifu_valid;
+	wire ifu_over;
 	wire ifu_in_sram;
 	wire [31:0] inst_tmp;
 	wire [31:0] inst_icache_tmp;
@@ -55,11 +57,20 @@ module ysyx_23060236_ifu(
 	assign inst_ifu_tmp  = ({32{~ifu_in_sram}} & ifu_rdata[31:0] | {32{ifu_aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0])) & {32{ifu_rvalid & ifu_rready}};
 	assign inst_icache_tmp = icache_rdata & {32{icache_rvalid & icache_rready & ~icache_rresp[1]}};
 	assign inst_tmp = inst_ifu_tmp | inst_icache_tmp;
+	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & ifu_in_sram);
+
+	ysyx_23060236_Reg #(1, 0) reg_ifu_valid(
+		.clock(clock),
+		.reset(reset),
+		.din(ifu_valid & ~ifu_over | ~ifu_valid & wb_valid),
+		.dout(ifu_valid),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(1, 1) reg_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & wb_valid & ~ifu_in_sram),
+		.din(icache_arvalid & ~icache_arready | ~icache_arvalid & ifu_valid & ~ifu_in_sram),
 		.dout(icache_arvalid),
 		.wen(1)
 	);
@@ -83,7 +94,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & icache_rready & icache_rresp[1] | wb_valid & ifu_in_sram)),
+		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & icache_rready & icache_rresp[1] | ifu_valid & ifu_in_sram)),
 		.dout(ifu_arvalid),
 		.wen(1)
 	);
@@ -99,7 +110,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~idu_valid & (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & ifu_in_sram)),
+		.din(~idu_valid & ifu_over),
 		.dout(idu_valid),
 		.wen(1)
 	);
