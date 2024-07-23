@@ -70,22 +70,7 @@ module ysyx_23060236_lsu(
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(8, 3, 8, 1) calculate_lsu_wstrb(
-		.out(lsu_wstrb),
-		.key(lsu_awaddr[2:0]),
-		.default_out(8'b0),
-		.lut({
-			3'b000, wmask,
-			3'b001, {wmask[6:0], 1'b0},
-			3'b010, {wmask[5:0], 2'b0},
-			3'b011, {wmask[4:0], 3'b0},
-			3'b100, {wmask[3:0], 4'b0},
-			3'b101, {wmask[2:0], 5'b0},
-			3'b110, {wmask[1:0], 6'b0},
-			3'b111, {wmask[0:0], 7'b0}
-		})
-	);
-
+	assign lsu_wstrb = wmask << lsu_awaddr[2:0];
 	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
 
 	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
