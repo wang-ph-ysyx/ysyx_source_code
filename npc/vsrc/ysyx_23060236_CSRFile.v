@@ -7,7 +7,6 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 	input enable,
 	input inst_ecall,
 	input [31:0] epc,
-	input [31:0] cause,
 	output [31:0] jump,
 	input inst_mret,
 	input valid

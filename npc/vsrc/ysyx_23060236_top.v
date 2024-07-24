@@ -91,7 +91,6 @@ module ysyx_23060236(
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
-	wire [31:0] cause;
 
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
@@ -398,7 +397,6 @@ module ysyx_23060236(
 		.raddr1(rs1),
 		.raddr2(rs2),
 		.wen(reg_wen),
-		.cause(cause),
 		.valid(wb_valid)
 	);
 
@@ -411,7 +409,6 @@ module ysyx_23060236(
 		.enable(csr_enable),
 		.inst_ecall(inst_ecall),
 		.epc(pc),
-		.cause(cause),
 		.jump(csr_jump),
 		.inst_mret(inst_mret),
 		.valid(wb_valid)
