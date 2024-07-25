@@ -152,14 +152,14 @@ module ysyx_23060236_exu(
 
 
 	//write
-	ysyx_23060236_MuxKeyInternal #(3, 3, 4, 1) calculate_wmask(
+	ysyx_23060236_MuxKeyInternal #(3, 2, 4, 1) calculate_wmask(
 		.out(wmask[3:0]),
-		.key(funct3),
+		.key(funct3[1:0]),
 		.default_out(4'b0),
 		.lut({
-			3'b000, 4'h1, //sb
-			3'b001, 4'h3, //sh
-			3'b010, 4'hf  //sw
+			2'b00, 4'h1, //sb
+			2'b01, 4'h3, //sh
+			2'b10, 4'hf  //sw
 		})
 	);
 
