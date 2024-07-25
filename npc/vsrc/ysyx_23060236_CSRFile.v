@@ -1,15 +1,15 @@
 module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
-	input clock,
-	input reset,
-	input [11:0] imm,
-	input [DATA_WIDTH-1:0] wdata,
+	input  clock,
+	input  reset,
+	input  [11:0] imm,
+	input  [DATA_WIDTH-1:0] wdata,
 	output [DATA_WIDTH-1:0] rdata,
-	input enable,
-	input inst_ecall,
-	input [31:0] epc,
+	input  enable,
+	input  inst_ecall,
+	input  [31:0] epc,
 	output [31:0] jump,
-	input inst_mret,
-	input valid
+	input  inst_mret,
+	input  valid
 );
 
 	wire [2:0] addr;
@@ -45,6 +45,8 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
 		else if (valid) begin
 			if (enable) begin
 				csr[addr] <= wdata;
+				csr[ADDR_MVENDORID] <= 32'h79737978;
+				csr[ADDR_MARCHID]   <= 32'h015fdf0c;
 			end
 			else if (inst_ecall) begin
 				csr[ADDR_MEPC]   <= epc;

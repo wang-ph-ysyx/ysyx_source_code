@@ -41,7 +41,6 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
 	wire [31:0] lsu_rdata_32;
-	wire [31:0] addr;
 
 	assign lsu_arsize = {1'b0, funct3[1:0]};
 	assign lsu_awsize = {1'b0, funct3[1:0]};
@@ -97,9 +96,8 @@ module ysyx_23060236_lsu(
 
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign addr = src1 + imm;
-	assign lsu_araddr = addr;
-	assign lsu_awaddr = addr;
+	assign lsu_araddr = src1 + imm;
+	assign lsu_awaddr = lsu_araddr;
 	assign lsu_aligned_64 = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
 	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
 	assign lsu_rdata_32 = (lsu_aligned_64 & lsu_araddr[2]) ? lsu_rdata[63:32] : lsu_rdata[31:0];
