@@ -76,22 +76,21 @@ module ysyx_23060236(
 	wire wb_valid;
 
 	wire [31:0] inst;
-	wire [6:0] opcode;
-	wire [3:0] rs1;
-	wire [3:0] rs2;
-	wire [3:0] rd;
-	wire [2:0] funct3;
-	wire [6:0] funct7;
+	wire [6:0]  opcode;
+	wire [3:0]  rs1;
+	wire [3:0]  rs2;
+	wire [3:0]  rd;
+	wire [2:0]  funct3;
+	wire [6:0]  funct7;
 	wire [31:0] imm;
 	wire [31:0] src1;
 	wire [31:0] val;
 	wire [31:0] src2;
-	wire [2:0] Type;
+	wire [2:0]  Type;
 	wire reg_wen;
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
-	wire [31:0] cause;
 
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
@@ -103,63 +102,63 @@ module ysyx_23060236(
 	wire idu_valid;
 	wire [7:0] wmask;
 
-	wire ifu_arvalid;
+	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
 	wire [63:0] ifu_rdata;
-	wire ifu_arready;
-	wire ifu_rvalid;
-	wire [1:0] ifu_rresp;
-	wire ifu_rready;
+	wire        ifu_arready;
+	wire        ifu_rvalid;
+	wire [1:0]  ifu_rresp;
+	wire        ifu_rready;
 
 	wire [31:0] lsu_araddr;
-	wire lsu_arvalid;
-	wire lsu_arready;
+	wire        lsu_arvalid;
+	wire        lsu_arready;
 	wire [63:0] lsu_rdata;
-	wire [1:0] lsu_rresp;
-	wire lsu_rvalid;
-	wire lsu_rready;
+	wire [1:0]  lsu_rresp;
+	wire        lsu_rvalid;
+	wire        lsu_rready;
 	wire [31:0] lsu_awaddr;
-	wire lsu_awvalid;
-	wire lsu_awready;
+	wire        lsu_awvalid;
+	wire        lsu_awready;
 	wire [63:0] lsu_wdata;
-	wire [7:0] lsu_wstrb;
-	wire lsu_wvalid;
-	wire lsu_wready;
-	wire [1:0] lsu_bresp;
-	wire lsu_bvalid;
-	wire lsu_bready;
-	wire [2:0] lsu_arsize;
-	wire [2:0] lsu_awsize;
+	wire [7:0]  lsu_wstrb;
+	wire        lsu_wvalid;
+	wire        lsu_wready;
+	wire [1:0]  lsu_bresp;
+	wire        lsu_bvalid;
+	wire        lsu_bready;
+	wire [2:0]  lsu_arsize;
+	wire [2:0]  lsu_awsize;
 
 	wire lsu_aligned_64;
 	wire lsu_aligned_32;
 	wire ifu_aligned;
 
 	wire [31:0] clint_araddr;
-	wire clint_arvalid;
-	wire clint_arready;
+	wire        clint_arvalid;
+	wire        clint_arready;
 	wire [31:0] clint_rdata;
 	wire [1:0]  clint_rresp;
-	wire clint_rvalid;
-	wire clint_rready;
+	wire        clint_rvalid;
+	wire        clint_rready;
 
 	wire [31:0] icache_araddr;
-	wire icache_arvalid;
-	wire icache_arready;
+	wire        icache_arvalid;
+	wire        icache_arready;
 	wire [31:0] icache_rdata;
-	wire [1:0] icache_rresp;
-	wire icache_rvalid;
-	wire icache_rready;
+	wire [1:0]  icache_rresp;
+	wire        icache_rvalid;
+	wire        icache_rready;
 	wire [31:0] icache_awaddr;
-	wire icache_awvalid;
-	wire icache_awready;
+	wire        icache_awvalid;
+	wire        icache_awready;
 	wire [31:0] icache_wdata;
-	wire [7:0] icache_wstrb;
-	wire icache_wvalid;
-	wire icache_wready;
-	wire [1:0] icache_bresp;
-	wire icache_bvalid;
-	wire icache_bready;
+	wire [7:0]  icache_wstrb;
+	wire        icache_wvalid;
+	wire        icache_wready;
+	wire [1:0]  icache_bresp;
+	wire        icache_bvalid;
+	wire        icache_bready;
 
 	parameter TYPE_R = 3'd0;
 	parameter TYPE_I = 3'd1;
@@ -343,6 +342,7 @@ module ysyx_23060236(
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
+		.Type(Type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.val(exu_val),
@@ -398,7 +398,6 @@ module ysyx_23060236(
 		.raddr1(rs1),
 		.raddr2(rs2),
 		.wen(reg_wen),
-		.cause(cause),
 		.valid(wb_valid)
 	);
 
@@ -411,7 +410,6 @@ module ysyx_23060236(
 		.enable(csr_enable),
 		.inst_ecall(inst_ecall),
 		.epc(pc),
-		.cause(cause),
 		.jump(csr_jump),
 		.inst_mret(inst_mret),
 		.valid(wb_valid)
@@ -441,7 +439,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-/*
+
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -453,7 +451,7 @@ import "DPI-C" function void add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 	end
-*/
+
 import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 	always @(posedge clock) begin

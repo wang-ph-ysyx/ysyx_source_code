@@ -140,13 +140,11 @@ module ysyx_23060236_xbar(
 	assign io_master_bready  = lsu_bready;
 	assign lsu_bvalid        = io_master_bvalid;
 	assign lsu_bresp         = io_master_bresp;
-/*
+
 import "DPI-C" function void add_lsu_readingcycle();
-import "DPI-C" function void add_ifu_readingcycle();
 
 	always @(posedge clock) begin
 		if (lsu_reading) add_lsu_readingcycle();
-		if (ifu_reading) add_ifu_readingcycle();
 	end
-*/
+
 endmodule
