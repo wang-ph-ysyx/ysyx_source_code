@@ -20,13 +20,6 @@ module ysyx_23060236_exu(
 	parameter TYPE_U = 3'd4;
 	parameter TYPE_J = 3'd5; 
 
-	wire [31:0] val0;
-	wire [31:0]	val1;
-	wire [31:0] val2;
-
-	wire [31:0] jump1;
-	wire [31:0] jump2;
-
 	wire [31:0] compare;
 	wire overflow;
 	wire less;
