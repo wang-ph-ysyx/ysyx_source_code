@@ -33,10 +33,10 @@ module ysyx_23060236_ifu(
 	input         wb_valid,
 	input  [31:0] pc,
 	output [31:0] inst,
-	output        ifu_aligned,
 	output        idu_valid
 );
 
+	wire ifu_aligned;
 	wire ifu_valid;
 	wire ifu_over;
 	wire pc_in_sram;
