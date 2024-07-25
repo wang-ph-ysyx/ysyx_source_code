@@ -40,7 +40,6 @@ module ysyx_23060236_ifu(
 	wire ifu_valid;
 	wire ifu_over;
 	wire pc_in_sram;
-	wire dnpc_in_sram;
 	wire [31:0] inst_tmp;
 	wire [31:0] inst_icache_tmp;
 	wire [31:0] inst_ifu_tmp;
