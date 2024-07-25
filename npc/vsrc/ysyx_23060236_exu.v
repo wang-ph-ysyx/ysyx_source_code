@@ -45,30 +45,30 @@ module ysyx_23060236_exu(
 	wire jump_en;
 
 	//exu_val
-	ysyx_23060236_MuxKeyInternal #(3, 7, 32, 1) calculate_loperand(
+	ysyx_23060236_MuxKeyInternal #(6, 7, 32, 1) calculate_loperand(
 		.out(loperand),
 		.key(opcode),
-		.default_out(pc),
+		.default_out(32'b0),
 		.lut({
 			7'b0110111, 32'b0,     //lui
-		//7'b0010111, pc,        //auipc     default
-		//7'b1101111, pc,        //jal       default
-		//7'b1100111, pc,        //jalr      default
+			7'b0010111, pc,        //auipc
+			7'b1101111, pc,        //jal
+			7'b1100111, pc,        //jalr
 			7'b0010011, src1,      //src1 imm
 			7'b0110011, src1       //src1 src2
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(3, 7, 32, 1) calculate_roperand(
+	ysyx_23060236_MuxKeyInternal #(6, 7, 32, 1) calculate_roperand(
 		.out(roperand),
 		.key(opcode),
-		.default_out(imm),
+		.default_out(32'b0),
 		.lut({
-		//7'b0110111, imm,       //lui       default
-		//7'b0010111, imm,       //auipc     default
+			7'b0110111, imm,       //lui
+			7'b0010111, imm,       //auipc
 			7'b1101111, 32'd4,     //jal
 			7'b1100111, 32'd4,     //jalr
-		//7'b0010011, imm,       //src1 imm  default
+			7'b0010011, imm,       //src1 imm
 			7'b0110011, src2       //src1 src2
 		})
 	);
