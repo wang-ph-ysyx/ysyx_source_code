@@ -34,10 +34,7 @@ module ysyx_23060236_icache(
 	wire [25:0] read_tag;
 	wire [3:0]  write_index;
 	wire [25:0] write_tag;
-	wire awaddr_valid;
-	wire wdata_valid;
 	wire [31:0] awaddr_reg;
-	wire [31:0] wdata_reg;
 
 	assign read_tag = icache_araddr[31:6];
 	assign read_index = icache_araddr[5:2];
@@ -88,7 +85,7 @@ module ysyx_23060236_icache(
 	ysyx_23060236_Reg #(1, 1) calculate_icache_wready(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_wready & ~icache_wvalid | ~icache_wready & icache_bvalid & icache_bready),
+		.din(icache_wready & ~icache_wvalid | ~icache_wready & icache_awvalid & icache_awready),
 		.dout(icache_wready),
 		.wen(1)
 	);
@@ -101,34 +98,10 @@ module ysyx_23060236_icache(
 		.wen(icache_awvalid & icache_awready)
 	);
 
-	ysyx_23060236_Reg #(32, 0) calculate_wdata_reg(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_wdata),
-		.dout(wdata_reg),
-		.wen(icache_wvalid & icache_wready)
-	);
-
-	ysyx_23060236_Reg #(1, 0) calculate_awaddr_valid(
-		.clock(clock),
-		.reset(reset),
-		.din(awaddr_valid & ~(icache_bvalid & icache_bready) | ~awaddr_valid & icache_awvalid & icache_awready),
-		.dout(awaddr_valid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 0) calculate_wdata_valid(
-		.clock(clock),
-		.reset(reset),
-		.din(wdata_valid & ~(icache_bvalid & icache_bready) | ~wdata_valid & icache_wvalid & icache_wready),
-		.dout(wdata_valid),
-		.wen(1)
-	);
-
 	ysyx_23060236_Reg #(1, 0) calculate_icache_bvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_bvalid & ~icache_bready | ~icache_bvalid & (awaddr_valid & wdata_valid)),
+		.din(icache_bvalid & ~icache_bready | ~icache_bvalid & (icache_wvalid & icache_wready)),
 		.dout(icache_bvalid),
 		.wen(1)
 	);
@@ -137,15 +110,15 @@ module ysyx_23060236_icache(
 
 	always @(posedge clock) begin
 		if (reset) icache_valid <= 16'b0;
-		else if (wdata_valid & awaddr_valid) icache_valid[write_index] <= 1'b1;
+		else if (icache_wvalid & icache_wready) icache_valid[write_index] <= 1'b1;
 	end
 
 	always @(posedge clock) begin
-		if (~reset & wdata_valid & awaddr_valid) icache_data[write_index] <= wdata_reg;
+		if (~reset & icache_wvalid & icache_wready) icache_data[write_index] <= icache_wdata;
 	end
 
 	always @(posedge clock) begin
-		if (~reset & wdata_valid & awaddr_valid) icache_tag[write_index] <= write_tag;
+		if (~reset & icache_wvalid & icache_wready) icache_tag[write_index] <= write_tag;
 	end
 
 endmodule
