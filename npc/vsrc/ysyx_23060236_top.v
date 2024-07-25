@@ -342,6 +342,7 @@ module ysyx_23060236(
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
+		.Type(Type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.val(exu_val),
