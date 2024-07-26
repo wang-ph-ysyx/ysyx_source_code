@@ -36,7 +36,6 @@ module ysyx_23060236_ifu(
 	output        idu_valid
 );
 
-	wire ifu_aligned;
 	wire ifu_valid;
 	wire ifu_over;
 	wire pc_in_sram;
@@ -53,8 +52,7 @@ module ysyx_23060236_ifu(
 	assign ifu_rready    = 1;
 	assign ifu_araddr    = pc;
 	assign pc_in_sram    = (pc   >= 32'h0f000000) & (pc   < 32'h0f002000);
-	assign ifu_aligned   = pc_in_sram;
-	assign inst_ifu_tmp  = ({32{~pc_in_sram}} & ifu_rdata[31:0] | {32{ifu_aligned}} & ({32{pc[2]}} & ifu_rdata[63:32] | {32{~pc[2]}} & ifu_rdata[31:0])) & {32{ifu_rvalid & ifu_rready}};
+	assign inst_ifu_tmp  = ((pc_in_sram & pc[2]) ? ifu_rdata[63:32] : ifu_rdata[31:0]) & {32{ifu_rvalid & ifu_rready}};
 	assign inst_icache_tmp = icache_rdata & {32{icache_rvalid & icache_rready & ~icache_rresp[1]}};
 	assign inst_tmp = inst_ifu_tmp | inst_icache_tmp;
 	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & pc_in_sram);
