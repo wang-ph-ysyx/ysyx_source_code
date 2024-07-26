@@ -15,7 +15,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld
 LDFLAGS   += --gc-sections -e _start 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/riscv/ysyxsoc/include
-CACHESIMFLAGS = -b -c $(BUILD_DIR)/icache_trace.bin
+CACHESIMFLAGS = -b -c $(WORK_DIR)/build/icache_trace.bin
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
 image: $(IMAGE).elf
