@@ -65,7 +65,7 @@ static long load_img() {
   fseek(fp, 0, SEEK_SET);
 #ifdef CONFIG_CTRACE
 	int ret = fread(guest_to_host(FLASH_BASE), size, 1, fp);
-#elif
+#else
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
 #endif
   assert(ret == 1);

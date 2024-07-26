@@ -30,7 +30,7 @@ static void restart() {
   /* Set the initial program counter. */
 #ifdef CONFIG_CTRACE
 	cpu.pc = FLASH_BASE;
-#elif
+#else
   cpu.pc = RESET_VECTOR;
 #endif
   /* The zero register is always 0. */
@@ -44,7 +44,7 @@ void init_isa() {
   /* Load built-in image. */
 #ifdef CONFIG_CTRACE
 	memcpy(guest_to_host(FLASH_BASE), img, sizeof(img));
-#elif
+#else
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
 #endif
   /* Initialize this virtual computer system. */
