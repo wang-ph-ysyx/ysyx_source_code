@@ -15,6 +15,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld
 LDFLAGS   += --gc-sections -e _start 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/riscv/ysyxsoc/include
+CACHESIMFLAGS = -b -c $(BUILD_DIR)/icache_trace.bin
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
 image: $(IMAGE).elf
@@ -24,3 +25,6 @@ image: $(IMAGE).elf
 
 run: image
 	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin
+
+cachesim: image
+	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(CACHESIMFLAGS)" IMG=$(IMAGE).bin
