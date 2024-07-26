@@ -81,6 +81,9 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
 	IFDEF(CONFIG_MTRACE, mtrace_read(addr, len));
+#ifdef CONFIG_CTRACE
+	if (addr >= 0x10000000 && addr < 0x10001000) return 0;
+#endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
