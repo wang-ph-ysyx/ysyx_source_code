@@ -30,8 +30,8 @@ module ysyx_23060236_icache(
 	localparam INDEX_LEN  = 4;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 
-	reg [ADDR_LEN-1:0] icache_data [2**INDEX_LEN-1:0];
-	reg [TAG_LEN-1:0] icache_tag  [2**INDEX_LEN-1:0];
+	reg [ADDR_LEN-1:0]     icache_data [2**INDEX_LEN-1:0];
+	reg [TAG_LEN-1:0]      icache_tag  [2**INDEX_LEN-1:0];
 	reg [2**INDEX_LEN-1:0] icache_valid;
 
 	wire hit_icache;
