@@ -1,122 +1,176 @@
 module ysyx_23060236_exu(
-	input [6:0] opcode,
-	input [31:0] src1,
-	input [31:0] src2,
-	input [31:0] imm,
-	input [2:0] funct3,
-	input [6:0] funct7,
-	input [31:0] pc,
+	input  [6:0]  opcode,
+	input  [31:0] src1,
+	input  [31:0] src2,
+	input  [31:0] imm,
+	input  [2:0]  Type,
+	input  [2:0]  funct3,
+	input  [6:0]  funct7,
+	input  [31:0] pc,
 	output [31:0] val,
 	output [31:0] jump,
-	input [31:0] csr_val,
+	input  [31:0] csr_val,
 	output [31:0] csr_wdata,
-	output [7:0] wmask);
+	output [3:0]  wmask
+);
 
-	wire [31:0] val0;
-	wire [31:0]	val1;
-	wire [31:0] val2;
-
-	wire [31:0] jump1;
-	wire [31:0] jump2;
+	parameter TYPE_R = 3'd0;
+	parameter TYPE_I = 3'd1;
+	parameter TYPE_S = 3'd2;
+	parameter TYPE_B = 3'd3;
+	parameter TYPE_U = 3'd4;
+	parameter TYPE_J = 3'd5; 
 
 	wire [31:0] compare;
+	wire overflow;
+	wire less;
+	wire unequal;
+	wire uless;
 
-	reg [31:0] rdata;
+	wire [31:0] op_compare;
+	wire op_overflow;
+	wire op_less;
+	wire op_uless;
 
-	ysyx_23060236_MuxKeyInternal #(3, 7, 32, 1) calculate_val0(
-		.out(val0),
+	wire [31:0] loperand;
+	wire [31:0] roperand;
+	wire [3:0] operator;
+	wire [3:0] operator1;
+	wire [3:0] operator2;
+	wire [3:0] operator3;
+	wire [3:0] operator4;
+	wire [31:0] jloperand;
+	wire [31:0] jroperand;
+	wire jump_cond;
+	wire jump_en;
+
+	//exu_val
+	ysyx_23060236_MuxKeyInternal #(6, 7, 32, 1) calculate_loperand(
+		.out(loperand),
+		.key(opcode),
+		.default_out(32'b0),
+		.lut({
+			7'b0110111, 32'b0,     //lui
+			7'b0010111, pc,        //auipc
+			7'b1101111, pc,        //jal
+			7'b1100111, pc,        //jalr
+			7'b0010011, src1,      //src1 imm
+			7'b0110011, src1       //src1 src2
+		})
+	);
+
+	ysyx_23060236_MuxKeyInternal #(6, 7, 32, 1) calculate_roperand(
+		.out(roperand),
 		.key(opcode),
 		.default_out(32'b0),
 		.lut({
 			7'b0110111, imm,       //lui
-			7'b0010111, pc + imm,  //auipc
-			7'b1101111, pc + 4     //jal
+			7'b0010111, imm,       //auipc
+			7'b1101111, 32'd4,     //jal
+			7'b1100111, 32'd4,     //jalr
+			7'b0010011, imm,       //src1 imm
+			7'b0110011, src2       //src1 src2
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(6, 10, 32, 1) calculate_val1(
-		.out(val1),
-		.key({funct3, opcode}),
+	localparam OP_ADD   = 4'd0;
+	localparam OP_SUB   = 4'd1;
+	localparam OP_AND   = 4'd2;
+	localparam OP_XOR   = 4'd3;
+	localparam OP_OR    = 4'd4;
+	localparam OP_SRL   = 4'd5;
+	localparam OP_SRA   = 4'd6;
+	localparam OP_SLL   = 4'd7;
+	localparam OP_LESS  = 4'd8;
+	localparam OP_ULESS = 4'd9;
+	assign operator = ((Type == TYPE_I) | (Type == TYPE_R)) ? operator1 : OP_ADD;
+
+	ysyx_23060236_MuxKeyInternal #(8, 3, 4, 1) calculate_operator1(
+		.out(operator1),
+		.key(funct3),
+		.default_out(OP_ADD),
+		.lut({
+			3'b000, operator2,     //add sub addi
+			3'b001, OP_SLL,        //sll slli
+			3'b010, OP_LESS,       //slt slti
+			3'b011, OP_ULESS,      //sltu sltiu
+			3'b100, OP_XOR,        //xor xori
+			3'b101, operator3,     //srl sra srli srai
+			3'b110, OP_OR,         //or ori
+			3'b111, OP_AND         //and andi
+		})
+	);
+
+	assign operator2 = (Type == TYPE_R & funct7[5]) ? OP_SUB : OP_ADD;
+	assign operator3 = funct7[5] ? OP_SRA : OP_SRL;
+
+	assign {op_overflow, op_compare} = loperand - roperand;
+	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
+	assign op_uless = op_overflow;
+	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
+		.out(val),
+		.key(operator),
 		.default_out(32'b0),
 		.lut({
-			10'b0000010011, src1 + imm,             //addi
-			10'b0110010011, {31'b0, {src1 < imm}},  //sltiu
-			10'b1000010011, src1 ^ imm,             //xori
-			10'b1100010011, src1 | imm,             //ori
-			10'b1110010011, src1 & imm,             //andi
-			10'b0001100111, pc + 4                  //jalr
+			OP_ADD,   loperand + roperand,
+			OP_SUB,   op_compare,
+			OP_AND,   loperand & roperand,
+			OP_XOR,   loperand ^ roperand,
+			OP_OR,    loperand | roperand,
+			OP_SRL,   loperand >> (roperand & 32'h1f),
+			OP_SRA,   ($signed(loperand)) >>> (roperand & 32'h1f),
+			OP_SLL,   loperand << (roperand & 32'h1f),
+			OP_LESS,  {31'b0, op_less},
+			OP_ULESS, {31'b0, op_uless}
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(13, 17, 32, 1) calculate_val2(
-		.out(val2),
-		.key({funct7, funct3, opcode}),
-		.default_out(32'b0),
+
+	//jump
+	assign jloperand = (Type == TYPE_I) ? src1 : pc;
+	assign jroperand = imm;
+	assign jump = {jloperand + jroperand} & {32{jump_en}};
+	assign jump_en = (Type == TYPE_J) | (opcode == 7'b1100111) | (Type == TYPE_B) & jump_cond;
+	assign {overflow, compare} = src1 - src2;
+	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
+	assign unequal = |compare;
+	assign uless = overflow;
+
+	ysyx_23060236_MuxKeyInternal #(6, 3, 1, 1) calculate_jump_cond(
+		.out(jump_cond),
+		.key(funct3),
+		.default_out(1'b0),
 		.lut({
-			17'b00000000010010011, src1 << imm,             //slli
-			17'b00000001010010011, src1 >> imm,             //srli
-			17'b01000001010010011, ($signed(src1)) >>> (imm & 32'h1f), //srai
-			17'b00000000000110011, src1 + src2,             //add
-			17'b01000000000110011, src1 - src2,             //sub
-			17'b00000000010110011, src1 << (0'h1f & src2),  //sll
-			17'b00000000100110011, {31'b0, {(src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31]}},  //slt
-			17'b00000000110110011, {31'b0, {src1 < src2}},  //sltu
-			17'b00000001000110011, src1 ^ src2,             //xor
-			17'b00000001010110011, src1 >> (src2 & 32'h1f), //srl
-			17'b01000001010110011, ($signed(src1)) >>> (src2 & 32'h1f), //sra
-			17'b00000001100110011, src1 | src2,             //or
-			17'b00000001110110011, src1 & src2              //and
+			3'b000, ~unequal,  //beq
+			3'b001, unequal,   //bne
+			3'b100, less,      //blt
+			3'b101, ~less,     //bge
+			3'b110, uless,     //bltu
+			3'b111, ~uless     //bgeu
 		})
 	);
 
 
-	ysyx_23060236_MuxKeyInternal #(1, 7, 32, 1) calculate_jump1(
-		.out(jump1),
-		.key(opcode),
-		.default_out(32'b0),
-		.lut({
-			7'b1101111, pc + imm  //jal
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(7, 10, 32, 1) calculate_jump2(
-		.out(jump2),
-		.key({funct3, opcode}),
-		.default_out(32'b0),
-		.lut({
-			10'b0001100111, (src1 + imm) & (~32'b1),          //jalr
-			10'b0001100011, (pc + imm) & (~{32{|compare}}),   //beq
-			10'b0011100011, (pc + imm) & {32{|compare}},      //bne
-			10'b1001100011, (pc + imm) & {32{(src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31]}},      //blt
-			10'b1011100011, (pc + imm) & {32{(~src1[31] & src2[31]) | ~(src1[31] ^ src2[31]) & ~compare[31]}},      //bge
-			10'b1101100011, (pc + imm) & {32{src1 < src2}},   //bltu
-			10'b1111100011, (pc + imm) & {32{src1 >= src2}}   //bgeu
-		})
-	);
-
-	ysyx_23060236_MuxKeyInternal #(3, 10, 8, 1) calculate_wmask(
+	//write
+	ysyx_23060236_MuxKeyInternal #(3, 2, 4, 1) calculate_wmask(
 		.out(wmask),
-		.key({funct3, opcode}),
-		.default_out(8'b0),
+		.key(funct3[1:0]),
+		.default_out(4'b0),
 		.lut({
-			10'b0000100011, 8'h1, //sb
-			10'b0010100011, 8'h3, //sh
-			10'b0100100011, 8'hf  //sw
+			2'b00, 4'h1, //sb
+			2'b01, 4'h3, //sh
+			2'b10, 4'hf  //sw
 		})
 	);
 
-	ysyx_23060236_MuxKeyInternal #(2, 10, 32, 1) calculate_csr_wdata(
+	ysyx_23060236_MuxKeyInternal #(2, 3, 32, 1) calculate_csr_wdata(
 		.out(csr_wdata),
-		.key({funct3, opcode}),
+		.key(funct3),
 		.default_out(32'b0),
 		.lut({
-			10'b0101110011, src1 | csr_val, //csrrs
-			10'b0011110011, src1            //csrrw
+			3'b010, src1 | csr_val, //csrrs
+			3'b001, src1            //csrrw
 		})
 	);
-
-	assign val = val0 | val1 | val2;
-	assign jump = jump1 | jump2;
-	assign compare = src1 - src2;
 
 endmodule
