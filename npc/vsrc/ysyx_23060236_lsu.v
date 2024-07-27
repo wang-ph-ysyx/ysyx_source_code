@@ -96,7 +96,7 @@ module ysyx_23060236_lsu(
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = lsu_araddr;
-	assign lsu_aligned = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
+	assign lsu_aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000) | (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
 	assign lsu_val_raw = lsu_aligned ? lsu_val_shift : lsu_rdata;
 
 endmodule
