@@ -6,7 +6,7 @@ module ysyx_23060236_xbar(
 	input         ifu_arvalid,
 	output        ifu_arready,
 
-	output [63:0] ifu_rdata,
+	output [31:0] ifu_rdata,
 	output [1:0]  ifu_rresp,
 	output        ifu_rvalid,
 	input         ifu_rready,
@@ -16,7 +16,7 @@ module ysyx_23060236_xbar(
 	input  [2:0]  lsu_arsize,
 	output        lsu_arready,
 
-	output [63:0] lsu_rdata,
+	output [31:0] lsu_rdata,
 	output [1:0]  lsu_rresp,
 	output        lsu_rvalid,
 	input         lsu_rready,
@@ -26,8 +26,8 @@ module ysyx_23060236_xbar(
 	input  [2:0]  lsu_awsize,
 	output        lsu_awready,
 
-	input  [63:0] lsu_wdata,
-	input  [7:0]  lsu_wstrb,
+	input  [31:0] lsu_wdata,
+	input  [3:0]  lsu_wstrb,
 	input         lsu_wvalid,
 	output        lsu_wready,
 
@@ -46,8 +46,8 @@ module ysyx_23060236_xbar(
 	
 	input         io_master_wready,
 	output        io_master_wvalid,
-	output [63:0] io_master_wdata,
-	output [7:0]  io_master_wstrb,
+	output [31:0] io_master_wdata,
+	output [3:0]  io_master_wstrb,
 	output        io_master_wlast,
 	
 	output        io_master_bready,
@@ -66,7 +66,7 @@ module ysyx_23060236_xbar(
 	output        io_master_rready,
 	input         io_master_rvalid,
 	input  [1:0]  io_master_rresp,
-	input  [63:0] io_master_rdata,
+	input  [31:0] io_master_rdata,
 	input         io_master_rlast,
 	input  [3:0]  io_master_rid,
 
@@ -120,8 +120,8 @@ module ysyx_23060236_xbar(
 	assign lsu_rvalid        = lsu_reading & (soc_reading & io_master_rvalid | clint_reading & clint_rvalid);
 	assign ifu_rresp         = {2{ifu_reading}} & io_master_rresp;
 	assign lsu_rresp         = {2{lsu_reading}} & ({2{soc_reading}} & io_master_rresp | {2{clint_reading}} & clint_rresp);
-	assign ifu_rdata         = {64{ifu_reading}} & io_master_rdata;
-	assign lsu_rdata         = {64{lsu_reading}} & ({64{soc_reading}} & io_master_rdata | {64{clint_reading}} & {32'b0, clint_rdata});
+	assign ifu_rdata         = {32{ifu_reading}} & io_master_rdata;
+	assign lsu_rdata         = {32{lsu_reading}} & ({32{soc_reading}} & io_master_rdata | {32{clint_reading}} & clint_rdata);
 
 	assign lsu_awready       = io_master_awready;
 	assign io_master_awvalid = lsu_awvalid;

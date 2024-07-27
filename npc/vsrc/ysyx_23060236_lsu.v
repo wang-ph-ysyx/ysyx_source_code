@@ -6,7 +6,7 @@ module ysyx_23060236_lsu(
 	output        lsu_arvalid,
 	output [2:0]  lsu_arsize,
 	input         lsu_arready,
-	input  [63:0] lsu_rdata,
+	input  [31:0] lsu_rdata,
 	input  [1:0]  lsu_rresp,
 	input         lsu_rvalid,
 	output        lsu_rready,
@@ -15,8 +15,8 @@ module ysyx_23060236_lsu(
 	output        lsu_awvalid,
 	output [2:0]  lsu_awsize,
 	input         lsu_awready,
-	output [63:0] lsu_wdata,
-	output [7:0]  lsu_wstrb,
+	output [31:0] lsu_wdata,
+	output [3:0]  lsu_wstrb,
 	output        lsu_wvalid,
 	input         lsu_wready,
 	input  [1:0]  lsu_bresp,
@@ -35,12 +35,10 @@ module ysyx_23060236_lsu(
 	output [31:0] lsu_val
 );
 
-	wire lsu_aligned_64;
-	wire lsu_aligned_32;
+	wire lsu_aligned;
 	wire [31:0] lsu_val_raw;
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
-	wire [31:0] lsu_rdata_32;
 
 	assign lsu_arsize = {1'b0, funct3[1:0]};
 	assign lsu_awsize = {1'b0, funct3[1:0]};
@@ -58,9 +56,9 @@ module ysyx_23060236_lsu(
 		})
 	);
 
-	assign lsu_val_shift = lsu_rdata_32 >> {lsu_araddr[1:0], 3'b0};
-	assign lsu_wstrb = {4'b0, wmask} << lsu_awaddr[2:0];
-	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
+	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
+	assign lsu_wstrb = wmask << lsu_awaddr[1:0];
+	assign lsu_wdata = src2 << {lsu_awaddr[1:0], 3'b0};
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
@@ -98,9 +96,7 @@ module ysyx_23060236_lsu(
 	assign lsu_bready = 1;
 	assign lsu_araddr = src1 + imm;
 	assign lsu_awaddr = lsu_araddr;
-	assign lsu_aligned_64 = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000);
-	assign lsu_aligned_32 = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
-	assign lsu_rdata_32 = (lsu_aligned_64 & lsu_araddr[2]) ? lsu_rdata[63:32] : lsu_rdata[31:0];
-	assign lsu_val_raw = (lsu_aligned_64 | lsu_aligned_32) ? lsu_val_shift : lsu_rdata_32;
+	assign lsu_aligned = (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
+	assign lsu_val_raw = lsu_aligned ? lsu_val_shift : lsu_rdata;
 
 endmodule

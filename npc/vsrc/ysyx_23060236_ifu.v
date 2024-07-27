@@ -5,7 +5,7 @@ module ysyx_23060236_ifu(
 	output [31:0] ifu_araddr,
 	output        ifu_arvalid,
 	input         ifu_arready,
-	input  [63:0] ifu_rdata,
+	input  [31:0] ifu_rdata,
 	input  [1:0]  ifu_rresp,
 	input         ifu_rvalid,
 	output        ifu_rready,
@@ -22,7 +22,7 @@ module ysyx_23060236_ifu(
 	output [31:0] icache_awaddr,
 	input         icache_awready,
 	output [31:0] icache_wdata,
-	output [7:0]  icache_wstrb,
+	output [3:0]  icache_wstrb,
 	output        icache_wvalid,
 	input         icache_wready,
 	input  [1:0]  icache_bresp,
@@ -47,12 +47,11 @@ module ysyx_23060236_ifu(
 	assign icache_araddr = pc;
 	assign icache_awaddr = pc;
 	assign icache_wdata  = inst;
-	assign icache_wstrb  = 8'hff;
+	assign icache_wstrb  = 4'hf;
 	assign icache_bready = 1;
 	assign ifu_rready    = 1;
 	assign ifu_araddr    = pc;
-	assign pc_in_sram    = (pc   >= 32'h0f000000) & (pc   < 32'h0f002000);
-	assign inst_ifu_tmp  = ((pc_in_sram & pc[2]) ? ifu_rdata[63:32] : ifu_rdata[31:0]) & {32{ifu_rvalid & ifu_rready}};
+	assign inst_ifu_tmp  = ifu_rdata & {32{ifu_rvalid & ifu_rready}};
 	assign inst_icache_tmp = icache_rdata & {32{icache_rvalid & icache_rready & ~icache_rresp[1]}};
 	assign inst_tmp = inst_ifu_tmp | inst_icache_tmp;
 	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & pc_in_sram);
