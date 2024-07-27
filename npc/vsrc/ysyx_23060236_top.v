@@ -13,8 +13,8 @@ module ysyx_23060236(
 
 	input         io_master_wready,
 	output        io_master_wvalid,
-	output [63:0] io_master_wdata,
-	output [7:0]  io_master_wstrb,
+	output [31:0] io_master_wdata,
+	output [3:0]  io_master_wstrb,
 	output        io_master_wlast,
 
 	output        io_master_bready,
@@ -33,7 +33,7 @@ module ysyx_23060236(
 	output        io_master_rready,
 	input         io_master_rvalid,
 	input  [1:0]  io_master_rresp,
-	input  [63:0] io_master_rdata,
+	input  [31:0] io_master_rdata,
 	input         io_master_rlast,
 	input  [3:0]  io_master_rid,
 
@@ -47,8 +47,8 @@ module ysyx_23060236(
 
 	output        io_slave_wready,
 	input         io_slave_wvalid,
-	input  [63:0] io_slave_wdata,
-	input  [7:0]  io_slave_wstrb,
+	input  [31:0] io_slave_wdata,
+	input  [3:0]  io_slave_wstrb,
 	input         io_slave_wlast,
 
 	input         io_slave_bready,
@@ -67,7 +67,7 @@ module ysyx_23060236(
 	input         io_slave_rready,
 	output        io_slave_rvalid,
 	output [1:0]  io_slave_rresp,
-	output [63:0] io_slave_rdata,
+	output [31:0] io_slave_rdata,
 	output        io_slave_rlast,
 	output [3:0]  io_slave_rid     
 );
@@ -104,7 +104,7 @@ module ysyx_23060236(
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
-	wire [63:0] ifu_rdata;
+	wire [31:0] ifu_rdata;
 	wire        ifu_arready;
 	wire        ifu_rvalid;
 	wire [1:0]  ifu_rresp;
@@ -113,15 +113,15 @@ module ysyx_23060236(
 	wire [31:0] lsu_araddr;
 	wire        lsu_arvalid;
 	wire        lsu_arready;
-	wire [63:0] lsu_rdata;
+	wire [31:0] lsu_rdata;
 	wire [1:0]  lsu_rresp;
 	wire        lsu_rvalid;
 	wire        lsu_rready;
 	wire [31:0] lsu_awaddr;
 	wire        lsu_awvalid;
 	wire        lsu_awready;
-	wire [63:0] lsu_wdata;
-	wire [7:0]  lsu_wstrb;
+	wire [31:0] lsu_wdata;
+	wire [3:0]  lsu_wstrb;
 	wire        lsu_wvalid;
 	wire        lsu_wready;
 	wire [1:0]  lsu_bresp;
@@ -149,7 +149,7 @@ module ysyx_23060236(
 	wire        icache_awvalid;
 	wire        icache_awready;
 	wire [31:0] icache_wdata;
-	wire [7:0]  icache_wstrb;
+	wire [3:0]  icache_wstrb;
 	wire        icache_wvalid;
 	wire        icache_wready;
 	wire [1:0]  icache_bresp;

@@ -16,7 +16,7 @@ module ysyx_23060236_icache(
 	output        icache_awready,
 
 	input  [31:0] icache_wdata,
-	input  [7:0]  icache_wstrb,
+	input  [3:0]  icache_wstrb,
 	input         icache_wvalid,
 	output        icache_wready,
 
