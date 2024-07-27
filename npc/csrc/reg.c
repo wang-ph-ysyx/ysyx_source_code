@@ -20,7 +20,7 @@ void reg_display() {
 		uint32_t reg_val = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i];
 		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
-	printf("lsu_rdata\t%#lx\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rdata);
+	printf("lsu_rdata\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rdata);
 	printf("ifu_rdata\t%#lx\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_rdata);
 	printf("wb_valid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid);
 	printf("lsu_rvalid\t%#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_rvalid);
