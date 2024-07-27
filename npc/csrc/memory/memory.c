@@ -25,7 +25,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 	//printf("read: %#x, data:%#x\n", addr, *data);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	uint8_t *haddr = guest2host_mrom(addr);
+	uint8_t *haddr = guest2host_mrom(addr & ~0x3);
 	*data = *(int32_t *)haddr;
 }
 
