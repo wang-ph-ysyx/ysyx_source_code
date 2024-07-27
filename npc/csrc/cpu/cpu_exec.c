@@ -11,30 +11,12 @@
 VysyxSoCFull *top = NULL;
 int trigger_difftest = 0;
 
-static long total_inst = 0;
-static long total_cycle = 0;
-static long total_ifu_getinst = 0;
-static long total_lsu_getdata = 0;
-
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
 void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
 void nvboard_update();
-
-void print_statistic() {
-	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
-	printf("IPC: %f\n", (double)total_inst / total_cycle);
-	printf("\nperformance counter:\n");
-	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
-	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
-}
-
-extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
-extern "C" void add_total_inst() { ++total_inst; }
-extern "C" void add_total_cycle() { ++total_cycle; }
-extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval();
@@ -79,7 +61,6 @@ void cpu_exec(unsigned n) {
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
-	print_statistic();
 }
 
 void reset() {
