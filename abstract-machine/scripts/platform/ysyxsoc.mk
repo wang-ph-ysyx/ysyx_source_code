@@ -31,5 +31,5 @@ run: image
 cachetrace: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(CACHESIMFLAGS)" IMG=$(IMAGE).bin
 
-cachesim: $(CACHE_TRACE)
+cachesim: 
 	$(MAKE) -C $(CACHESIM_HOME) ARGS="$(CACHETRACE)" run
