@@ -27,7 +27,6 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t flash[FLASH_SIZE];
 static uint8_t mrom[MROM_SIZE];
 static uint8_t sram[SRAM_SIZE];
-static uint8_t sdram[SDRAM_SIZE];
 
 uint8_t* guest_to_host(paddr_t paddr) { 
 	if (paddr >= MROM_BASE && paddr < MROM_BASE + MROM_SIZE) 
@@ -36,11 +35,8 @@ uint8_t* guest_to_host(paddr_t paddr) {
 		return sram + paddr - SRAM_BASE;
 	if (paddr >= FLASH_BASE && paddr < FLASH_BASE + FLASH_SIZE)
 		return flash + paddr - FLASH_BASE;
-	if (paddr >= SDRAM_BASE && paddr < SDRAM_BASE + SDRAM_SIZE)
-		return sdram + paddr - SDRAM_BASE;
 	return pmem + paddr - CONFIG_MBASE; 
 }
-
 paddr_t host_to_guest(uint8_t *haddr) { 
 	if (haddr >= mrom && haddr < mrom + MROM_SIZE)
 		return haddr - mrom + MROM_BASE;
@@ -48,8 +44,6 @@ paddr_t host_to_guest(uint8_t *haddr) {
 		return haddr - sram + SRAM_BASE;
 	if (haddr >= flash && haddr < flash + FLASH_SIZE)
 		return haddr - flash + FLASH_BASE;
-	if (haddr >= sdram && haddr < sdram + SDRAM_SIZE)
-		return haddr - sdram + SDRAM_BASE;
 	return haddr - pmem + CONFIG_MBASE; 
 }
 
@@ -81,10 +75,6 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
 	IFDEF(CONFIG_MTRACE, mtrace_read(addr, len));
-#ifdef CONFIG_CTRACE
-	if (addr >= 0x10000000 && addr < 0x10001000) return 0x20;
-	if (addr >= 0x02000000 && addr < 0x02010000) return 0x0;
-#endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
@@ -93,9 +83,6 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
 	IFDEF(CONFIG_MTRACE, mtrace_write(addr, len, data));
-#ifdef CONFIG_CTRACE
-	if (addr >= 0x10000000 && addr < 0x10001000) return;
-#endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);

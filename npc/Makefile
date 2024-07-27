@@ -5,7 +5,7 @@ INC_PATH ?=
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
-										--timescale "1ns/1ns" --no-timing --trace
+										--timescale "1ns/1ns" --no-timing
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -70,6 +70,3 @@ count:
 
 countNoblank:
 	find ./csrc ./vsrc -name *.[cvh] | xargs grep -v '^$$' | wc -l
-
-perf:
-	make -C ../am-kernels/benchmarks/microbench ARCH=riscv32e-ysyxsoc run mainargs=train

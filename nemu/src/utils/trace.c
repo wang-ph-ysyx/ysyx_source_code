@@ -1,5 +1,4 @@
 #include <common.h>
-#include <stdio.h>
 
 //code of iringbuf
 #define RINGBUF_SIZE 10
@@ -167,24 +166,7 @@ void dtrace_write(const char *name, paddr_t addr, int len, paddr_t offset, word_
 //code of etrace
 void etrace(word_t NO) {
 	switch (NO) {
-		case 11: printf("trigger yield\n"); break;
+		case -1: printf("trigger yield\n"); break;
 		default: printf("unknown error trace\n");
 	}
 }
-
-#ifdef CONFIG_CTRACE
-FILE *icache_fp;
-void init_icachetrace(const char *icache_file) {
-	icache_fp = stdout;
-	if (icache_file != NULL) {
-		FILE *fp = fopen(icache_file, "w");
-		Assert(fp, "Can not open '%s'", icache_file);
-		icache_fp = fp;
-	}
-}
-
-void icache_trace(uint32_t pc) {
-	fwrite(&pc, 4, 1, icache_fp);
-}
-
-#endif

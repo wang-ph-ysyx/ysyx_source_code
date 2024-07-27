@@ -7,7 +7,7 @@
 #include <memory.h>
 
 void reg_display();
-void cpu_exec(unsigned long n);
+void cpu_exec(unsigned n);
 
 int batch_mode = 0;
 
