@@ -47,9 +47,6 @@ void _trm_init() {
 		ysyx_s[i] = (char)(ysyx & 0xff);
 		ysyx >>= 8;
 	}
-	putch('A');
-	putch('B');
-	putch('\n');
 	printf("npc made by %s_%d\n", ysyx_s, ID);
 
 	int ret = main(mainargs);
