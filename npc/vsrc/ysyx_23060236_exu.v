@@ -11,7 +11,7 @@ module ysyx_23060236_exu(
 	output [31:0] jump,
 	input  [31:0] csr_val,
 	output [31:0] csr_wdata,
-	output [7:0]  wmask
+	output [3:0]  wmask
 );
 
 	parameter TYPE_R = 3'd0;
@@ -153,7 +153,7 @@ module ysyx_23060236_exu(
 
 	//write
 	ysyx_23060236_MuxKeyInternal #(3, 2, 4, 1) calculate_wmask(
-		.out(wmask[3:0]),
+		.out(wmask),
 		.key(funct3[1:0]),
 		.default_out(4'b0),
 		.lut({

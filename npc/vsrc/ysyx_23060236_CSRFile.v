@@ -1,4 +1,4 @@
-module ysyx_23060236_CSRFile #(DATA_WIDTH = 1) (
+module ysyx_23060236_CSRFile #(DATA_WIDTH = 32) (
 	input  clock,
 	input  reset,
 	input  [11:0] imm,

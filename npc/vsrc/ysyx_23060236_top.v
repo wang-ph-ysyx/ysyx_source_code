@@ -100,7 +100,7 @@ module ysyx_23060236(
 	wire lsu_wen;
 	wire lsu_ren;
 	wire idu_valid;
-	wire [7:0] wmask;
+	wire [3:0] wmask;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -129,10 +129,6 @@ module ysyx_23060236(
 	wire        lsu_bready;
 	wire [2:0]  lsu_arsize;
 	wire [2:0]  lsu_awsize;
-
-	wire lsu_aligned_64;
-	wire lsu_aligned_32;
-	wire ifu_aligned;
 
 	wire [31:0] clint_araddr;
 	wire        clint_arvalid;
@@ -316,7 +312,6 @@ module ysyx_23060236(
 		.wb_valid(wb_valid),
 		.pc(pc),
 		.inst(inst),
-		.ifu_aligned(ifu_aligned),
 		.idu_valid(idu_valid)
 	);
 
@@ -384,8 +379,6 @@ module ysyx_23060236(
 		.wb_valid(wb_valid),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
-		.lsu_aligned_64(lsu_aligned_64),
-		.lsu_aligned_32(lsu_aligned_32),
 		.lsu_val(lsu_val)
 	);
 
@@ -423,7 +416,7 @@ module ysyx_23060236(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (opcode != 7'b0100011))),
+		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (Type != TYPE_S))),
 		.dout(wb_valid),
 		.wen(1)
 	);
@@ -447,7 +440,7 @@ import "DPI-C" function void add_ifu_getinst();
 
 	always @(posedge clock) begin
 		add_total_cycle();
-		if (ifu_rvalid & ifu_rready) add_ifu_getinst();
+		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_rready & ~icache_rresp[1]) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 	end

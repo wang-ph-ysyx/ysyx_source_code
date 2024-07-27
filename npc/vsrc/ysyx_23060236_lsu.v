@@ -28,15 +28,15 @@ module ysyx_23060236_lsu(
 	input  [31:0] src1,
 	input  [31:0] src2,
 	input  [31:0] imm,
-	input  [7:0]  wmask,
+	input  [3:0]  wmask,
 	input         wb_valid,
 	input         lsu_ren,
 	input         lsu_wen,
-	output        lsu_aligned_64,
-	output        lsu_aligned_32,
 	output [31:0] lsu_val
 );
 
+	wire lsu_aligned_64;
+	wire lsu_aligned_32;
 	wire [31:0] lsu_val_raw;
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
@@ -59,7 +59,7 @@ module ysyx_23060236_lsu(
 	);
 
 	assign lsu_val_shift = lsu_rdata_32 >> {lsu_araddr[1:0], 3'b0};
-	assign lsu_wstrb = wmask << lsu_awaddr[2:0];
+	assign lsu_wstrb = {4'b0, wmask} << lsu_awaddr[2:0];
 	assign lsu_wdata = {32'b0, src2} << {lsu_awaddr[2:0], 3'b0};
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
