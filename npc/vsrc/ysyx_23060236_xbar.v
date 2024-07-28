@@ -5,6 +5,8 @@ module ysyx_23060236_xbar(
 	input  [31:0] ifu_araddr,
 	input         ifu_arvalid,
 	output        ifu_arready,
+	input  [1:0]  ifu_arburst,
+	input  [3:0]  ifu_arlen,
 
 	output [31:0] ifu_rdata,
 	output [1:0]  ifu_rresp,
@@ -110,9 +112,9 @@ module ysyx_23060236_xbar(
 	assign io_master_araddr  = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{soc_reading}} & lsu_araddr;
 	assign clint_araddr      = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
 	assign io_master_arid    = 0;
-	assign io_master_arlen   = 0;
+	assign io_master_arlen   = {4'b0, {{4{ifu_reading}} & ifu_arlen}};
 	assign io_master_arsize  = {3{ifu_reading}} & 3'b010 | {3{lsu_reading}} & lsu_arsize;
-	assign io_master_arburst = 0;
+	assign io_master_arburst = {2{ifu_reading}} & ifu_arburst;
 
 	assign io_master_rready  = ifu_reading & ifu_rready | lsu_reading & lsu_rready & soc_reading;
 	assign clint_rready      = lsu_reading & clint_reading & lsu_rready;
