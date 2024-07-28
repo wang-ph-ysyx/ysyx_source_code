@@ -46,11 +46,12 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_ifu_tmp;
 	wire [31:0] icache_awaddr_tmp;
 	wire [2:0]  count;
+	wire [31:0] ifu_rdata_reg;
 
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign icache_rready = 1;
 	assign icache_araddr = pc;
-	assign icache_wdata  = ifu_rdata;
+	assign icache_wdata  = ifu_rdata_reg;
 	assign icache_wstrb  = 4'hf;
 	assign icache_bready = 1;
 	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'hf; //与icache的块大小一致
@@ -100,7 +101,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & ifu_rvalid & pc_in_sdram),
+		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & ifu_rvalid & ifu_rready & pc_in_sdram),
 		.dout(icache_wvalid),
 		.wen(1)
 	);
@@ -124,9 +125,17 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & ifu_rvalid & (icache_bvalid & icache_bready | ~pc_in_sdram)),
+		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & (icache_bvalid & icache_bready | ~pc_in_sdram)),
 		.dout(ifu_rready),
 		.wen(1)
+	);
+
+	ysyx_23060236_Reg #(32, 0) reg_ifu_rdata(
+		.clock(clock),
+		.reset(reset),
+		.din(ifu_rdata),
+		.dout(ifu_rdata_reg),
+		.wen(ifu_rvalid & ifu_rready)
 	);
 
 	ysyx_23060236_Reg #(32, 0) reg_inst(
