@@ -61,7 +61,7 @@ module ysyx_23060236_ifu(
 	assign inst_tmp = (ifu_rvalid & ifu_rready & ((pc[3:2] == icache_awaddr[3:2]) | ~pc_in_sdram)) ? ifu_rdata : 
 		                (icache_rvalid & icache_rready & ~icache_rresp[1]) ? icache_rdata : 
 										inst;
-	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & ~pc_in_sdram);
+	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready & ~(|count) | ifu_rvalid & ifu_rready & ~pc_in_sdram);
 	assign icache_awaddr_tmp = (icache_rvalid & icache_rready & icache_rresp[1]) ? (pc & ~32'hf) : 
 														 (icache_bvalid & icache_bready & |count) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
