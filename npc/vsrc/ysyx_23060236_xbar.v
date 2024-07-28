@@ -85,14 +85,27 @@ module ysyx_23060236_xbar(
 
 	wire ifu_reading, lsu_reading;
 	wire soc_reading, clint_reading;
+	wire [2:0] count;
+	wire [2:0] next_count;
 
 	assign soc_reading = ~clint_reading;
 	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr <= 32'h0200ffff);
+	assign next_count = (io_master_rvalid & io_master_rready) ? (count - 1) : 
+		                  (io_master_arvalid & io_master_arready) ? io_master_arlen[2:0] :
+											count;
+
+	ysyx_23060236_Reg #(3, 0) reg_count(
+		.clock(clock),
+		.reset(reset),
+		.din(next_count),
+		.dout(count),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
 		.clock(clock),
 		.reset(reset),
-		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
+		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready & ~(|count))),
 		.dout(ifu_reading),
 		.wen(1)
 	);

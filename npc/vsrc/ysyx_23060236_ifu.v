@@ -44,8 +44,8 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_tmp;
 	wire [31:0] inst_icache_tmp;
 	wire [31:0] inst_ifu_tmp;
-	wire [2:0]  count;
 	wire [31:0] icache_awaddr_tmp;
+	wire [2:0]  count;
 
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign icache_rready = 1;
