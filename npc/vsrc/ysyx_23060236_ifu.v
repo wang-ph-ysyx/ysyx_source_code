@@ -100,7 +100,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & ifu_rvalid & ifu_rready & pc_in_sdram),
+		.din(icache_wvalid & ~icache_wready | ~icache_wvalid & ifu_rvalid & pc_in_sdram),
 		.dout(icache_wvalid),
 		.wen(1)
 	);
@@ -124,7 +124,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & (icache_bvalid & icache_bready | ~pc_in_sdram)),
+		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & ifu_rvalid & (icache_bvalid & icache_bready | ~pc_in_sdram)),
 		.dout(ifu_rready),
 		.wen(1)
 	);
