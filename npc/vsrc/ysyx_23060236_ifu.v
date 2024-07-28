@@ -53,7 +53,6 @@ module ysyx_23060236_ifu(
 	assign icache_wdata  = ifu_rdata;
 	assign icache_wstrb  = 4'hf;
 	assign icache_bready = 1;
-	assign ifu_rready    = 1;
 	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'hf; //与icache的块大小一致
 	assign ifu_arburst   = ~pc_in_sdram ? 2'b0 : 2'b01;
 	assign ifu_arlen     = ~pc_in_sdram ? 4'b0 : 4'b0011; //与icache的块大小一致
@@ -119,6 +118,14 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & icache_rready & icache_rresp[1] | ifu_valid & ~pc_in_sdram)),
 		.dout(ifu_arvalid),
+		.wen(1)
+	);
+
+	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
+		.clock(clock),
+		.reset(reset),
+		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & (icache_bvalid & icache_bready | ~pc_in_sdram)),
+		.dout(ifu_rready),
 		.wen(1)
 	);
 
