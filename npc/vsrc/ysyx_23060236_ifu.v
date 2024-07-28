@@ -58,7 +58,7 @@ module ysyx_23060236_ifu(
 	assign ifu_arburst   = ~pc_in_sdram ? 2'b0 : 2'b01;
 	assign ifu_arlen     = ~pc_in_sdram ? 4'b0 : 4'b0011; //与icache的块大小一致
 	//与icache的块大小一致
-	assign inst_tmp = (ifu_rvalid & ifu_rready & (pc[3:2] == icache_awaddr[3:2])) ? ifu_rdata : 
+	assign inst_tmp = (ifu_rvalid & ifu_rready & ((pc[3:2] == icache_awaddr[3:2]) | ~pc_in_sdram)) ? ifu_rdata : 
 		                (icache_rvalid & icache_rready & ~icache_rresp[1]) ? icache_rdata : 
 										inst;
 	assign ifu_over = (icache_rvalid & icache_rready & ~icache_rresp[1] | icache_bvalid & icache_bready | ifu_rvalid & ifu_rready & ~pc_in_sdram);
