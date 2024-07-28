@@ -53,11 +53,11 @@ module ysyx_23060236_lsu(
 		.key(funct3),
 		.default_out(32'b0),
 		.lut({
-			3'b000, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},      //lb
-			3'b001, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0},  //lh
-			3'b010, lsu_val_shift,                                                //lw
-			3'b100, lsu_val_shift & 32'hff,                                       //lbu
-			3'b101, lsu_val_shift & 32'hffff                                      //lhu
+			3'b000, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
+			3'b001, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
+			3'b010, lsu_val_shift,                                                 //lw
+			3'b100, lsu_val_shift & 32'hff,                                        //lbu
+			3'b101, lsu_val_shift & 32'hffff                                       //lhu
 		})
 	);
 

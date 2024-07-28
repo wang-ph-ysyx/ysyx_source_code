@@ -43,6 +43,7 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_icache_tmp;
 	wire [31:0] inst_ifu_tmp;
 
+	assign pc_in_sram    = (pc >= 32'h0f000000) & (pc < 32'h0f002000);
 	assign icache_rready = 1;
 	assign icache_araddr = pc;
 	assign icache_awaddr = pc;
