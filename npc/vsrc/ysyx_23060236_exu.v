@@ -46,20 +46,20 @@ module ysyx_23060236_exu(
 	wire jump_en;
 
 	//exu_val
-	assign loperand = (opcode == 7'b0110111) ? 32'b0 : 
-										(opcode == 7'b0010111) ? pc :
-										(opcode == 7'b1101111) ? pc :
-										(opcode == 7'b1100111) ? pc :
-										(opcode == 7'b0010011) ? src1 :
-										(opcode == 7'b0110011) ? src1 : 
+	assign loperand = (opcode == 7'b0110111) ? 32'b0 :  //lui
+										(opcode == 7'b0010111) ? pc :     //auipc
+										(opcode == 7'b1101111) ? pc :     //jal
+										(opcode == 7'b1100111) ? pc :     //jalr
+										(opcode == 7'b0010011) ? src1 :   //src1 imm
+										(opcode == 7'b0110011) ? src1 :   //src1 src2
 										32'b0;
 
-	assign roperand = (opcode == 7'b0110111) ? imm :
-										(opcode == 7'b0010111) ? imm :
-										(opcode == 7'b1101111) ? 32'd4 :
-										(opcode == 7'b1100111) ? 32'd4 :
-										(opcode == 7'b0010011) ? imm :
-										(opcode == 7'b0110011) ? src2 :
+	assign roperand = (opcode == 7'b0110111) ? imm :    //lui
+										(opcode == 7'b0010111) ? imm :    //auipc
+										(opcode == 7'b1101111) ? 32'd4 :  //jal
+										(opcode == 7'b1100111) ? 32'd4 :  //jalr
+										(opcode == 7'b0010011) ? imm :    //src1 imm
+										(opcode == 7'b0110011) ? src2 :   //src1 src2
 										32'd0;
 
 	localparam OP_ADD   = 4'd0;
