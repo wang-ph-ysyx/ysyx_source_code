@@ -101,7 +101,7 @@ module ysyx_23060236_exu(
 							 (operator == OP_XOR  ) ? (loperand ^ roperand) :
 							 (operator == OP_OR   ) ? (loperand | roperand) : 
 							 (operator == OP_SRL  ) ? (loperand >> (roperand & 32'h1f)) : 
-							 (operator == OP_SRA  ) ? (loperand_signed) >> (roperand & 32'h1f) :
+							 (operator == OP_SRA  ) ? (loperand_signed) >>> (roperand & 32'h1f) :
 							 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 							 (operator == OP_LESS ) ? {31'b0, op_less} : 
 							 (operator == OP_ULESS) ? {31'b0, op_uless} : 
