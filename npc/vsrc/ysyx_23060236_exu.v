@@ -90,14 +90,14 @@ module ysyx_23060236_exu(
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 
-	assign val = (operator == OP_ADD  ) ? loperand + roperand : 
+	assign val = (operator == OP_ADD  ) ? (loperand + roperand) : 
 							 (operator == OP_SUB  ) ? op_compare : 
-							 (operator == OP_AND  ) ? loperand & roperand : 
-							 (operator == OP_XOR  ) ? loperand ^ roperand :
-							 (operator == OP_OR   ) ? loperand | roperand : 
-							 (operator == OP_SRL  ) ? loperand >> (roperand & 32'h1f) : 
-							 (operator == OP_SRA  ) ? ($signed(loperand)) >>> (roperand & 32'h1f) :
-							 (operator == OP_SLL  ) ? loperand << (roperand & 32'h1f) : 
+							 (operator == OP_AND  ) ? (loperand & roperand) : 
+							 (operator == OP_XOR  ) ? (loperand ^ roperand) :
+							 (operator == OP_OR   ) ? (loperand | roperand) : 
+							 (operator == OP_SRL  ) ? (loperand >> (roperand & 32'h1f)) : 
+							 (operator == OP_SRA  ) ? (($signed(loperand)) >>> (roperand & 32'h1f)) :
+							 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 							 (operator == OP_LESS ) ? {31'b0, op_less} : 
 							 (operator == OP_ULESS) ? {31'b0, op_uless} : 
 							 32'b0;
