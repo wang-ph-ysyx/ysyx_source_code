@@ -111,7 +111,7 @@ module ysyx_23060236_exu(
 			OP_XOR,   loperand ^ roperand,
 			OP_OR,    loperand | roperand,
 			OP_SRL,   loperand >> (roperand & 32'h1f),
-			OP_SRA,   ($signed(loperand)) >>> (roperand & 32'h1f),
+			OP_SRA,   ($signed(loperand)) >> (roperand & 32'h1f),
 			OP_SLL,   loperand << (roperand & 32'h1f),
 			OP_LESS,  {31'b0, op_less},
 			OP_ULESS, {31'b0, op_uless}
