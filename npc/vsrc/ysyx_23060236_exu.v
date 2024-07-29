@@ -100,24 +100,6 @@ module ysyx_23060236_exu(
 							 (operator == OP_LESS ) ? {31'b0, op_less} : 
 							 (operator == OP_ULESS) ? {31'b0, op_uless} : 
 							 32'b0;
-/*	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
-		.out(val),
-		.key(operator),
-		.default_out(32'b0),
-		.lut({
-			OP_ADD,   loperand + roperand,
-			OP_SUB,   op_compare,
-			OP_AND,   loperand & roperand,
-			OP_XOR,   loperand ^ roperand,
-			OP_OR,    loperand | roperand,
-			OP_SRL,   loperand >> (roperand & 32'h1f),
-			OP_SRA,   ($signed(loperand)) >>> (roperand & 32'h1f),
-			OP_SLL,   loperand << (roperand & 32'h1f),
-			OP_LESS,  {31'b0, op_less},
-			OP_ULESS, {31'b0, op_uless}
-		})
-	);
-*/
 
 	//jump
 	assign jloperand = (Type == TYPE_I) ? src1 : pc;
