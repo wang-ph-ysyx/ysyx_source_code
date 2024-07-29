@@ -39,7 +39,7 @@ module ysyx_23060236_exu(
 	wire [3:0] operator2;
 	wire [3:0] operator3;
 	wire [3:0] operator4;
-	wire [62:0] psigned_loperand;
+	wire [62:0] val_sra;
 	wire [31:0] jloperand;
 	wire [31:0] jroperand;
 	wire jump_cond;
@@ -90,14 +90,14 @@ module ysyx_23060236_exu(
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
-	assign psigned_loperand = {{31{loperand[31]}}, loperand};
+	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
 	assign val = (operator == OP_ADD  ) ? (loperand + roperand) : 
 							 (operator == OP_SUB  ) ? op_compare : 
 							 (operator == OP_AND  ) ? (loperand & roperand) : 
 							 (operator == OP_XOR  ) ? (loperand ^ roperand) :
 							 (operator == OP_OR   ) ? (loperand | roperand) : 
 							 (operator == OP_SRL  ) ? (loperand >> (roperand & 32'h1f)) : 
-							 (operator == OP_SRA  ) ? {psigned_loperand >> (roperand & 32'h1f)}[31:0] :
+							 (operator == OP_SRA  ) ? val_sra[31:0] :
 							 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 							 (operator == OP_LESS ) ? {31'b0, op_less} : 
 							 (operator == OP_ULESS) ? {31'b0, op_uless} : 
