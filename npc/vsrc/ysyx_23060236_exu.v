@@ -92,7 +92,7 @@ module ysyx_23060236_exu(
 	reg signed [31:0] loperand_signed;
 
 	always @(*) begin
-		loperand_signed = loperand;
+		loperand_signed = $signed(loperand);
 	end
 
 	assign val = (operator == OP_ADD  ) ? (loperand + roperand) : 
