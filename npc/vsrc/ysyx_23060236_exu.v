@@ -53,19 +53,13 @@ module ysyx_23060236_exu(
 										(opcode == 7'b0110011) ? src1 : 
 										32'b0;
 
-	ysyx_23060236_MuxKeyInternal #(6, 7, 32, 1) calculate_roperand(
-		.out(roperand),
-		.key(opcode),
-		.default_out(32'b0),
-		.lut({
-			7'b0110111, imm,       //lui
-			7'b0010111, imm,       //auipc
-			7'b1101111, 32'd4,     //jal
-			7'b1100111, 32'd4,     //jalr
-			7'b0010011, imm,       //src1 imm
-			7'b0110011, src2       //src1 src2
-		})
-	);
+	assign roperand = (opcode == 7'b0110111) ? imm :
+										(opcode == 7'b0010111) ? imm :
+										(opcode == 7'b1101111) ? 32'd4 :
+										(opcode == 7'b1100111) ? 32'd4 :
+										(opcode == 7'b0010011) ? imm :
+										(opcode == 7'b0110011) ? src2 :
+										32'd0;
 
 	localparam OP_ADD   = 4'd0;
 	localparam OP_SUB   = 4'd1;
