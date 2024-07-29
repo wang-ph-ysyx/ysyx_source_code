@@ -73,21 +73,15 @@ module ysyx_23060236_exu(
 	localparam OP_ULESS = 4'd9;
 	assign operator = ((Type == TYPE_I) | (Type == TYPE_R)) ? operator1 : OP_ADD;
 
-	ysyx_23060236_MuxKeyInternal #(8, 3, 4, 1) calculate_operator1(
-		.out(operator1),
-		.key(funct3),
-		.default_out(OP_ADD),
-		.lut({
-			3'b000, operator2,     //add sub addi
-			3'b001, OP_SLL,        //sll slli
-			3'b010, OP_LESS,       //slt slti
-			3'b011, OP_ULESS,      //sltu sltiu
-			3'b100, OP_XOR,        //xor xori
-			3'b101, operator3,     //srl sra srli srai
-			3'b110, OP_OR,         //or ori
-			3'b111, OP_AND         //and andi
-		})
-	);
+	assign operator1 = (funct3 == 3'b000) ? operator2 :
+										 (funct3 == 3'b001) ? OP_SLL : 
+										 (funct3 == 3'b010) ? OP_LESS :
+										 (funct3 == 3'b011) ? OP_ULESS :
+										 (funct3 == 3'b100) ? OP_XOR :
+										 (funct3 == 3'b101) ? operator3 :
+										 (funct3 == 3'b110) ? OP_OR :
+										 (funct3 == 3'b111) ? OP_AND :
+										 OP_ADD;
 
 	assign operator2 = (Type == TYPE_R & funct7[5]) ? OP_SUB : OP_ADD;
 	assign operator3 = funct7[5] ? OP_SRA : OP_SRL;
