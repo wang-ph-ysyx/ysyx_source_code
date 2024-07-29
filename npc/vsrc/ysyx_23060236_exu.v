@@ -89,7 +89,7 @@ module ysyx_23060236_exu(
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
-/*
+
 	assign val = (operator == OP_ADD  ) ? (loperand + roperand) : 
 							 (operator == OP_SUB  ) ? op_compare : 
 							 (operator == OP_AND  ) ? (loperand & roperand) : 
@@ -100,8 +100,8 @@ module ysyx_23060236_exu(
 							 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 							 (operator == OP_LESS ) ? {31'b0, op_less} : 
 							 (operator == OP_ULESS) ? {31'b0, op_uless} : 
-							 32'b0;*/
-	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
+							 32'b0;
+/*	ysyx_23060236_MuxKeyInternal #(10, 4, 32, 1) calculate_val(
 		.out(val),
 		.key(operator),
 		.default_out(32'b0),
@@ -118,7 +118,7 @@ module ysyx_23060236_exu(
 			OP_ULESS, {31'b0, op_uless}
 		})
 	);
-
+*/
 
 	//jump
 	assign jloperand = (Type == TYPE_I) ? src1 : pc;
