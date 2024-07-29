@@ -89,7 +89,11 @@ module ysyx_23060236_exu(
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
-	wire signed [31:0] loperand_signed = loperand;
+	reg signed [31:0] loperand_signed;
+
+	always @(*) begin
+		loperand_signed = loperand;
+	end
 
 	assign val = (operator == OP_ADD  ) ? (loperand + roperand) : 
 							 (operator == OP_SUB  ) ? op_compare : 
