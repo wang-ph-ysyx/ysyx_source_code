@@ -22,19 +22,13 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 32) (
 	localparam ADDR_MVENDORID = 3'd4;
 	localparam ADDR_MARCHID   = 3'd5;
 
-	ysyx_23060236_MuxKeyInternal #(6, 12, 3, 1) choose_addr(
-		.out(addr),
-		.key(imm),
-		.default_out(3'b000),
-		.lut({
-			12'h341, ADDR_MEPC      ,
-			12'h342, ADDR_MCAUSE    ,
-			12'h300, ADDR_MSTATUS   ,
-			12'h305, ADDR_MTVEC     ,
-			12'hf11, ADDR_MVENDORID ,
-			12'hf12, ADDR_MARCHID   
-		})
-	);
+	assign addr = (imm == 12'h341) ? ADDR_MEPC      :
+	              (imm == 12'h342) ? ADDR_MCAUSE    :
+	              (imm == 12'h300) ? ADDR_MSTATUS   :
+	              (imm == 12'h305) ? ADDR_MTVEC     :
+	              (imm == 12'hf11) ? ADDR_MVENDORID :
+	              (imm == 12'hf12) ? ADDR_MARCHID   :
+								3'b000;
 
 	always @(posedge clock) begin
 		if (reset) begin
