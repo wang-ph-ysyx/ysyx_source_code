@@ -44,17 +44,11 @@ module ysyx_23060236_idu(
 	              (opcode == 7'b1110011) ? TYPE_I : //csrrs csrrw
 								3'd0;
 
-	ysyx_23060236_MuxKeyInternal #(5, 3, 32, 1) choose_imm(
-		.out(imm),
-		.key(Type),
-		.default_out(32'b0),
-		.lut({
-			TYPE_I, {{20{in[31]}}, in[31:20]},
-			TYPE_U, {in[31:12], 12'b0},
-			TYPE_S, {{20{in[31]}}, in[31:25], in[11:7]},
-			TYPE_J, {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0},
-			TYPE_B, {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0}
-		})
-	);
+	assign imm = (Type == TYPE_I) ? {{20{in[31]}}, in[31:20]} :
+	             (Type == TYPE_U) ? {in[31:12], 12'b0} :
+	             (Type == TYPE_S) ? {{20{in[31]}}, in[31:25], in[11:7]} :
+	             (Type == TYPE_J) ? {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0} :
+	             (Type == TYPE_B) ? {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0} :
+							 32'b0;
 
 endmodule
