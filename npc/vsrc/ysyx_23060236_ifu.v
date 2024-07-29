@@ -157,17 +157,28 @@ module ysyx_23060236_ifu(
 	import "DPI-C" function void add_ifu_readingcycle();
 	import "DPI-C" function void add_miss_icache();
 	import "DPI-C" function void add_hit_icache();
+	import "DPI-C" function void add_tmt();
 
 	reg ifu_reading;
+	reg ifu_miss_icache;
 
 	always @(posedge clock) begin
-		if (wb_valid) ifu_reading <= 1;
+		if (reset) ifu_reading <= 1;
+		else if (wb_valid) ifu_reading <= 1;
 		else if (ifu_over) ifu_reading <= 0;
-		if (ifu_reading) add_ifu_readingcycle();
+
+		if (~reset & ifu_reading) add_ifu_readingcycle();
+
 		if (icache_rvalid & icache_rready) begin
 			if (icache_rresp[1]) add_miss_icache();
 			else add_hit_icache();
 		end
+
+		if (reset) ifu_miss_icache <= 0;
+		else if (icache_rvalid & icache_rready & icache_rresp[1]) ifu_miss_icache <= 1;
+		else if (ifu_over) ifu_miss_icache <= 0;
+
+		if (ifu_miss_icache) add_tmt();
 	end
 
 endmodule

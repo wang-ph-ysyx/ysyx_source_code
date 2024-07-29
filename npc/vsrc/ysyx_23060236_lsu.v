@@ -48,18 +48,12 @@ module ysyx_23060236_lsu(
 	assign lsu_wdata = src2 << {lsu_awaddr[1:0], 3'b0};
 	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
 
-	ysyx_23060236_MuxKeyInternal #(5, 3, 32, 1) caculate_lsu_val_tmp(
-		.out(lsu_val_tmp),
-		.key(funct3),
-		.default_out(32'b0),
-		.lut({
-			3'b000, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
-			3'b001, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
-			3'b010, lsu_val_shift,                                                 //lw
-			3'b100, lsu_val_shift & 32'hff,                                        //lbu
-			3'b101, lsu_val_shift & 32'hffff                                       //lhu
-		})
-	);
+	assign lsu_val_tmp = (funct3 == 3'b000) ? (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0} :     //lb  
+                       (funct3 == 3'b001) ? (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0} : //lh
+                       (funct3 == 3'b010) ? lsu_val_shift :                                                 //lw
+                       (funct3 == 3'b100) ? lsu_val_shift & 32'hff :                                        //lbu
+                       (funct3 == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
+											 32'b0;
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),

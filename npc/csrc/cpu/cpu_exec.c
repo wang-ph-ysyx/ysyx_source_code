@@ -17,12 +17,15 @@ int trigger_difftest = 0;
 //performance register
 static long total_inst = 0;
 static long total_cycle = 0;
-static long total_ifu_getinst = 0;
 static long total_lsu_getdata = 0;
+static long total_lsu_writedata = 0;
+static long total_ifu_getinst = 0;
 static long total_lsu_readingcycle = 0;
+static long total_lsu_writingcycle = 0;
 static long total_ifu_readingcycle = 0;
 static long hit_icache = 0;
 static long miss_icache = 0;
+static long tmt = 0;
 static int lsu_awaddr = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
@@ -42,19 +45,27 @@ void print_statistic() {
 	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
 	printf("total_lsu_readingcycle: %ld\n", total_lsu_readingcycle);
 	printf("average lsu reading delay: %f\n", (double)total_lsu_readingcycle / total_lsu_getdata);
+	printf("total_lsu_writedata: %ld\n", total_lsu_writedata);
+	printf("total_lsu_writingcycle: %ld\n", total_lsu_writingcycle);
+	printf("average lsu writing delay: %f\n", (double)total_lsu_writingcycle / total_lsu_writedata);
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
+	printf("TMT: %ld\n", tmt);
+	printf("average miss time: %f\n", (double)tmt / miss_icache);
 	printf("\n");
 }
 
-extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_total_inst() { ++total_inst; }
 extern "C" void add_total_cycle() { ++total_cycle; }
 extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
+extern "C" void add_lsu_writedata() { ++total_lsu_writedata; }
+extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
+extern "C" void add_lsu_writingcycle() { ++total_lsu_writingcycle; }
 extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 extern "C" void add_hit_icache() { ++hit_icache; }
 extern "C" void add_miss_icache() { ++miss_icache; }
+extern "C" void add_tmt() { ++tmt; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {
