@@ -452,11 +452,11 @@ import "DPI-C" function void add_lsu_writedata();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 		if (lsu_bvalid & lsu_bready) add_lsu_writedata();
 	end
-*/
+
 import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-
+*/
 endmodule
