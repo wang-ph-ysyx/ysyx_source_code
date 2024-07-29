@@ -130,19 +130,13 @@ module ysyx_23060236_exu(
 	assign unequal = |compare;
 	assign uless = overflow;
 
-	ysyx_23060236_MuxKeyInternal #(6, 3, 1, 1) calculate_jump_cond(
-		.out(jump_cond),
-		.key(funct3),
-		.default_out(1'b0),
-		.lut({
-			3'b000, ~unequal,  //beq
-			3'b001, unequal,   //bne
-			3'b100, less,      //blt
-			3'b101, ~less,     //bge
-			3'b110, uless,     //bltu
-			3'b111, ~uless     //bgeu
-		})
-	);
+	assign jump_cond = (funct3 == 3'b000) ? ~unequal : 
+										 (funct3 == 3'b001) ? unequal : 
+										 (funct3 == 3'b100) ? less : 
+										 (funct3 == 3'b101) ? ~less :
+										 (funct3 == 3'b110) ? uless : 
+										 (funct3 == 3'b111) ? ~uless : 
+										 1'b0;
 
 
 	//write
