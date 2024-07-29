@@ -51,6 +51,7 @@ void print_statistic() {
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
 	printf("TMT: %ld\n", tmt);
+	printf("average miss time: %f\n", (double)tmt / miss_icache);
 	printf("\n");
 }
 
