@@ -140,25 +140,13 @@ module ysyx_23060236_exu(
 
 
 	//write
-	ysyx_23060236_MuxKeyInternal #(3, 2, 4, 1) calculate_wmask(
-		.out(wmask),
-		.key(funct3[1:0]),
-		.default_out(4'b0),
-		.lut({
-			2'b00, 4'h1, //sb
-			2'b01, 4'h3, //sh
-			2'b10, 4'hf  //sw
-		})
-	);
+	assign wmask = (funct3[1:0] == 2'b00) ? 4'h1 : 
+								 (funct3[1:0] == 2'b01) ? 4'h3 :
+								 (funct3[1:0] == 2'b10) ? 4'hf : 
+								 4'b0;
 
-	ysyx_23060236_MuxKeyInternal #(2, 3, 32, 1) calculate_csr_wdata(
-		.out(csr_wdata),
-		.key(funct3),
-		.default_out(32'b0),
-		.lut({
-			3'b010, src1 | csr_val, //csrrs
-			3'b001, src1            //csrrw
-		})
-	);
+	assign csr_wdata = (funct3 == 3'b010) ? (src1 | csr_val) : 
+										 (funct3 == 3'b001) ? src1 :
+										 32'b0;
 
 endmodule
