@@ -443,12 +443,14 @@ import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
 import "DPI-C" function void add_ifu_getinst();
+import "DPI-C" function void add_lsu_writedata();
 
 	always @(posedge clock) begin
 		add_total_cycle();
 		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_rready & ~icache_rresp[1]) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
+		if (lsu_bvalid & lsu_bready) add_lsu_writedata();
 	end
 
 import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);

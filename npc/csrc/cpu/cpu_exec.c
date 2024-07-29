@@ -17,9 +17,11 @@ int trigger_difftest = 0;
 //performance register
 static long total_inst = 0;
 static long total_cycle = 0;
-static long total_ifu_getinst = 0;
 static long total_lsu_getdata = 0;
+static long total_lsu_writedata = 0;
+static long total_ifu_getinst = 0;
 static long total_lsu_readingcycle = 0;
+static long total_lsu_writingcycle = 0;
 static long total_ifu_readingcycle = 0;
 static long hit_icache = 0;
 static long miss_icache = 0;
@@ -47,11 +49,13 @@ void print_statistic() {
 	printf("\n");
 }
 
-extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_total_inst() { ++total_inst; }
 extern "C" void add_total_cycle() { ++total_cycle; }
 extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
+extern "C" void add_lsu_writedata() { ++total_lsu_writedata; }
+extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
 extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
+extern "C" void add_lsu_writingcycle() { ++total_lsu_writingcycle; }
 extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 extern "C" void add_hit_icache() { ++hit_icache; }
 extern "C" void add_miss_icache() { ++miss_icache; }

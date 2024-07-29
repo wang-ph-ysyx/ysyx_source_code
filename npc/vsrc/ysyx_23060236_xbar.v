@@ -157,8 +157,16 @@ module ysyx_23060236_xbar(
 	assign lsu_bresp         = io_master_bresp;
 
 import "DPI-C" function void add_lsu_readingcycle();
+import "DPI-C" function void add_lsu_writingcycle();
+
+	reg lsu_writing;
 
 	always @(posedge clock) begin
+		if (reset) lsu_writing <= 0;
+		else if (lsu_awvalid) lsu_writing <= 1;
+		else if (lsu_bvalid & lsu_bready) lsu_writing <= 0;
+
+		if (lsu_writing) add_lsu_writingcycle();
 		if (lsu_reading) add_lsu_readingcycle();
 	end
 
