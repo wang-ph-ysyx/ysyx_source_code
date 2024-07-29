@@ -44,6 +44,9 @@ void print_statistic() {
 	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
 	printf("total_lsu_readingcycle: %ld\n", total_lsu_readingcycle);
 	printf("average lsu reading delay: %f\n", (double)total_lsu_readingcycle / total_lsu_getdata);
+	printf("total_lsu_writedata: %ld\n", total_lsu_writedata);
+	printf("total_lsu_writingcycle: %ld\n", total_lsu_writingcycle);
+	printf("average lsu writing delay: %f\n", (double)total_lsu_writingcycle / total_lsu_writedata);
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
 	printf("\n");
