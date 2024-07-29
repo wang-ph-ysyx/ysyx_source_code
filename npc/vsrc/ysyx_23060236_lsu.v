@@ -35,30 +35,31 @@ module ysyx_23060236_lsu(
 	output [31:0] lsu_val
 );
 
-	wire lsu_aligned;
-	wire [31:0] lsu_val_raw;
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
 
 	assign lsu_arsize = {1'b0, funct3[1:0]};
 	assign lsu_awsize = {1'b0, funct3[1:0]};
+	assign lsu_rready = 1;
+	assign lsu_bready = 1;
+	assign lsu_araddr = src1 + imm;
+	assign lsu_awaddr = lsu_araddr;
+	assign lsu_wstrb = wmask << lsu_awaddr[1:0];
+	assign lsu_wdata = src2 << {lsu_awaddr[1:0], 3'b0};
+	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
 
 	ysyx_23060236_MuxKeyInternal #(5, 3, 32, 1) caculate_lsu_val_tmp(
 		.out(lsu_val_tmp),
 		.key(funct3),
 		.default_out(32'b0),
 		.lut({
-			3'b000, (lsu_val_raw & 32'hff) | {{24{lsu_val_raw[7]}}, 8'h0},      //lb
-			3'b001, (lsu_val_raw & 32'hffff) | {{16{lsu_val_raw[15]}}, 16'h0},  //lh
-			3'b010, lsu_val_raw,                                                //lw
-			3'b100, lsu_val_raw & 32'hff,                                       //lbu
-			3'b101, lsu_val_raw & 32'hffff                                      //lhu
+			3'b000, (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0},     //lb
+			3'b001, (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0}, //lh
+			3'b010, lsu_val_shift,                                                 //lw
+			3'b100, lsu_val_shift & 32'hff,                                        //lbu
+			3'b101, lsu_val_shift & 32'hffff                                       //lhu
 		})
 	);
-
-	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
-	assign lsu_wstrb = wmask << lsu_awaddr[1:0];
-	assign lsu_wdata = src2 << {lsu_awaddr[1:0], 3'b0};
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
@@ -91,12 +92,5 @@ module ysyx_23060236_lsu(
 		.dout(lsu_val),
 		.wen(lsu_rvalid & lsu_rready | wb_valid)
 	);
-
-	assign lsu_rready = 1;
-	assign lsu_bready = 1;
-	assign lsu_araddr = src1 + imm;
-	assign lsu_awaddr = lsu_araddr;
-	assign lsu_aligned = (lsu_araddr >= 32'h0f000000) & (lsu_araddr < 32'h0f002000) | (lsu_araddr >= 32'h80000000) & (lsu_araddr < 32'hc0000000);
-	assign lsu_val_raw = lsu_aligned ? lsu_val_shift : lsu_rdata;
 
 endmodule

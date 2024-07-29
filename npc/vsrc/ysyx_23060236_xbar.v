@@ -5,6 +5,8 @@ module ysyx_23060236_xbar(
 	input  [31:0] ifu_araddr,
 	input         ifu_arvalid,
 	output        ifu_arready,
+	input  [1:0]  ifu_arburst,
+	input  [3:0]  ifu_arlen,
 
 	output [31:0] ifu_rdata,
 	output [1:0]  ifu_rresp,
@@ -83,14 +85,27 @@ module ysyx_23060236_xbar(
 
 	wire ifu_reading, lsu_reading;
 	wire soc_reading, clint_reading;
+	wire [2:0] count;
+	wire [2:0] next_count;
 
 	assign soc_reading = ~clint_reading;
 	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr <= 32'h0200ffff);
+	assign next_count = (io_master_rvalid & io_master_rready) ? (count - 1) : 
+		                  (io_master_arvalid & io_master_arready) ? io_master_arlen[2:0] :
+											count;
+
+	ysyx_23060236_Reg #(3, 0) reg_count(
+		.clock(clock),
+		.reset(reset),
+		.din(next_count),
+		.dout(count),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
 		.clock(clock),
 		.reset(reset),
-		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready)),
+		.din(~ifu_reading & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready & ~(|count))),
 		.dout(ifu_reading),
 		.wen(1)
 	);
@@ -110,9 +125,9 @@ module ysyx_23060236_xbar(
 	assign io_master_araddr  = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{soc_reading}} & lsu_araddr;
 	assign clint_araddr      = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
 	assign io_master_arid    = 0;
-	assign io_master_arlen   = 0;
+	assign io_master_arlen   = {4'b0, {{4{ifu_reading}} & ifu_arlen}};
 	assign io_master_arsize  = {3{ifu_reading}} & 3'b010 | {3{lsu_reading}} & lsu_arsize;
-	assign io_master_arburst = 0;
+	assign io_master_arburst = {2{ifu_reading}} & ifu_arburst;
 
 	assign io_master_rready  = ifu_reading & ifu_rready | lsu_reading & lsu_rready & soc_reading;
 	assign clint_rready      = lsu_reading & clint_reading & lsu_rready;

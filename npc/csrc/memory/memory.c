@@ -20,12 +20,12 @@ void difftest_skip_ref();
 void reg_display();
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {
-	*data = *(int32_t *)(flash + addr);
+	*data = *(int32_t *)(flash + (addr & ~0x3));
 	//flash_trace
 	//printf("read: %#x, data:%#x\n", addr, *data);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	uint8_t *haddr = guest2host_mrom(addr);
+	uint8_t *haddr = guest2host_mrom(addr & ~0x3);
 	*data = *(int32_t *)haddr;
 }
 
