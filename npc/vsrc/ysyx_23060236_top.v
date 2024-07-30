@@ -449,7 +449,7 @@ import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
 import "DPI-C" function void add_ifu_getinst();
 import "DPI-C" function void add_lsu_writedata();
-/*
+
 	always @(posedge clock) begin
 		add_total_cycle();
 		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_rready & ~icache_rresp[1]) add_ifu_getinst();
@@ -463,5 +463,5 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule
