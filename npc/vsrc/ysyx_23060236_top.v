@@ -175,11 +175,8 @@ module ysyx_23060236(
 	wire [31:0] exu_jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
-	wire error;
-	assign error = (|ifu_rresp) | (|lsu_rresp) | (|lsu_bresp);
 	assign snpc = pc + 4;
-	assign dnpc = error ? 0 : 
-								csr_jump_en ? csr_jump : 
+	assign dnpc = csr_jump_en ? csr_jump : 
 								exu_jump_en ? exu_jump :
 								snpc;
 
