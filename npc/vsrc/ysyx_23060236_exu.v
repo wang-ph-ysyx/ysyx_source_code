@@ -49,14 +49,13 @@ module ysyx_23060236_exu(
 	wire jump_cond;
 
 	//exu_val
-	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? pc : //auipc/jal/jalr
-										(opcode_type[INST_ADDI] | opcode_type[INST_ADD]) ? src1 :   //src1 imm/src1 src2
-										32'b0; //lui
+	assign loperand = (opcode_type[INST_ADDI] | opcode_type[INST_ADD]) ? src1 : //src1 imm/src1 src2
+										(opcode_type[INST_LUI]) ? 32'b0 :   //lui
+										pc; //auipc/jal/jalr
 
-	assign roperand = (opcode_type[INST_LUI] | opcode_type[INST_AUIPC] | opcode_type[INST_ADDI]) ? imm ://lui/auipc/src1 imm
-										(opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? 32'd4 :  //jal/jalr
+	assign roperand = (opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? 32'd4 :  //jal/jalr
 										opcode_type[INST_ADD] ? src2 :   //src1 src2
-										32'd0;
+										imm;//lui/auipc/src1 imm
 
 	localparam OP_ADD   = 4'd0;
 	localparam OP_SUB   = 4'd1;
