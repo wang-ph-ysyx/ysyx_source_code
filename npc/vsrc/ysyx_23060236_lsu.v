@@ -23,6 +23,7 @@ module ysyx_23060236_lsu(
 	input         lsu_bvalid,
 	output        lsu_bready,
 
+	input  [6:0]  opcode,
 	input  [2:0]  funct3,
 	input  [31:0] src1,
 	input  [31:0] src2,

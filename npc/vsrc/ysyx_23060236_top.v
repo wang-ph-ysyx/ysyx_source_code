@@ -86,7 +86,7 @@ module ysyx_23060236(
 	wire [31:0] src1;
 	wire [31:0] val;
 	wire [31:0] src2;
-	wire [2:0]  inst_type;
+	wire [2:0]  Type;
 	wire reg_wen;
 	wire csr_enable;
 	wire inst_ecall;
@@ -330,7 +330,7 @@ module ysyx_23060236(
 		.rs1(rs1),
 		.rs2(rs2),
 		.imm(imm),
-		.inst_type(inst_type),
+		.Type(Type),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.reg_wen(reg_wen),
@@ -343,7 +343,7 @@ module ysyx_23060236(
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
-		.inst_type(inst_type),
+		.Type(Type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.val(exu_val),
@@ -376,6 +376,7 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
+		.opcode(opcode),
 		.funct3(funct3),
 		.src1(src1),
 		.src2(src2),
@@ -421,7 +422,7 @@ module ysyx_23060236(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (inst_type != TYPE_S))),
+		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (Type != TYPE_S))),
 		.dout(wb_valid),
 		.wen(1)
 	);
@@ -437,7 +438,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-/*
+
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -457,5 +458,5 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule
