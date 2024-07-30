@@ -1,5 +1,6 @@
 module ysyx_23060236_RegisterFile #(ADDR_WIDTH = 4, DATA_WIDTH = 32) (
   input clock,
+	input reset,
   input [DATA_WIDTH-1:0] wdata,
   input [ADDR_WIDTH-1:0] waddr,
 	output [DATA_WIDTH-1:0] rdata1,
@@ -13,10 +14,10 @@ module ysyx_23060236_RegisterFile #(ADDR_WIDTH = 4, DATA_WIDTH = 32) (
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
 
   always @(posedge clock) begin
-		if (valid & wen) begin
-				rf[waddr] <= wdata;
-				rf[0] <= 0;
-			end
+		if (reset) rf[0] <= 0;
+		else if (valid & wen & (waddr != 0)) begin
+			rf[waddr] <= wdata;
+		end
   end
 
 	assign rdata1 = rf[raddr1];
