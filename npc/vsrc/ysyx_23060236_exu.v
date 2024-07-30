@@ -46,19 +46,12 @@ module ysyx_23060236_exu(
 	wire jump_en;
 
 	//exu_val
-	assign loperand = (opcode == 7'b0110111) ? 32'b0 :  //lui
-										(opcode == 7'b0010111) ? pc :     //auipc
-										(opcode == 7'b1101111) ? pc :     //jal
-										(opcode == 7'b1100111) ? pc :     //jalr
-										(opcode == 7'b0010011) ? src1 :   //src1 imm
-										(opcode == 7'b0110011) ? src1 :   //src1 src2
-										32'b0;
+	assign loperand = ((opcode == 7'b0010111) | (opcode == 7'b1101111) | (opcode == 7'b1100111)) ? pc : //auipc/jal/jalr
+										((opcode == 7'b0010011) | (opcode == 7'b0110011)) ? src1 :   //src1 imm/src1 src2
+										32'b0; //lui
 
-	assign roperand = (opcode == 7'b0110111) ? imm :    //lui
-										(opcode == 7'b0010111) ? imm :    //auipc
-										(opcode == 7'b1101111) ? 32'd4 :  //jal
-										(opcode == 7'b1100111) ? 32'd4 :  //jalr
-										(opcode == 7'b0010011) ? imm :    //src1 imm
+	assign roperand = ((opcode == 7'b0110111) | (opcode == 7'b0010111) | (opcode == 7'b0010011)) ? imm ://lui/auipc/src1 imm
+										((opcode == 7'b1101111) | (opcode == 7'b1100111)) ? 32'd4 :  //jal/jalr
 										(opcode == 7'b0110011) ? src2 :   //src1 src2
 										32'd0;
 
