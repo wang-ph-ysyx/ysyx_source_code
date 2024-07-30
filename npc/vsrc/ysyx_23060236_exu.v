@@ -3,7 +3,7 @@ module ysyx_23060236_exu(
 	input  [31:0] src1,
 	input  [31:0] src2,
 	input  [31:0] imm,
-	input  [2:0]  Type,
+	input  [5:0]  inst_type,
 	input  [2:0]  funct3,
 	input  [6:0]  funct7,
 	input  [31:0] pc,
@@ -14,12 +14,12 @@ module ysyx_23060236_exu(
 	output [3:0]  wmask
 );
 
-	parameter TYPE_R = 3'd0;
-	parameter TYPE_I = 3'd1;
-	parameter TYPE_S = 3'd2;
-	parameter TYPE_B = 3'd3;
-	parameter TYPE_U = 3'd4;
-	parameter TYPE_J = 3'd5; 
+	parameter TYPE_R = 0;
+	parameter TYPE_I = 1;
+	parameter TYPE_S = 2;
+	parameter TYPE_B = 3;
+	parameter TYPE_U = 4;
+	parameter TYPE_J = 5; 
 
 	wire [31:0] compare;
 	wire overflow;
@@ -72,7 +72,7 @@ module ysyx_23060236_exu(
 	localparam OP_SLL   = 4'd7;
 	localparam OP_LESS  = 4'd8;
 	localparam OP_ULESS = 4'd9;
-	assign operator = ((Type == TYPE_I) | (Type == TYPE_R)) ? operator1 : OP_ADD;
+	assign operator = (inst_type[TYPE_I] | inst_type[TYPE_R]) ? operator1 : OP_ADD;
 
 	assign operator1 = (funct3 == 3'b000) ? operator2 :
 										 (funct3 == 3'b001) ? OP_SLL : 
@@ -84,7 +84,7 @@ module ysyx_23060236_exu(
 										 (funct3 == 3'b111) ? OP_AND :
 										 OP_ADD;
 
-	assign operator2 = (Type == TYPE_R & funct7[5]) ? OP_SUB : OP_ADD;
+	assign operator2 = (inst_type[TYPE_R] & funct7[5]) ? OP_SUB : OP_ADD;
 	assign operator3 = funct7[5] ? OP_SRA : OP_SRL;
 
 	assign {op_overflow, op_compare} = loperand - roperand;
@@ -104,10 +104,10 @@ module ysyx_23060236_exu(
 							 32'b0;
 
 	//jump
-	assign jloperand = (Type == TYPE_I) ? src1 : pc;
+	assign jloperand = (inst_type[TYPE_I]) ? src1 : pc;
 	assign jroperand = imm;
 	assign jump = {jloperand + jroperand} & {32{jump_en}};
-	assign jump_en = (Type == TYPE_J) | (opcode == 7'b1100111) | (Type == TYPE_B) & jump_cond;
+	assign jump_en = (inst_type[TYPE_J]) | (opcode == 7'b1100111) | (inst_type[TYPE_B]) & jump_cond;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
