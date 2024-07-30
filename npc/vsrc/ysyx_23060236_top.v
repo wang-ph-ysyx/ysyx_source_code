@@ -76,7 +76,7 @@ module ysyx_23060236(
 	wire wb_valid;
 
 	wire [31:0] inst;
-	wire [6:0]  opcode;
+	wire [9:0]  opcode_type;
 	wire [3:0]  rs1;
 	wire [3:0]  rs2;
 	wire [3:0]  rd;
@@ -86,7 +86,6 @@ module ysyx_23060236(
 	wire [31:0] src1;
 	wire [31:0] val;
 	wire [31:0] src2;
-	wire [2:0]  Type;
 	wire reg_wen;
 	wire csr_enable;
 	wire inst_ecall;
@@ -158,12 +157,16 @@ module ysyx_23060236(
 	wire        icache_bvalid;
 	wire        icache_bready;
 
-	parameter TYPE_R = 3'd0;
-	parameter TYPE_I = 3'd1;
-	parameter TYPE_S = 3'd2;
-	parameter TYPE_B = 3'd3;
-	parameter TYPE_U = 3'd4;
-	parameter TYPE_J = 3'd5;
+	parameter INST_LUI   = 0;
+	parameter INST_AUIPC = 1;
+	parameter INST_JAL   = 2;
+	parameter INST_JALR  = 3;
+	parameter INST_BEQ   = 4;
+	parameter INST_LW    = 5;
+	parameter INST_SW    = 6;
+	parameter INST_ADDI  = 7;
+	parameter INST_ADD   = 8;
+	parameter INST_CSR   = 9;
 
 	wire [31:0] csr_jump;
 	wire [31:0] exu_jump;
@@ -323,14 +326,13 @@ module ysyx_23060236(
 
 	ysyx_23060236_idu my_idu(
 		.in(inst),
-		.opcode(opcode),
+		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.rd(rd),
 		.rs1(rs1),
 		.rs2(rs2),
 		.imm(imm),
-		.Type(Type),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.reg_wen(reg_wen),
@@ -339,11 +341,10 @@ module ysyx_23060236(
 	);
 
 	ysyx_23060236_exu my_exu(
-		.opcode(opcode),
+		.opcode_type(opcode_type),
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
-		.Type(Type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.val(exu_val),
@@ -421,7 +422,7 @@ module ysyx_23060236(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (Type != TYPE_S))),
+		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & ~opcode_type[INST_LW] & ~opcode_type[INST_SW])),
 		.dout(wb_valid),
 		.wen(1)
 	);
