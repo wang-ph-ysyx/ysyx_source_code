@@ -51,8 +51,7 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 32) (
 		end
 	end
 
-	assign rdata = ~enable ? 32'b0 : 
-								 choose[MEPC     ] ? mepc    :
+	assign rdata = choose[MEPC     ] ? mepc    :
                  choose[MCAUSE   ] ? mcause  :
                  choose[MSTATUS  ] ? mstatus :
                  choose[MTVEC    ] ? mtvec   :

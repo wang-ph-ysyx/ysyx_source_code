@@ -28,7 +28,6 @@ module ysyx_23060236_lsu(
 	input  [31:0] src2,
 	input  [31:0] imm,
 	input  [3:0]  wmask,
-	input         wb_valid,
 	input         lsu_ren,
 	input         lsu_wen,
 	output [31:0] lsu_val
@@ -81,9 +80,9 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_val_tmp & {32{~wb_valid}}),
+		.din(lsu_val_tmp),
 		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready | wb_valid)
+		.wen(lsu_rvalid & lsu_rready)
 	);
 
 endmodule

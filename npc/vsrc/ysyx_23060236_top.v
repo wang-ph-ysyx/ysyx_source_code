@@ -385,7 +385,6 @@ module ysyx_23060236(
 		.src2(src2),
 		.imm(imm),
 		.wmask(wmask),
-		.wb_valid(wb_valid),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.lsu_val(lsu_val)
@@ -421,7 +420,9 @@ module ysyx_23060236(
 
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
-	assign val = (exu_val | csr_val | lsu_val);
+	assign val = opcode_type[INST_LW ] ? lsu_val : 
+							 csr_enable ? csr_val :
+							 exu_val;
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
