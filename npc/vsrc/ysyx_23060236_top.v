@@ -76,7 +76,7 @@ module ysyx_23060236(
 	wire wb_valid;
 
 	wire [31:0] inst;
-	wire [6:0]  opcode;
+	wire [9:0]  opcode_type;
 	wire [3:0]  rs1;
 	wire [3:0]  rs2;
 	wire [3:0]  rd;
@@ -86,11 +86,13 @@ module ysyx_23060236(
 	wire [31:0] src1;
 	wire [31:0] val;
 	wire [31:0] src2;
-	wire [2:0]  Type;
 	wire reg_wen;
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
+
+	wire csr_jump_en;
+	wire exu_jump_en;
 
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
@@ -158,22 +160,25 @@ module ysyx_23060236(
 	wire        icache_bvalid;
 	wire        icache_bready;
 
-	parameter TYPE_R = 3'd0;
-	parameter TYPE_I = 3'd1;
-	parameter TYPE_S = 3'd2;
-	parameter TYPE_B = 3'd3;
-	parameter TYPE_U = 3'd4;
-	parameter TYPE_J = 3'd5;
+	parameter INST_LUI   = 0;
+	parameter INST_AUIPC = 1;
+	parameter INST_JAL   = 2;
+	parameter INST_JALR  = 3;
+	parameter INST_BEQ   = 4;
+	parameter INST_LW    = 5;
+	parameter INST_SW    = 6;
+	parameter INST_ADDI  = 7;
+	parameter INST_ADD   = 8;
+	parameter INST_CSR   = 9;
 
 	wire [31:0] csr_jump;
 	wire [31:0] exu_jump;
-	wire [31:0] jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
-	wire error;
-	assign error = (|ifu_rresp) | (|lsu_rresp) | (|lsu_bresp);
 	assign snpc = pc + 4;
-	assign dnpc = (({32{|jump}} & jump) | (~{32{|jump}} & snpc)) & {32{~error}};
+	assign dnpc = csr_jump_en ? csr_jump : 
+								exu_jump_en ? exu_jump :
+								snpc;
 
 	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
 		.clock(clock),
@@ -323,14 +328,13 @@ module ysyx_23060236(
 
 	ysyx_23060236_idu my_idu(
 		.in(inst),
-		.opcode(opcode),
+		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.rd(rd),
 		.rs1(rs1),
 		.rs2(rs2),
 		.imm(imm),
-		.Type(Type),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.reg_wen(reg_wen),
@@ -339,16 +343,16 @@ module ysyx_23060236(
 	);
 
 	ysyx_23060236_exu my_exu(
-		.opcode(opcode),
+		.opcode_type(opcode_type),
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
-		.Type(Type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.val(exu_val),
 		.pc(pc),
 		.jump(exu_jump),
+		.jump_en(exu_jump_en),
 		.csr_val(csr_val),
 		.csr_wdata(csr_wdata),
 		.wmask(wmask)
@@ -376,13 +380,11 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
-		.opcode(opcode),
 		.funct3(funct3),
 		.src1(src1),
 		.src2(src2),
 		.imm(imm),
 		.wmask(wmask),
-		.wb_valid(wb_valid),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.lsu_val(lsu_val)
@@ -390,6 +392,7 @@ module ysyx_23060236(
 
 	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
+		.reset(reset),
 		.wdata(val),
 		.waddr(rd),
 		.rdata1(src1),
@@ -410,19 +413,21 @@ module ysyx_23060236(
 		.inst_ecall(inst_ecall),
 		.epc(pc),
 		.jump(csr_jump),
+		.jump_en(csr_jump_en),
 		.inst_mret(inst_mret),
 		.valid(wb_valid)
 	);
 
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
-	assign val = (exu_val | csr_val | lsu_val);
-	assign jump = exu_jump | csr_jump;
+	assign val = opcode_type[INST_LW ] ? lsu_val : 
+							 csr_enable ? csr_val :
+							 exu_val;
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & (opcode != 7'b0000011) & (Type != TYPE_S))),
+		.din(~wb_valid & (lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready | idu_valid & ~opcode_type[INST_LW] & ~opcode_type[INST_SW])),
 		.dout(wb_valid),
 		.wen(1)
 	);
