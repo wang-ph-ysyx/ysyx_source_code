@@ -91,6 +91,9 @@ module ysyx_23060236(
 	wire inst_ecall;
 	wire inst_mret;
 
+	wire csr_jump_en;
+	wire exu_jump_en;
+
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
@@ -170,13 +173,15 @@ module ysyx_23060236(
 
 	wire [31:0] csr_jump;
 	wire [31:0] exu_jump;
-	wire [31:0] jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
 	wire error;
 	assign error = (|ifu_rresp) | (|lsu_rresp) | (|lsu_bresp);
 	assign snpc = pc + 4;
-	assign dnpc = (({32{|jump}} & jump) | (~{32{|jump}} & snpc)) & {32{~error}};
+	assign dnpc = error ? 0 : 
+								csr_jump_en ? csr_jump : 
+								exu_jump_en ? exu_jump :
+								snpc;
 
 	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
 		.clock(clock),
@@ -350,6 +355,7 @@ module ysyx_23060236(
 		.val(exu_val),
 		.pc(pc),
 		.jump(exu_jump),
+		.jump_en(exu_jump_en),
 		.csr_val(csr_val),
 		.csr_wdata(csr_wdata),
 		.wmask(wmask)
@@ -411,6 +417,7 @@ module ysyx_23060236(
 		.inst_ecall(inst_ecall),
 		.epc(pc),
 		.jump(csr_jump),
+		.jump_en(csr_jump_en),
 		.inst_mret(inst_mret),
 		.valid(wb_valid)
 	);
@@ -418,7 +425,6 @@ module ysyx_23060236(
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
 	assign val = (exu_val | csr_val | lsu_val);
-	assign jump = exu_jump | csr_jump;
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),

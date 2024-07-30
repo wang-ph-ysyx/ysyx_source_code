@@ -8,6 +8,7 @@ module ysyx_23060236_exu(
 	input  [31:0] pc,
 	output [31:0] val,
 	output [31:0] jump,
+	output        jump_en,
 	input  [31:0] csr_val,
 	output [31:0] csr_wdata,
 	output [3:0]  wmask
@@ -46,7 +47,6 @@ module ysyx_23060236_exu(
 	wire [31:0] jloperand;
 	wire [31:0] jroperand;
 	wire jump_cond;
-	wire jump_en;
 
 	//exu_val
 	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? pc : //auipc/jal/jalr
@@ -102,7 +102,7 @@ module ysyx_23060236_exu(
 	//jump
 	assign jloperand = opcode_type[INST_JALR] ? src1 : pc;
 	assign jroperand = imm;
-	assign jump = {jloperand + jroperand} & {32{jump_en}};
+	assign jump = jloperand + jroperand;
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];

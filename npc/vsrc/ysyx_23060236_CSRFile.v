@@ -9,6 +9,7 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 32) (
 	input  inst_mret,
 	input  [31:0] epc,
 	output [31:0] jump,
+	output        jump_en,
 	input  valid
 );
 
@@ -60,5 +61,6 @@ module ysyx_23060236_CSRFile #(DATA_WIDTH = 32) (
 								 32'b0;
 
 	assign jump = {32{inst_ecall}} & mtvec | {32{inst_mret}} & mepc;
+	assign jump_en = inst_ecall | inst_mret;
 
 endmodule
