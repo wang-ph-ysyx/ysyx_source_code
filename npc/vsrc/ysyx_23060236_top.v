@@ -77,7 +77,6 @@ module ysyx_23060236(
 
 	wire [31:0] inst;
 	wire [6:0]  opcode;
-	wire [3:0]  opcode_type;
 	wire [3:0]  rs1;
 	wire [3:0]  rs2;
 	wire [3:0]  rd;
@@ -377,7 +376,6 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
-		.opcode(opcode),
 		.funct3(funct3),
 		.src1(src1),
 		.src2(src2),
