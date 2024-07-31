@@ -6,7 +6,7 @@ module ysyx_23060236_clint(
 	input  arvalid,
 	output reg arready,
 
-	output [31:0] rdata,
+	output reg [31:0] rdata,
 	output [1:0]  rresp,
 	output rvalid,
 	input  rready
@@ -31,28 +31,15 @@ module ysyx_23060236_clint(
 		else if (arready & arvalid) arready <= 0;
 		else if (rready & rvalid) arready <= 1;
 	end
-	/*ysyx_23060236_Reg #(1, 1) reg_arready(
-		.clock(clock),
-		.reset(reset),
-		.din(~arready & rvalid & rready | arready & ~arvalid),
-		.dout(arready),
-		.wen(1)
-	);*/
 
-	ysyx_23060236_Reg #(32, 0) reg_rdata(
-		.clock(clock),
-		.reset(reset),
-		.din(data_out),
-		.dout(rdata),
-		.wen(arvalid & arready)
-	);
+	always @(posedge clock) begin
+		if (arvalid & arready) rdata <= data_out;
+	end
 
-	ysyx_23060236_Reg #(1, 0) reg_rvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(~rvalid & arvalid & arready | rvalid & ~rready),
-		.dout(rvalid),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		if (reset) rvalid <= 0;
+		else if (rvalid & rready) rvalid <= 0;
+		else if (arvalid & arready) rvalid <= 1;
+	end
 
 endmodule
