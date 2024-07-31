@@ -30,7 +30,7 @@ module ysyx_23060236_lsu(
 	input  [3:0]  wmask,
 	input         lsu_ren,
 	input         lsu_wen,
-	output [31:0] lsu_val
+	output reg [31:0] lsu_val
 );
 
 	wire [31:0] lsu_val_tmp;
@@ -77,12 +77,8 @@ module ysyx_23060236_lsu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(32, 0) reg_lsu_val(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_val_tmp),
-		.dout(lsu_val),
-		.wen(lsu_rvalid & lsu_rready)
-	);
+	always @(posedge clock) begin
+		if (lsu_rvalid & lsu_rready) lsu_val <= lsu_val_tmp;
+	end
 
 endmodule
