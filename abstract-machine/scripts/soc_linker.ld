@@ -29,7 +29,10 @@ SECTIONS {
   } > sdram AT> flash 
 	text_load_start = LOADADDR(.text);
   .rodata : {
+		. = ALIGN(8);
     *(.rodata*)
+		. = ALIGN(8);
+		*(.srodata.*)
   } > sdram AT> flash 
 
   .data.extra : {
@@ -66,7 +69,9 @@ SECTIONS {
 
   .data : {
 		. = ALIGN(8);
-    *(.data)
+    *(.data.*)
+		. = ALIGN(8);
+		*(.sdata.*)
   } > sdram AT> flash 
 	data_load_start = LOADADDR(.data.extra);
 
