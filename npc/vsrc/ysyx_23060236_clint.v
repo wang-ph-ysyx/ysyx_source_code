@@ -27,7 +27,7 @@ module ysyx_23060236_clint(
 	);
 
 	always @(posedge clock) begin
-		if (reset) arready <= 0;
+		if (reset) arready <= 1;
 		else if (arready & arvalid) arready <= 0;
 		else if (rready & rvalid) arready <= 1;
 	end
