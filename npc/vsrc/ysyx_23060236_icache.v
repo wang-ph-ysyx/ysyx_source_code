@@ -124,11 +124,11 @@ module ysyx_23060236_icache(
 	end
 
 	always @(posedge clock) begin
-		if (~reset & icache_wvalid & icache_wready) icache_data[write_index][write_offset[OFFSET_LEN-3:0]] <= icache_wdata;
+		if (icache_wvalid & icache_wready) icache_data[write_index][write_offset[OFFSET_LEN-3:0]] <= icache_wdata;
 	end
 
 	always @(posedge clock) begin
-		if (~reset & icache_wvalid & icache_wready) icache_tag[write_index] <= write_tag;
+		if (icache_wvalid & icache_wready) icache_tag[write_index] <= write_tag;
 	end
 
 endmodule
