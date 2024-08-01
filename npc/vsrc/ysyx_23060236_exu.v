@@ -43,8 +43,6 @@ module ysyx_23060236_exu(
 	wire [3:0] operator3;
 	wire [3:0] operator4;
 	wire [62:0] val_sra;
-	wire [31:0] jloperand;
-	wire [31:0] jroperand;
 	wire jump_cond;
 
 	//exu_val
