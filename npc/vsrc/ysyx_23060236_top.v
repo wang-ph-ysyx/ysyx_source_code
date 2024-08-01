@@ -420,7 +420,6 @@ module ysyx_23060236(
 	assign inst_mret = (inst == 32'h30200073);
 	assign val = opcode_type[INST_LW ] ? lsu_val : 
 							 (opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? snpc :
-							 opcode_type[INST_LUI] ? imm : 
 							 csr_enable ? csr_val :
 							 exu_val;
 
@@ -443,7 +442,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-/*
+
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -463,5 +462,5 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule

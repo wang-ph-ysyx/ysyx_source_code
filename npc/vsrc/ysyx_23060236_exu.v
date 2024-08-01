@@ -47,6 +47,7 @@ module ysyx_23060236_exu(
 
 	//exu_val
 	assign loperand = (opcode_type[INST_ADDI] | opcode_type[INST_ADD] | opcode_type[INST_JALR]) ? src1 : //imm/src2/jalr
+										opcode_type[INST_LUI] ? 32'b0 :   //lui
 										pc;   //auipc/jal/beq
 
 	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
