@@ -11,6 +11,7 @@ module ysyx_23060236_idu(
 	output lsu_ren,
 	output reg_wen,
 	output csr_enable,
+	output inst_fencei,
 	input  idu_valid);
 
 	wire [5:0] Type;
@@ -54,6 +55,7 @@ module ysyx_23060236_idu(
 	assign opcode_type[INST_ADDI ] = (opcode == 7'b0010011);
 	assign opcode_type[INST_ADD  ] = (opcode == 7'b0110011);
 	assign opcode_type[INST_CSR  ] = (opcode == 7'b1110011);
+	assign inst_fencei = (opcode == 7'b0001111);
 
 	assign Type[TYPE_R] = opcode_type[INST_ADD];
 	assign Type[TYPE_I] = opcode_type[INST_JALR] | opcode_type[INST_LW] | opcode_type[INST_ADDI] | opcode_type[INST_CSR];

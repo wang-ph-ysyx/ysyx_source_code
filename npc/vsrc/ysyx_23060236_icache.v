@@ -22,7 +22,9 @@ module ysyx_23060236_icache(
 
 	output [1:0]  icache_bresp,
 	output        icache_bvalid,
-	input         icache_bready
+	input         icache_bready,
+
+	input         inst_fencei
 );
 
 	localparam ADDR_LEN   = 32;
@@ -119,7 +121,7 @@ module ysyx_23060236_icache(
 	assign icache_bresp = 0;
 
 	always @(posedge clock) begin
-		if (reset) icache_valid <= 0;
+		if (reset | inst_fencei) icache_valid <= 0;
 		else if (icache_wvalid & icache_wready) icache_valid[write_index] <= 1'b1;
 	end
 

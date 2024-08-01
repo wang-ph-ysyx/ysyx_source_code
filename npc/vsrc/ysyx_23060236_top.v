@@ -90,6 +90,7 @@ module ysyx_23060236(
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
+	wire inst_fencei;
 
 	wire csr_jump_en;
 	wire exu_jump_en;
@@ -287,7 +288,8 @@ module ysyx_23060236(
 		.icache_wready(icache_wready),
 		.icache_bresp(icache_bresp),
 		.icache_bvalid(icache_bvalid),
-		.icache_bready(icache_bready)
+		.icache_bready(icache_bready),
+		.inst_fencei(inst_fencei)
 	);
 
 	ysyx_23060236_ifu my_ifu(
@@ -338,6 +340,7 @@ module ysyx_23060236(
 		.lsu_wen(lsu_wen),
 		.reg_wen(reg_wen),
 		.csr_enable(csr_enable),
+		.inst_fencei(inst_fencei),
 		.idu_valid(idu_valid)
 	);
 
