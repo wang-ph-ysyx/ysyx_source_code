@@ -172,12 +172,11 @@ module ysyx_23060236(
 	parameter INST_CSR   = 9;
 
 	wire [31:0] csr_jump;
-	wire [31:0] exu_jump;
 	wire [31:0] dnpc;
 	wire [31:0] snpc;
 	assign snpc = pc + 4;
 	assign dnpc = csr_jump_en ? csr_jump : 
-								exu_jump_en ? exu_jump :
+								exu_jump_en ? exu_val :
 								snpc;
 
 	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
@@ -351,7 +350,6 @@ module ysyx_23060236(
 		.funct7(funct7),
 		.val(exu_val),
 		.pc(pc),
-		.jump(exu_jump),
 		.jump_en(exu_jump_en),
 		.csr_val(csr_val),
 		.csr_wdata(csr_wdata),
@@ -421,6 +419,7 @@ module ysyx_23060236(
 	assign inst_ecall = (inst == 32'h00000073);
 	assign inst_mret = (inst == 32'h30200073);
 	assign val = opcode_type[INST_LW ] ? lsu_val : 
+							 (opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? snpc :
 							 csr_enable ? csr_val :
 							 exu_val;
 
