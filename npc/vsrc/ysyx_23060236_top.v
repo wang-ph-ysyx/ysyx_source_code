@@ -340,6 +340,8 @@ module ysyx_23060236(
 		.lsu_wen(lsu_wen),
 		.reg_wen(reg_wen),
 		.csr_enable(csr_enable),
+		.inst_ecall(inst_ecall),
+		.inst_mret(inst_mret),
 		.inst_fencei(inst_fencei),
 		.idu_valid(idu_valid)
 	);
@@ -419,8 +421,6 @@ module ysyx_23060236(
 		.valid(wb_valid)
 	);
 
-	assign inst_ecall = (inst == 32'h00000073);
-	assign inst_mret = (inst == 32'h30200073);
 	assign val = opcode_type[INST_LW ] ? lsu_val : 
 							 (opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? snpc :
 							 csr_enable ? csr_val :
