@@ -89,7 +89,7 @@ module ysyx_23060236_xbar(
 	wire [2:0] next_count;
 
 	assign soc_reading = ~clint_reading;
-	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr <= 32'h0200ffff);
+	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr < 32'h02010000);
 	assign next_count = (io_master_rvalid & io_master_rready) ? (count - 1) : 
 		                  (io_master_arvalid & io_master_arready) ? io_master_arlen[2:0] :
 											count;

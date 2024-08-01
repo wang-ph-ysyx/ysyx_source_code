@@ -7,7 +7,6 @@ module ysyx_23060236_exu(
 	input  [6:0]  funct7,
 	input  [31:0] pc,
 	output [31:0] val,
-	output [31:0] jump,
 	output        jump_en,
 	input  [31:0] csr_val,
 	output [31:0] csr_wdata,
@@ -44,18 +43,15 @@ module ysyx_23060236_exu(
 	wire [3:0] operator3;
 	wire [3:0] operator4;
 	wire [62:0] val_sra;
-	wire [31:0] jloperand;
-	wire [31:0] jroperand;
 	wire jump_cond;
 
 	//exu_val
-	assign loperand = (opcode_type[INST_ADDI] | opcode_type[INST_ADD]) ? src1 : //src1 imm/src1 src2
-										(opcode_type[INST_LUI]) ? 32'b0 :   //lui
-										pc; //auipc/jal/jalr
+	assign loperand = (opcode_type[INST_ADDI] | opcode_type[INST_ADD] | opcode_type[INST_JALR]) ? src1 : //imm/src2/jalr
+										opcode_type[INST_LUI] ? 32'b0 :   //lui
+										pc;   //auipc/jal/beq
 
-	assign roperand = (opcode_type[INST_JAL] | opcode_type[INST_JALR]) ? 32'd4 :  //jal/jalr
-										opcode_type[INST_ADD] ? src2 :   //src1 src2
-										imm;//lui/auipc/src1 imm
+	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
+										imm;  //lui/auipc/imm/jal/jalr/beq
 
 	localparam OP_ADD   = 4'd0;
 	localparam OP_SUB   = 4'd1;
@@ -99,9 +95,6 @@ module ysyx_23060236_exu(
 							 32'b0;
 
 	//jump
-	assign jloperand = opcode_type[INST_JALR] ? src1 : pc;
-	assign jroperand = imm;
-	assign jump = jloperand + jroperand;
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
