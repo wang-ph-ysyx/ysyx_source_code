@@ -13,6 +13,7 @@ VysyxSoCFull *top = NULL;
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
+extern int wave_trace;
 
 //performance register
 static long total_inst = 0;
@@ -71,11 +72,11 @@ extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
 #ifdef WAVE_TRACE
-	tfp->dump(contextp->time()); contextp->timeInc(1);
+	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
 	top->clock = 1; top->eval(); 
 #ifdef WAVE_TRACE
-	tfp->dump(contextp->time()); contextp->timeInc(1);
+	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
 }
 
@@ -85,10 +86,10 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 
-	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
 	uint32_t inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 	for (; n > 0; --n) {
-		pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+		pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
 		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
 		nvboard_update();
 		one_cycle();
@@ -104,6 +105,7 @@ void cpu_exec(unsigned long n) {
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (inst == 0x100073 || trigger_difftest) break;
+		//if (pc == 0xa0003578 && top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid == 1) break;
 	}
 
 	if (trigger_difftest) {
@@ -115,7 +117,7 @@ void cpu_exec(unsigned long n) {
 	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[10])
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
-	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc);
+	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc);
 	print_statistic();
 }
 
