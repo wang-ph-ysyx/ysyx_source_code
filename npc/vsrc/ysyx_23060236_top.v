@@ -173,21 +173,13 @@ module ysyx_23060236(
 
 	wire [31:0] icache_araddr;
 	wire        icache_arvalid;
-	wire        icache_arready;
 	wire [31:0] icache_rdata;
-	wire [1:0]  icache_rresp;
+	wire        icache_hit;
 	wire        icache_rvalid;
-	wire        icache_rready;
 	wire [31:0] icache_awaddr;
-	wire        icache_awvalid;
-	wire        icache_awready;
 	wire [31:0] icache_wdata;
-	wire [3:0]  icache_wstrb;
 	wire        icache_wvalid;
-	wire        icache_wready;
-	wire [1:0]  icache_bresp;
 	wire        icache_bvalid;
-	wire        icache_bready;
 
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
@@ -276,21 +268,13 @@ module ysyx_23060236(
 		.reset(reset),
 		.icache_araddr(icache_araddr),
 		.icache_arvalid(icache_arvalid),
-		.icache_arready(icache_arready),
 		.icache_rdata(icache_rdata),
-		.icache_rresp(icache_rresp),
+		.icache_hit(icache_hit),
 		.icache_rvalid(icache_rvalid),
-		.icache_rready(icache_rready),
 		.icache_awaddr(icache_awaddr),
-		.icache_awvalid(icache_awvalid),
-		.icache_awready(icache_awready),
 		.icache_wdata(icache_wdata),
-		.icache_wstrb(icache_wstrb),
 		.icache_wvalid(icache_wvalid),
-		.icache_wready(icache_wready),
-		.icache_bresp(icache_bresp),
 		.icache_bvalid(icache_bvalid),
-		.icache_bready(icache_bready),
 		.inst_fencei(inst_fencei)
 	);
 
@@ -309,21 +293,13 @@ module ysyx_23060236(
 		.ifu_rready(ifu_rready),
 		.icache_araddr(icache_araddr),
 		.icache_arvalid(icache_arvalid),
-		.icache_arready(icache_arready),
 		.icache_rdata(icache_rdata),
-		.icache_rresp(icache_rresp),
+		.icache_hit(icache_hit),
 		.icache_rvalid(icache_rvalid),
-		.icache_rready(icache_rready),
 		.icache_awaddr(icache_awaddr),
-		.icache_awvalid(icache_awvalid),
-		.icache_awready(icache_awready),
 		.icache_wdata(icache_wdata),
-		.icache_wstrb(icache_wstrb),
 		.icache_wvalid(icache_wvalid),
-		.icache_wready(icache_wready),
-		.icache_bresp(icache_bresp),
 		.icache_bvalid(icache_bvalid),
-		.icache_bready(icache_bready),
 		.wb_valid(wb_valid),
 		.pc(ifu_pc),
 		.jump_addr(jump_addr),
