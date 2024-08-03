@@ -65,6 +65,7 @@ static int cmd_wt(char *args) {
 	if (args == NULL) wave_trace = 1;
 	else if (*args == 'o') wave_trace = 1;
 	else if (*args == 'c') wave_trace = 0;
+	else printf("Usage: 'wt o' to open, 'wt c' to close\n");
 	return 0;
 }
 
