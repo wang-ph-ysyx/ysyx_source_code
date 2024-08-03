@@ -78,7 +78,7 @@ module ysyx_23060236_idu(
 	assign rd_tmp         = in[10:7];
 	assign funct3_tmp     = in[14:12];
 	assign funct7_tmp     = in[31:25];
-	assign reg_wen_tmp    = Type[TYPE_I] & ~((funct3 == 3'b0) & opcode_type_tmp[INST_CSR]) | Type[TYPE_U] | Type[TYPE_J] | Type[TYPE_R];
+	assign reg_wen_tmp    = Type[TYPE_I] & ~((funct3_tmp == 3'b0) & opcode_type_tmp[INST_CSR]) | Type[TYPE_U] | Type[TYPE_J] | Type[TYPE_R];
 
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
