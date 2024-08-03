@@ -77,6 +77,7 @@ module ysyx_23060236_lsu(
 			jump_addr <= csr_jump_en ? csr_jump :
 									 exu_jump_en ? exu_val :
 									 snpc;
+			pc_next   <= pc;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
