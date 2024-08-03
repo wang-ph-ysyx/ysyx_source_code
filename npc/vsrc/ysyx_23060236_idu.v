@@ -55,6 +55,7 @@ module ysyx_23060236_idu(
 			inst_fencei <= inst_fencei_tmp;
 			inst_ecall  <= inst_ecall_tmp;
 			inst_mret   <= inst_mret_tmp;
+			pc_next     <= pc;
 		end
 	end
 
