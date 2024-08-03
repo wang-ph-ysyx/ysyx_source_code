@@ -112,6 +112,7 @@ module ysyx_23060236(
 	wire lsu_inst_mret;
 	wire inst_fencei;
 
+	wire [31:0] csr_jump;
 	wire csr_jump_en;
 	wire exu_jump_en;
 
@@ -186,19 +187,6 @@ module ysyx_23060236(
 	wire [1:0]  icache_bresp;
 	wire        icache_bvalid;
 	wire        icache_bready;
-
-	parameter INST_LUI   = 0;
-	parameter INST_AUIPC = 1;
-	parameter INST_JAL   = 2;
-	parameter INST_JALR  = 3;
-	parameter INST_BEQ   = 4;
-	parameter INST_LW    = 5;
-	parameter INST_SW    = 6;
-	parameter INST_ADDI  = 7;
-	parameter INST_ADD   = 8;
-	parameter INST_CSR   = 9;
-
-	wire [31:0] csr_jump;
 
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
@@ -487,7 +475,7 @@ module ysyx_23060236(
 		.jump_en(csr_jump_en),
 		.valid(wb_valid)
 	);
-
+/*
 	assign io_slave_awready = 0;
 	assign io_slave_wready  = 0;
 	assign io_slave_bvalid  = 0;
@@ -499,7 +487,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-
+*/
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
