@@ -86,6 +86,14 @@ module ysyx_23060236_icache(
 		.wen(1)
 	);
 
+	ysyx_23060236_Reg #(1, 1) calculate_icache_awready(
+		.clock(clock),
+		.reset(reset),
+		.din(icache_awready & ~icache_awvalid | ~icache_awready & icache_bvalid & icache_bready),
+		.dout(icache_awready),
+		.wen(1)
+	);
+
 	ysyx_23060236_Reg #(1, 1) calculate_icache_wready(
 		.clock(clock),
 		.reset(reset),
@@ -110,7 +118,6 @@ module ysyx_23060236_icache(
 		.wen(1)
 	);
 
-	assign icache_awready = 1;
 	assign icache_bresp = 0;
 
 	always @(posedge clock) begin
