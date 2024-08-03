@@ -143,7 +143,7 @@ module ysyx_23060236_ifu(
 		.dout(idu_valid),
 		.wen(1)
 	);
-/*
+
 	import "DPI-C" function void add_ifu_readingcycle();
 	import "DPI-C" function void add_miss_icache();
 	import "DPI-C" function void add_hit_icache();
@@ -170,5 +170,5 @@ module ysyx_23060236_ifu(
 
 		if (ifu_miss_icache) add_tmt();
 	end
-*/
+
 endmodule
