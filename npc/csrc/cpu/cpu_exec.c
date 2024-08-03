@@ -13,6 +13,7 @@ VysyxSoCFull *top = NULL;
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
+extern int wave_trace;
 
 //performance register
 static long total_inst = 0;
@@ -71,11 +72,11 @@ extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
 #ifdef WAVE_TRACE
-	tfp->dump(contextp->time()); contextp->timeInc(1);
+	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
 	top->clock = 1; top->eval(); 
 #ifdef WAVE_TRACE
-	tfp->dump(contextp->time()); contextp->timeInc(1);
+	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
 }
 
