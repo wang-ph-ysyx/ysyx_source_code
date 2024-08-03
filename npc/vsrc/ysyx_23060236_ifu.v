@@ -33,9 +33,11 @@ module ysyx_23060236_ifu(
 
 
 	input         wb_valid,
-	input  [31:0] pc,
+	output [31:0] pc,
+	input  [31:0] jump_addr,
 	output [31:0] inst,
-	output        idu_valid
+	output        idu_valid,
+	input         idu_ready
 );
 
 	wire ifu_valid;
@@ -80,6 +82,14 @@ module ysyx_23060236_ifu(
 		.din(~ifu_valid & wb_valid),
 		.dout(ifu_valid),
 		.wen(1)
+	);
+
+	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
+		.clock(clock),
+		.reset(reset),
+		.din(jump_addr),
+		.dout(pc),
+		.wen(wb_valid)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
@@ -149,7 +159,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~idu_valid & ifu_over),
+		.din(~idu_valid & ifu_over | idu_valid & ~idu_ready),
 		.dout(idu_valid),
 		.wen(1)
 	);
