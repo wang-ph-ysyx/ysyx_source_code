@@ -67,7 +67,7 @@ module ysyx_23060236_lsu(
 			reg_wen_next    <= reg_wen;
 			rd_next         <= rd;
 			csr_enable_next <= csr_enable;
-			csr_imm_next    <= csr_imm_next;
+			csr_imm_next    <= csr_imm;
 			csr_wdata_next  <= csr_wdata;
 			inst_ecall_next <= inst_ecall;
 			inst_mret_next  <= inst_mret;
