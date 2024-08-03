@@ -467,7 +467,7 @@ module ysyx_23060236(
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
 */
-/*
+
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -476,7 +476,7 @@ import "DPI-C" function void add_lsu_writedata();
 
 	always @(posedge clock) begin
 		add_total_cycle();
-		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_rready & ~icache_rresp[1]) add_ifu_getinst();
+		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_hit) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 		if (lsu_bvalid & lsu_bready) add_lsu_writedata();
@@ -487,5 +487,5 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-*/
+
 endmodule
