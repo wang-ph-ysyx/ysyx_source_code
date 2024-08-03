@@ -135,6 +135,7 @@ module ysyx_23060236(
 	wire        ifu_arready;
 	wire        ifu_rvalid;
 	wire [1:0]  ifu_rresp;
+	wire        ifu_rlast;
 	wire        ifu_rready;
 	wire [1:0]  ifu_arburst;
 	wire [3:0]  ifu_arlen;
@@ -198,6 +199,7 @@ module ysyx_23060236(
 		.ifu_arburst(ifu_arburst),
 		.ifu_rdata(ifu_rdata),
 		.ifu_rresp(ifu_rresp),
+		.ifu_rlast(ifu_rlast),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
 		.lsu_araddr(lsu_araddr),
@@ -302,6 +304,7 @@ module ysyx_23060236(
 		.ifu_arburst(ifu_arburst),
 		.ifu_rdata(ifu_rdata),
 		.ifu_rresp(ifu_rresp),
+		.ifu_rlast(ifu_rlast),
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
 		.icache_araddr(icache_araddr),

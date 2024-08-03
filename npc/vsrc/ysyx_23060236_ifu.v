@@ -9,6 +9,7 @@ module ysyx_23060236_ifu(
 	output [3:0]  ifu_arlen,
 	input  [31:0] ifu_rdata,
 	input  [1:0]  ifu_rresp,
+	input         ifu_rlast,
 	input         ifu_rvalid,
 	output        ifu_rready,
 
