@@ -97,8 +97,10 @@ module ysyx_23060236(
 	wire [6:0]  funct7;
 	wire [31:0] imm;
 	wire [31:0] src1;
-	wire [31:0] wb_val;
 	wire [31:0] src2;
+	wire [31:0] idu_src1;
+	wire [31:0] idu_src2;
+	wire [31:0] wb_val;
 	wire idu_reg_wen;
 	wire exu_reg_wen;
 	wire lsu_reg_wen;
@@ -313,13 +315,17 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
+		.src1(src1),
+		.src2(src2),
+		.rs1(rs1),
+		.rs2(rs2),
 		.pc_next(idu_pc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7(funct7),
 		.rd(idu_rd),
-		.rs1(rs1),
-		.rs2(rs2),
+		.src1_next(idu_src1),
+		.src2_next(idu_src2),
 		.imm(imm),
 		.reg_wen(idu_reg_wen),
 		.inst_ecall(idu_inst_ecall),
@@ -336,8 +342,8 @@ module ysyx_23060236(
 		.reset(reset),
 		.opcode_type(opcode_type),
 		.rd(idu_rd),
-		.src1(src1),
-		.src2(src2),
+		.src1(idu_src1),
+		.src2(idu_src2),
 		.imm(imm),
 		.funct3(funct3),
 		.funct7(funct7),
