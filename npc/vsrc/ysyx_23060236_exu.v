@@ -117,7 +117,6 @@ module ysyx_23060236_exu(
 
 	//exu_val
 	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_BEQ]) ? pc : //auipc/jal/beq
-										opcode_type[INST_LUI] ? 32'b0 :   //lui
 										src1;   //imm/src2/jalr/lw/sw
 
 	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
@@ -162,7 +161,7 @@ module ysyx_23060236_exu(
 									 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 									 (operator == OP_LESS ) ? {31'b0, op_less} : 
 									 (operator == OP_ULESS) ? {31'b0, op_uless} : 
-									 32'b0;
+									 imm; //lui
 
 	//jump
 	assign jump_en_tmp = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
