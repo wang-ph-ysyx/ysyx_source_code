@@ -33,26 +33,20 @@ module ysyx_23060236_lsu(
 	input         lsu_wen,
 	input  [31:0] pc,
 	input  [31:0] csr_wdata,
-	input  [31:0] csr_jump,
 	input  [11:0] csr_imm,
 	input  csr_enable,
 	input  jal_enable,
 	input  reg_wen,
-	input  exu_jump_en,
-	input  csr_jump_en,
 	input  inst_ecall,
-	input  inst_mret,
 
 	output reg [31:0] pc_next,
 	output reg [31:0] wb_val,
-	output reg [31:0] jump_addr,
 	output reg reg_wen_next,
 	output reg [3:0]  rd_next,
 	output reg csr_enable_next,
 	output reg [11:0] csr_imm_next,
 	output reg [31:0] csr_wdata_next,
 	output reg inst_ecall_next,
-	output reg inst_mret_next,
 
 	input  lsu_valid,
 	output lsu_ready,
@@ -70,14 +64,10 @@ module ysyx_23060236_lsu(
 			csr_imm_next    <= csr_imm;
 			csr_wdata_next  <= csr_wdata;
 			inst_ecall_next <= inst_ecall;
-			inst_mret_next  <= inst_mret;
+			pc_next         <= pc;
 			wb_val <= jal_enable ? snpc : 
 								csr_enable ? csr_val  :
 								exu_val;
-			jump_addr <= csr_jump_en ? csr_jump :
-									 exu_jump_en ? exu_val :
-									 snpc;
-			pc_next   <= pc;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;

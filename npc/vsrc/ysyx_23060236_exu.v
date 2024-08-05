@@ -14,12 +14,13 @@ module ysyx_23060236_exu(
 	input  reg_wen,
 	input  inst_ecall,
 	input  inst_mret,
+	input  csr_jump_en,
+	input  [31:0] csr_jump,
 
 	output reg [31:0] csr_val_next,
 	output reg [3:0]  rd_next,
 	output reg [31:0] pc_next,
 	output reg [31:0] val,
-	output reg        jump_en,
 	output reg [31:0] csr_wdata,
 	output reg [3:0]  wmask,
 	output reg [31:0] lsu_data,
@@ -31,7 +32,8 @@ module ysyx_23060236_exu(
 	output reg csr_enable,
 	output reg jal_enable,
 	output reg inst_ecall_next,
-	output reg inst_mret_next,
+	output reg [31:0] jump_addr,
+	output reg jump_wrong,
 
 	input  exu_valid,
 	output exu_ready,
@@ -42,7 +44,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_Reg #(1, 1) reg_exu_ready(
 		.clock(clock),
 		.reset(reset),
-		.din(exu_ready & ~exu_valid | ~exu_ready & lsu_valid & lsu_ready),
+		.din(exu_ready & ~exu_valid & ~jump_wrong_tmp | ~exu_ready & lsu_valid & lsu_ready),
 		.dout(exu_ready),
 		.wen(1)
 	);
@@ -55,11 +57,17 @@ module ysyx_23060236_exu(
 		.wen(1)
 	);
 
+	wire        jump_en;
+	wire        jump_wrong_tmp;
+	wire [31:0] jump_addr_tmp;
 	wire [31:0] val_tmp;
-	wire        jump_en_tmp;
 	wire [31:0] csr_wdata_tmp;
 	wire [3:0]  wmask_tmp;
 	wire [31:0] lsu_data_tmp;
+	wire [31:0] snpc;
+
+	assign snpc = pc + 4;
+	assign jump_wrong_tmp = (jump_addr_tmp != snpc);
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
@@ -67,7 +75,6 @@ module ysyx_23060236_exu(
 			pc_next         <= pc;
 			rd_next         <= rd;
 			val             <= val_tmp;
-      jump_en         <= jump_en_tmp;
       csr_wdata       <= csr_wdata_tmp;
       wmask           <= wmask_tmp;
       lsu_data        <= lsu_data_tmp;
@@ -79,9 +86,17 @@ module ysyx_23060236_exu(
 			jal_enable      <= opcode_type[INST_JAL] | opcode_type[INST_JALR];
 			reg_wen_next    <= reg_wen;
 			inst_ecall_next <= inst_ecall;
-			inst_mret_next  <= inst_mret;
+			jump_addr       <= jump_addr_tmp;
+			jump_wrong      <= jump_wrong_tmp;
+		end
+		else begin
+			jump_wrong <= 0;
 		end
 	end
+
+	assign jump_addr_tmp = csr_jump_en ? csr_jump :
+												 jump_en ? val_tmp :
+												 pc + 4;
 
 	parameter INST_LUI   = 0;
 	parameter INST_AUIPC = 1;
@@ -165,7 +180,7 @@ module ysyx_23060236_exu(
 									 32'b0;
 
 	//jump
-	assign jump_en_tmp = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
+	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
