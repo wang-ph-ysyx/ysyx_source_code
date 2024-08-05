@@ -58,7 +58,7 @@ module ysyx_23060236_lsu(
 	reg  [31:0] lsu_addr;
 	reg  [31:0] lsu_data_reg;
 	reg  [3:0]  wmask_reg;
-	reg  [1:0]  lsu_size_reg;
+	reg  [2:0]  funct3_reg;
 
 	always @(posedge clock) begin
 		if (lsu_valid & lsu_ready) begin
@@ -71,7 +71,7 @@ module ysyx_23060236_lsu(
 			pc_next         <= pc;
 			lsu_addr        <= exu_val;
 			lsu_data_reg    <= lsu_data;
-			lsu_size_reg    <= funct3[1:0];
+			funct3_reg      <= funct3;
 			wmask_reg       <= wmask;
 			wb_val <= jal_enable ? snpc : 
 								csr_enable ? csr_val  :
@@ -101,8 +101,8 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
 
-	assign lsu_arsize = {1'b0, lsu_size_reg};
-	assign lsu_awsize = {1'b0, lsu_size_reg};
+	assign lsu_arsize = {1'b0, funct3_reg[1:0]};
+	assign lsu_awsize = {1'b0, funct3_reg[1:0]};
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
 	assign lsu_araddr = lsu_addr;
@@ -111,11 +111,11 @@ module ysyx_23060236_lsu(
 	assign lsu_wdata  = lsu_data_reg << {lsu_awaddr[1:0], 3'b0};
 	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
 
-	assign lsu_val_tmp = (funct3 == 3'b000) ? (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0} :     //lb  
-                       (funct3 == 3'b001) ? (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0} : //lh
-                       (funct3 == 3'b010) ? lsu_val_shift :                                                 //lw
-                       (funct3 == 3'b100) ? lsu_val_shift & 32'hff :                                        //lbu
-                       (funct3 == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
+	assign lsu_val_tmp = (funct3_reg == 3'b000) ? (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0} :     //lb  
+                       (funct3_reg == 3'b001) ? (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0} : //lh
+                       (funct3_reg == 3'b010) ? lsu_val_shift :                                                 //lw
+                       (funct3_reg == 3'b100) ? lsu_val_shift & 32'hff :                                        //lbu
+                       (funct3_reg == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
 											 32'b0;
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
