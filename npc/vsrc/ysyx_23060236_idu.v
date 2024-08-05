@@ -61,7 +61,7 @@ module ysyx_23060236_idu(
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid_tmp(
 		.clock(clock),
 		.reset(reset),
-		.din(exu_valid & ~exu_ready & ~jump_wrong | ~exu_valid & idu_valid & idu_ready),
+		.din(exu_valid_tmp & ~(exu_ready & exu_valid) & ~jump_wrong | ~exu_valid_tmp & idu_valid & idu_ready),
 		.dout(exu_valid_tmp),
 		.wen(1)
 	);
