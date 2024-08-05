@@ -53,7 +53,7 @@ module ysyx_23060236_idu(
 	ysyx_23060236_Reg #(1, 1) reg_idu_ready_tmp(
 		.clock(clock),
 		.reset(reset),
-		.din(idu_ready_tmp & ~(idu_valid & idu_ready) | ~idu_ready_tmp & (exu_valid & exu_ready | jump_wrong)),
+		.din((idu_ready_tmp & ~(idu_valid & idu_ready) | ~idu_ready_tmp & exu_valid & exu_ready) | jump_wrong),
 		.dout(idu_ready_tmp),
 		.wen(1)
 	);
@@ -61,7 +61,7 @@ module ysyx_23060236_idu(
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(exu_valid & ~exu_ready & ~jump_wrong | ~exu_valid & idu_valid & idu_ready),
+		.din((exu_valid & ~exu_ready | ~exu_valid & idu_valid & idu_ready) & ~jump_wrong),
 		.dout(exu_valid),
 		.wen(1)
 	);
