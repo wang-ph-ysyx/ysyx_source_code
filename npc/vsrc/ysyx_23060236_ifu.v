@@ -45,6 +45,7 @@ module ysyx_23060236_ifu(
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
 
+	assign ifu_rready    = 1;
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign icache_araddr = pc;
 	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'hf; //与icache的块大小一致
@@ -115,14 +116,6 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & ~icache_hit | ifu_valid & ~pc_in_sdram)),
 		.dout(ifu_arvalid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & (icache_bvalid | ~pc_in_sdram)),
-		.dout(ifu_rready),
 		.wen(1)
 	);
 
