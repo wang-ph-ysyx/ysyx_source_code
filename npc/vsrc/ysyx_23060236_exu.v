@@ -44,7 +44,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_Reg #(1, 1) reg_exu_ready(
 		.clock(clock),
 		.reset(reset),
-		.din(exu_ready & ~exu_valid & ~jump_wrong_tmp | ~exu_ready & lsu_valid & lsu_ready),
+		.din(exu_ready & ~exu_valid | ~exu_ready & lsu_valid & lsu_ready),
 		.dout(exu_ready),
 		.wen(1)
 	);
