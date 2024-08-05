@@ -38,17 +38,17 @@ _ssbl_loader:
 	la t1, _data_start
 	la t2, _bss_start
   _data_copy:
-	lbu a1, 0(t0)
-	sb a1, 0(t1)
-	addi t0, t0, 1
-	addi t1, t1, 1
+	lw a1, 0(t0)
+	sw a1, 0(t1)
+	addi t0, t0, 4
+	addi t1, t1, 4
 	blt t1, t2, _data_copy
 
 	la t0, _bss_start
 	la t1, _end
 	_bss_clear:
-	sb x0, 0(t0)
-	addi t0, t0, 1
+	sw x0, 0(t0)
+	addi t0, t0, 4
 	blt t0, t1, _bss_clear
 
 	la a2, _trm_init
