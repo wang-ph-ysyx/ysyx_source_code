@@ -26,6 +26,7 @@ module ysyx_23060236_ifu(
 
 
 	input         wb_valid,
+	input         jump_wrong,
 	output [31:0] pc,
 	input  [31:0] jump_addr,
 	output [31:0] inst,
@@ -41,7 +42,10 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_ifu_tmp;
 	wire [31:0] icache_awaddr_tmp;
 	wire last;
+	wire jump_wrong_state;
+	wire [31:0] pc_tmp;
 
+	assign ifu_rready    = 1;
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign icache_araddr = pc;
 	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'hf; //与icache的块大小一致
@@ -55,6 +59,9 @@ module ysyx_23060236_ifu(
 	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit) ? (pc & ~32'hf) : 
 														 (icache_bvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
+	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
+									(idu_valid & idu_ready) ? (pc + 4) : 
+									pc;
 
 	ysyx_23060236_Reg #(1, 0) reg_last(
 		.clock(clock),
@@ -67,7 +74,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 1) reg_ifu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~ifu_valid & wb_valid),
+		.din(~ifu_valid & (idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over))),
 		.dout(ifu_valid),
 		.wen(1)
 	);
@@ -75,9 +82,9 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
 		.clock(clock),
 		.reset(reset),
-		.din(jump_addr),
+		.din(pc_tmp),
 		.dout(pc),
-		.wen(wb_valid)
+		.wen(1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
@@ -112,14 +119,6 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | ~ifu_rready & (icache_bvalid | ~pc_in_sdram)),
-		.dout(ifu_rready),
-		.wen(1)
-	);
-
 	ysyx_23060236_Reg #(32, 0) reg_icache_wdata(
 		.clock(clock),
 		.reset(reset),
@@ -139,8 +138,16 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~idu_valid & ifu_over | idu_valid & ~idu_ready),
+		.din(~idu_valid & ifu_over & ~jump_wrong & ~jump_wrong_state | idu_valid & ~idu_ready & ~jump_wrong),
 		.dout(idu_valid),
+		.wen(1)
+	);
+
+	ysyx_23060236_Reg #(1, 0) reg_jump_wrong_state(
+		.clock(clock),
+		.reset(reset),
+		.din(jump_wrong_state & ~ifu_over | ~jump_wrong_state & jump_wrong & ~ifu_over & ~idu_valid),
+		.dout(jump_wrong_state),
 		.wen(1)
 	);
 
@@ -154,7 +161,7 @@ module ysyx_23060236_ifu(
 
 	always @(posedge clock) begin
 		if (reset) ifu_reading <= 1;
-		else if (wb_valid) ifu_reading <= 1;
+		else if (ifu_valid) ifu_reading <= 1;
 		else if (ifu_over) ifu_reading <= 0;
 
 		if (~reset & ifu_reading) add_ifu_readingcycle();

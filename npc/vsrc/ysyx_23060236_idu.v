@@ -4,14 +4,26 @@ module ysyx_23060236_idu(
 
 	input  [31:0] in,
 	input  [31:0] pc,
+	input  [31:0] src1,
+	input  [31:0] src2,
+
+	input  [3:0]  exu_rd,
+	input  exu_reg_wen,
+	input  [3:0]  lsu_rd,
+	input  lsu_reg_wen,
+	input  lsu_ready,
+	input  jump_wrong,
+
+	output [3:0] rs1,
+	output [3:0] rs2,
 
 	output reg [31:0] pc_next,
 	output reg [9:0]  opcode_type,
 	output reg [2:0]  funct3,
 	output reg [6:0]  funct7,
 	output reg [3:0]  rd,
-	output reg [3:0]  rs1,
-	output reg [3:0]  rs2,
+	output reg [31:0] src1_next,
+	output reg [31:0] src2_next,
 	output reg [31:0] imm,
 	output reg reg_wen,
 	output reg inst_fencei,
@@ -25,19 +37,31 @@ module ysyx_23060236_idu(
 );
 
 	wire reg_wen_tmp;
+	wire raw_conflict;
+	wire idu_ready_tmp;
+	wire need_rs2;
 
-	ysyx_23060236_Reg #(1, 1) reg_idu_ready(
+	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
+	assign idu_ready = ~raw_conflict & idu_ready_tmp;
+	assign raw_conflict = (
+		~exu_ready & exu_reg_wen & (exu_rd != 4'b0) &
+		((exu_rd == rs1) | (exu_rd == rs2) & need_rs2) | 
+		~lsu_ready & lsu_reg_wen & (lsu_rd != 4'b0) &
+		((lsu_rd == rs1) | (lsu_rd == rs2) & need_rs2)
+	);
+
+	ysyx_23060236_Reg #(1, 1) reg_idu_ready_tmp(
 		.clock(clock),
 		.reset(reset),
-		.din(idu_ready & ~idu_valid | ~idu_ready & exu_valid & exu_ready),
-		.dout(idu_ready),
+		.din((idu_ready_tmp & ~(idu_valid & idu_ready) | ~idu_ready_tmp & exu_valid & exu_ready) | jump_wrong),
+		.dout(idu_ready_tmp),
 		.wen(1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(exu_valid & ~exu_ready | ~exu_valid & idu_valid & idu_ready),
+		.din((exu_valid & ~exu_ready | ~exu_valid & idu_valid & idu_ready) & ~jump_wrong),
 		.dout(exu_valid),
 		.wen(1)
 	);
@@ -48,14 +72,14 @@ module ysyx_23060236_idu(
 			funct3      <= funct3_tmp;
 			funct7      <= funct7_tmp;
 			rd          <= rd_tmp;
-			rs1         <= rs1_tmp;
-			rs2         <= rs2_tmp;
 			imm         <= imm_tmp;
 			reg_wen     <= reg_wen_tmp;
 			inst_fencei <= inst_fencei_tmp;
 			inst_ecall  <= inst_ecall_tmp;
 			inst_mret   <= inst_mret_tmp;
 			pc_next     <= pc;
+			src1_next   <= src1;
+			src2_next   <= src2;
 		end
 	end
 
@@ -73,8 +97,8 @@ module ysyx_23060236_idu(
 	wire [5:0] Type;
 	wire [6:0] opcode;
 	assign opcode         = in[6:0];
-	assign rs1_tmp        = in[18:15];
-	assign rs2_tmp        = in[23:20];
+	assign rs1            = in[18:15];
+	assign rs2            = in[23:20];
 	assign rd_tmp         = in[10:7];
 	assign funct3_tmp     = in[14:12];
 	assign funct7_tmp     = in[31:25];

@@ -33,26 +33,20 @@ module ysyx_23060236_lsu(
 	input         lsu_wen,
 	input  [31:0] pc,
 	input  [31:0] csr_wdata,
-	input  [31:0] csr_jump,
 	input  [11:0] csr_imm,
 	input  csr_enable,
 	input  jal_enable,
 	input  reg_wen,
-	input  exu_jump_en,
-	input  csr_jump_en,
 	input  inst_ecall,
-	input  inst_mret,
 
 	output reg [31:0] pc_next,
 	output reg [31:0] wb_val,
-	output reg [31:0] jump_addr,
 	output reg reg_wen_next,
 	output reg [3:0]  rd_next,
 	output reg csr_enable_next,
 	output reg [11:0] csr_imm_next,
 	output reg [31:0] csr_wdata_next,
 	output reg inst_ecall_next,
-	output reg inst_mret_next,
 
 	input  lsu_valid,
 	output lsu_ready,
@@ -61,6 +55,10 @@ module ysyx_23060236_lsu(
 
 	wire [31:0] snpc;
 	assign snpc = pc + 4;
+	reg  [31:0] lsu_addr;
+	reg  [31:0] lsu_data_reg;
+	reg  [3:0]  wmask_reg;
+	reg  [2:0]  funct3_reg;
 
 	always @(posedge clock) begin
 		if (lsu_valid & lsu_ready) begin
@@ -70,14 +68,14 @@ module ysyx_23060236_lsu(
 			csr_imm_next    <= csr_imm;
 			csr_wdata_next  <= csr_wdata;
 			inst_ecall_next <= inst_ecall;
-			inst_mret_next  <= inst_mret;
+			pc_next         <= pc;
+			lsu_addr        <= exu_val;
+			lsu_data_reg    <= lsu_data;
+			funct3_reg      <= funct3;
+			wmask_reg       <= wmask;
 			wb_val <= jal_enable ? snpc : 
 								csr_enable ? csr_val  :
 								exu_val;
-			jump_addr <= csr_jump_en ? csr_jump :
-									 exu_jump_en ? exu_val :
-									 snpc;
-			pc_next   <= pc;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
@@ -103,21 +101,21 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_val_tmp;
 	wire [31:0] lsu_val_shift;
 
-	assign lsu_arsize = {1'b0, funct3[1:0]};
-	assign lsu_awsize = {1'b0, funct3[1:0]};
+	assign lsu_arsize = {1'b0, funct3_reg[1:0]};
+	assign lsu_awsize = {1'b0, funct3_reg[1:0]};
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign lsu_araddr = exu_val;
-	assign lsu_awaddr = exu_val;
-	assign lsu_wstrb  = wmask << lsu_awaddr[1:0];
-	assign lsu_wdata  = lsu_data << {lsu_awaddr[1:0], 3'b0};
+	assign lsu_araddr = lsu_addr;
+	assign lsu_awaddr = lsu_addr;
+	assign lsu_wstrb  = wmask_reg << lsu_awaddr[1:0];
+	assign lsu_wdata  = lsu_data_reg << {lsu_awaddr[1:0], 3'b0};
 	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
 
-	assign lsu_val_tmp = (funct3 == 3'b000) ? (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0} :     //lb  
-                       (funct3 == 3'b001) ? (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0} : //lh
-                       (funct3 == 3'b010) ? lsu_val_shift :                                                 //lw
-                       (funct3 == 3'b100) ? lsu_val_shift & 32'hff :                                        //lbu
-                       (funct3 == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
+	assign lsu_val_tmp = (funct3_reg == 3'b000) ? (lsu_val_shift & 32'hff) | {{24{lsu_val_shift[7]}}, 8'h0} :     //lb  
+                       (funct3_reg == 3'b001) ? (lsu_val_shift & 32'hffff) | {{16{lsu_val_shift[15]}}, 16'h0} : //lh
+                       (funct3_reg == 3'b010) ? lsu_val_shift :                                                 //lw
+                       (funct3_reg == 3'b100) ? lsu_val_shift & 32'hff :                                        //lbu
+                       (funct3_reg == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
 											 32'b0;
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
@@ -139,7 +137,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
+		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & lsu_valid & lsu_ready),
 		.dout(lsu_wvalid),
 		.wen(1)
 	);
