@@ -129,7 +129,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen),
+		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & lsu_valid & lsu_ready),
 		.dout(lsu_wvalid),
 		.wen(1)
 	);
