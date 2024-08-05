@@ -55,6 +55,7 @@ module ysyx_23060236_lsu(
 
 	wire [31:0] snpc;
 	assign snpc = pc + 4;
+	reg  [31:0] lsu_addr;
 
 	always @(posedge clock) begin
 		if (lsu_valid & lsu_ready) begin
@@ -65,6 +66,7 @@ module ysyx_23060236_lsu(
 			csr_wdata_next  <= csr_wdata;
 			inst_ecall_next <= inst_ecall;
 			pc_next         <= pc;
+			lsu_addr        <= exu_val;
 			wb_val <= jal_enable ? snpc : 
 								csr_enable ? csr_val  :
 								exu_val;
@@ -97,8 +99,8 @@ module ysyx_23060236_lsu(
 	assign lsu_awsize = {1'b0, funct3[1:0]};
 	assign lsu_rready = 1;
 	assign lsu_bready = 1;
-	assign lsu_araddr = exu_val;
-	assign lsu_awaddr = exu_val;
+	assign lsu_araddr = lsu_addr;
+	assign lsu_awaddr = lsu_addr;
 	assign lsu_wstrb  = wmask << lsu_awaddr[1:0];
 	assign lsu_wdata  = lsu_data << {lsu_awaddr[1:0], 3'b0};
 	assign lsu_val_shift = lsu_rdata >> {lsu_araddr[1:0], 3'b0};
