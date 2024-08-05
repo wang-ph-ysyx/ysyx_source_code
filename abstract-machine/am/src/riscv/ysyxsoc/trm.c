@@ -41,13 +41,13 @@ void _trm_init() {
 	//memcpy(_data_start, data_load_start, (size_t) (_bss_start - _data_start));
 	//memset(_bss_start, 0, (size_t)(end - _bss_start));
 
-	uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
+	/*uint32_t ysyx = _read_csr_mvendorid(), ID = _read_csr_marchid();
 	char ysyx_s[4];
 	for (int i = 3; i >= 0; --i) {
 		ysyx_s[i] = (char)(ysyx & 0xff);
 		ysyx >>= 8;
 	}
-	printf("npc made by %s_%d\n", ysyx_s, ID);
+	printf("npc made by %s_%d\n", ysyx_s, ID);*/
 
 	int ret = main(mainargs);
 	halt(ret);
