@@ -59,8 +59,8 @@ module ysyx_23060236_ifu(
 	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit) ? (pc & ~32'hf) : 
 														 (icache_bvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
-	assign pc_tmp = (idu_valid & idu_ready) ? (pc + 4) : 
-									((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
+	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
+									(idu_valid & idu_ready) ? (pc + 4) : 
 									pc;
 
 	ysyx_23060236_Reg #(1, 0) reg_last(
