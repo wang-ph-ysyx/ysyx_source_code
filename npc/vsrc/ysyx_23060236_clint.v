@@ -21,13 +21,10 @@ module ysyx_23060236_clint(
 	assign arready = idle;
 	assign rvalid = ~idle;
 
-	ysyx_23060236_Reg #(1, 1) reg_idle(
-		.clock(clock),
-		.reset(reset),
-		.din(idle & ~arvalid | ~idle & rready),
-		.dout(idle),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		if (reset) idle <= 1;
+		else idle <= idle & ~arvalid | ~idle & rready;
+	end
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
