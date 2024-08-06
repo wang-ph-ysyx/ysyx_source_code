@@ -12,19 +12,16 @@ module ysyx_23060236_clint(
 	input  rready
 );
 
-	wire [63:0] mtime;
+	reg  [63:0] mtime;
 	wire [31:0] data_out;
 	
 	assign data_out = araddr[2] ? mtime[63:32] : mtime[31:0];
 	assign rresp = 0;
 
-	ysyx_23060236_Reg #(64, 0) reg_mtime(
-		.clock(clock),
-		.reset(reset),
-		.din(mtime + 1),
-		.dout(mtime),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		if (reset) mtime <= 0;
+		else mtime <= mtime + 1;
+	end
 
 	ysyx_23060236_Reg #(1, 1) reg_arready(
 		.clock(clock),
