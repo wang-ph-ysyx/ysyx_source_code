@@ -17,7 +17,7 @@ module ysyx_23060236_ifu(
 	input  [31:0] icache_rdata,
 	input         icache_hit,
 
-	output [31:0] icache_awaddr,
+	output reg [31:0] icache_awaddr,
 	output reg [31:0] icache_wdata,
 	output        icache_wvalid,
 
@@ -97,13 +97,9 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(32, 0) reg_icache_awaddr(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_awaddr_tmp),
-		.dout(icache_awaddr),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		icache_awaddr <= icache_awaddr_tmp;
+	end
 
 	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
 		.clock(clock),
