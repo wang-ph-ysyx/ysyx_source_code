@@ -26,7 +26,7 @@ module ysyx_23060236_ifu(
 	input         jump_wrong,
 	output [31:0] pc,
 	input  [31:0] jump_addr,
-	output [31:0] inst,
+	output reg [31:0] inst,
 	output        idu_valid,
 	input         idu_ready
 );
@@ -121,13 +121,9 @@ module ysyx_23060236_ifu(
 		if (ifu_rvalid & ifu_rready) icache_wdata <= ifu_rdata;
 	end
 
-	ysyx_23060236_Reg #(32, 0) reg_inst(
-		.clock(clock),
-		.reset(reset),
-		.din(inst_tmp),
-		.dout(inst),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		inst <= inst_tmp;
+	end
 
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
