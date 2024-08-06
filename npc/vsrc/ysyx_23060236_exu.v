@@ -10,28 +10,23 @@ module ysyx_23060236_exu(
 	input  [2:0]  funct3,
 	input         funct7_5,
 	input  [31:0] pc,
-	input  [31:0] csr_val,
 	input  reg_wen,
-	input  inst_ecall,
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
+	input  [31:0] csr_val,
 
-	output reg [31:0] csr_val_next,
 	output reg [3:0]  rd_next,
-	output reg [31:0] pc_next,
 	output reg [31:0] val,
-	output reg [31:0] csr_wdata,
 	output reg [31:0] lsu_data,
 	output reg [2:0]  funct3_next,
-	output reg [11:0] csr_imm,
 	output reg reg_wen_next,
 	output reg lsu_ren,
 	output reg lsu_wen,
-	output reg csr_enable,
-	output reg jal_enable,
-	output reg inst_ecall_next,
 	output reg [31:0] jump_addr,
 	output reg jump_wrong,
+
+	output [31:0] csr_wdata,
+	output csr_enable,
 
 	input  exu_valid,
 	output exu_ready,
@@ -57,31 +52,28 @@ module ysyx_23060236_exu(
 
 	wire        jump_en;
 	wire        jump_wrong_tmp;
+	wire        jal_enable;
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] val_tmp;
+	wire [31:0] alu_tmp;
 	wire [31:0] csr_wdata_tmp;
 	wire [31:0] lsu_data_tmp;
 	wire [31:0] snpc;
 
 	assign snpc = pc + 4;
 	assign jump_wrong_tmp = (jump_addr_tmp != snpc);
+	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
+	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
-			csr_val_next    <= csr_val;
-			pc_next         <= pc;
 			rd_next         <= rd;
 			val             <= val_tmp;
-      csr_wdata       <= csr_wdata_tmp;
       lsu_data        <= lsu_data_tmp;
 			funct3_next     <= funct3;
-			csr_imm         <= imm[11:0];
 			lsu_ren         <= opcode_type[INST_LW];
 			lsu_wen         <= opcode_type[INST_SW];
-			csr_enable      <= opcode_type[INST_CSR] & (funct3 != 3'b0);
-			jal_enable      <= opcode_type[INST_JAL] | opcode_type[INST_JALR];
 			reg_wen_next    <= reg_wen;
-			inst_ecall_next <= inst_ecall;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
 		end
@@ -93,6 +85,10 @@ module ysyx_23060236_exu(
 	assign jump_addr_tmp = csr_jump_en ? csr_jump :
 												 jump_en ? exu_jump :
 												 snpc;
+
+	assign val_tmp = jal_enable ? snpc :
+									 csr_enable ? csr_val :
+									 alu_tmp;
 
 	parameter INST_LUI   = 0;
 	parameter INST_AUIPC = 1;
@@ -166,7 +162,7 @@ module ysyx_23060236_exu(
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
-	assign val_tmp = (operator == OP_ADD  ) ? op_sum : 
+	assign alu_tmp = (operator == OP_ADD  ) ? op_sum : 
 									 (operator == OP_SUB  ) ? op_compare : 
 									 (operator == OP_AND  ) ? (loperand & roperand) : 
 									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
@@ -196,9 +192,9 @@ module ysyx_23060236_exu(
 
 
 	//write
-	assign csr_wdata_tmp = (funct3 == 3'b010) ? (src1 | csr_val) : 
-												 (funct3 == 3'b001) ? src1 :
-												 32'b0;
+	assign csr_wdata = (funct3 == 3'b010) ? (src1 | csr_val) : 
+										 (funct3 == 3'b001) ? src1 :
+										 32'b0;
 
 	assign lsu_data_tmp = src2;
 

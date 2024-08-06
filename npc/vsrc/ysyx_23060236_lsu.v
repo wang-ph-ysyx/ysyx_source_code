@@ -25,35 +25,21 @@ module ysyx_23060236_lsu(
 
 	input  [3:0]  rd,
 	input  [31:0] exu_val,
-	input  [31:0] csr_val,
 	input  [2:0]  funct3,
 	input  [31:0] lsu_data,
 	input         lsu_ren,
 	input         lsu_wen,
-	input  [31:0] pc,
-	input  [31:0] csr_wdata,
-	input  [11:0] csr_imm,
-	input  csr_enable,
-	input  jal_enable,
 	input  reg_wen,
-	input  inst_ecall,
 
-	output reg [31:0] pc_next,
 	output reg [31:0] wb_val,
 	output reg reg_wen_next,
 	output reg [3:0]  rd_next,
-	output reg csr_enable_next,
-	output reg [11:0] csr_imm_next,
-	output reg [31:0] csr_wdata_next,
-	output reg inst_ecall_next,
 
 	input  lsu_valid,
 	output lsu_ready,
 	output wb_valid
 );
 
-	wire [31:0] snpc;
-	assign snpc = pc + 4;
 	reg  [31:0] lsu_addr;
 	reg  [31:0] lsu_data_reg;
 	reg  [3:0]  wmask_reg;
@@ -69,18 +55,11 @@ module ysyx_23060236_lsu(
 		if (lsu_valid & lsu_ready) begin
 			reg_wen_next    <= reg_wen;
 			rd_next         <= rd;
-			csr_enable_next <= csr_enable;
-			csr_imm_next    <= csr_imm;
-			csr_wdata_next  <= csr_wdata;
-			inst_ecall_next <= inst_ecall;
-			pc_next         <= pc;
 			lsu_addr        <= exu_val;
 			lsu_data_reg    <= lsu_data;
 			funct3_reg      <= funct3;
 			wmask_reg       <= wmask_tmp;
-			wb_val <= jal_enable ? snpc : 
-								csr_enable ? csr_val  :
-								exu_val;
+			wb_val          <= exu_val;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
