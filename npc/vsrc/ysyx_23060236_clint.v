@@ -23,7 +23,8 @@ module ysyx_23060236_clint(
 
 	always @(posedge clock) begin
 		if (reset) idle <= 1;
-		else idle <= idle & ~arvalid | ~idle & rready;
+		else if (idle) idle <= ~arvalid;
+		else idle <= rready;
 	end
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
