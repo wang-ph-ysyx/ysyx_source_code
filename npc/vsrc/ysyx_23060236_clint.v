@@ -4,19 +4,30 @@ module ysyx_23060236_clint(
 
 	input  [31:0] araddr,
 	input  arvalid,
-	output reg arready,
+	output arready,
 
 	output [31:0] rdata,
 	output [1:0]  rresp,
-	output reg rvalid,
+	output rvalid,
 	input  rready
 );
 
 	wire [63:0] mtime;
 	wire [31:0] data_out;
+	reg  idle;
 	
 	assign data_out = araddr[2] ? mtime[63:32] : mtime[31:0];
 	assign rresp = 0;
+	assign arready = idle;
+	assign rvalid = ~idle;
+
+	ysyx_23060236_Reg #(1, 1) reg_idle(
+		.clock(clock),
+		.reset(reset),
+		.din(idle & ~arvalid | ~idle & rready),
+		.dout(idle),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
@@ -25,18 +36,6 @@ module ysyx_23060236_clint(
 		.dout(mtime),
 		.wen(1)
 	);
-
-	always @(posedge clock) begin
-		if (reset) arready <= 1;
-		else if (arvalid & arready) arready <= 0;
-		else if (rvalid & rready) arready <= 1;
-	end
-
-	always @(posedge clock) begin
-		if (reset) rvalid <= 0;
-		else if (rvalid & rready) rvalid <= 0;
-		else if (arvalid & arready) rvalid <= 1;
-	end
 
 	ysyx_23060236_Reg #(32, 0) reg_rdata(
 		.clock(clock),
