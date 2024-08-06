@@ -13,7 +13,7 @@ module ysyx_23060236_clint(
 );
 
 	wire [63:0] mtime;
-	reg  idle;
+	wire idle;
 	reg  high_data;
 	
 	assign rdata = high_data ? mtime[63:32] : mtime[31:0];
@@ -22,13 +22,16 @@ module ysyx_23060236_clint(
 	assign rvalid = ~idle;
 
 	always @(posedge clock) begin
-		if (reset) idle <= 1;
-		else idle <= idle & ~arvalid | ~idle & rready;
-	end
-
-	always @(posedge clock) begin
 		if (arvalid & arready) high_data <= araddr[2];
 	end
+
+	ysyx_23060236_Reg #(1, 1) reg_idle(
+		.clock(clock),
+		.reset(reset),
+		.din(idle & ~arvalid | ~idle & rready),
+		.dout(idle),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
