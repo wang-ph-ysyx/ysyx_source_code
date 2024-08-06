@@ -110,7 +110,7 @@ module ysyx_23060236_ifu(
 	);
 
 	always @(posedge clock) begin
-		icache_wdata <= (ifu_rvalid & ifu_rready) ? ifu_rdata : icache_wdata;
+		if (ifu_rvalid & ifu_rready) icache_wdata <= ifu_rdata;
 	end
 
 	always @(posedge clock) begin
