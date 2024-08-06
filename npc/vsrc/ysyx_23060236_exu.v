@@ -8,7 +8,7 @@ module ysyx_23060236_exu(
 	input  [31:0] src2,
 	input  [31:0] imm,
 	input  [2:0]  funct3,
-	input  [6:0]  funct7,
+	input         funct7_5,
 	input  [31:0] pc,
 	input  [31:0] csr_val,
 	input  reg_wen,
@@ -159,8 +159,8 @@ module ysyx_23060236_exu(
 										 (funct3 == 3'b111) ? OP_AND :
 										 OP_ADD;
 
-	assign operator2 = (opcode_type[INST_ADD] & funct7[5]) ? OP_SUB : OP_ADD;
-	assign operator3 = funct7[5] ? OP_SRA : OP_SRL;
+	assign operator2 = (opcode_type[INST_ADD] & funct7_5) ? OP_SUB : OP_ADD;
+	assign operator3 = funct7_5 ? OP_SRA : OP_SRL;
 
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_sum  = loperand + roperand;
