@@ -39,7 +39,7 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_icache_tmp;
 	wire [31:0] inst_ifu_tmp;
 	wire [31:0] icache_awaddr_tmp;
-	wire last;
+	reg last;
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
 
@@ -61,13 +61,9 @@ module ysyx_23060236_ifu(
 									(idu_valid & idu_ready) ? (pc + 4) : 
 									pc;
 
-	ysyx_23060236_Reg #(1, 0) reg_last(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_rlast),
-		.dout(last),
-		.wen(ifu_rvalid & ifu_rready)
-	);
+	always @(posedge clock) begin
+		if (ifu_rvalid & ifu_rready) last <= ifu_rlast;
+	end
 
 	ysyx_23060236_Reg #(1, 1) reg_ifu_valid(
 		.clock(clock),
