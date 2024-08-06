@@ -125,7 +125,6 @@ module ysyx_23060236(
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
-	wire [3:0] wmask;
 	wire [11:0] exu_csr_imm;
 	wire [11:0] lsu_csr_imm;
 
@@ -364,7 +363,6 @@ module ysyx_23060236(
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
 		.csr_wdata(exu_csr_wdata),
-		.wmask(wmask),
 		.lsu_data(lsu_data),
 		.funct3_next(exu_funct3),
 		.lsu_ren(lsu_ren),
@@ -406,7 +404,6 @@ module ysyx_23060236(
 		.lsu_awsize(lsu_awsize),
 		.funct3(exu_funct3),
 		.lsu_data(lsu_data),
-		.wmask(wmask),
 		.rd(exu_rd),
 		.exu_val(exu_val),
 		.csr_val(exu_csr_val),

@@ -28,7 +28,6 @@ module ysyx_23060236_lsu(
 	input  [31:0] csr_val,
 	input  [2:0]  funct3,
 	input  [31:0] lsu_data,
-	input  [3:0]  wmask,
 	input         lsu_ren,
 	input         lsu_wen,
 	input  [31:0] pc,
@@ -60,6 +59,12 @@ module ysyx_23060236_lsu(
 	reg  [3:0]  wmask_reg;
 	reg  [2:0]  funct3_reg;
 
+	wire [3:0] wmask_tmp;
+	assign wmask_tmp = (funct3[1:0] == 2'b00) ? 4'h1 : 
+										 (funct3[1:0] == 2'b01) ? 4'h3 :
+										 (funct3[1:0] == 2'b10) ? 4'hf : 
+										 4'b0;
+
 	always @(posedge clock) begin
 		if (lsu_valid & lsu_ready) begin
 			reg_wen_next    <= reg_wen;
@@ -72,7 +77,7 @@ module ysyx_23060236_lsu(
 			lsu_addr        <= exu_val;
 			lsu_data_reg    <= lsu_data;
 			funct3_reg      <= funct3;
-			wmask_reg       <= wmask;
+			wmask_reg       <= wmask_tmp;
 			wb_val <= jal_enable ? snpc : 
 								csr_enable ? csr_val  :
 								exu_val;

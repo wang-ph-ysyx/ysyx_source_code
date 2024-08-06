@@ -22,7 +22,6 @@ module ysyx_23060236_exu(
 	output reg [31:0] pc_next,
 	output reg [31:0] val,
 	output reg [31:0] csr_wdata,
-	output reg [3:0]  wmask,
 	output reg [31:0] lsu_data,
 	output reg [2:0]  funct3_next,
 	output reg [11:0] csr_imm,
@@ -62,7 +61,6 @@ module ysyx_23060236_exu(
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] val_tmp;
 	wire [31:0] csr_wdata_tmp;
-	wire [3:0]  wmask_tmp;
 	wire [31:0] lsu_data_tmp;
 	wire [31:0] snpc;
 
@@ -76,7 +74,6 @@ module ysyx_23060236_exu(
 			rd_next         <= rd;
 			val             <= val_tmp;
       csr_wdata       <= csr_wdata_tmp;
-      wmask           <= wmask_tmp;
       lsu_data        <= lsu_data_tmp;
 			funct3_next     <= funct3;
 			csr_imm         <= imm[11:0];
@@ -200,11 +197,6 @@ module ysyx_23060236_exu(
 
 
 	//write
-	assign wmask_tmp = (funct3[1:0] == 2'b00) ? 4'h1 : 
-										 (funct3[1:0] == 2'b01) ? 4'h3 :
-										 (funct3[1:0] == 2'b10) ? 4'hf : 
-										 4'b0;
-
 	assign csr_wdata_tmp = (funct3 == 3'b010) ? (src1 | csr_val) : 
 												 (funct3 == 3'b001) ? src1 :
 												 32'b0;
