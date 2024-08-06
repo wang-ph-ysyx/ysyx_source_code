@@ -349,7 +349,6 @@ module ysyx_23060236(
 		.csr_val(csr_val),
 		.reg_wen(idu_reg_wen),
 		.inst_ecall(idu_inst_ecall),
-		.inst_mret(idu_inst_mret),
 		.csr_val_next(exu_csr_val),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
@@ -436,7 +435,7 @@ module ysyx_23060236(
 		.valid(wb_valid)
 	);
 
-	ysyx_23060236_CSRFile #(32) my_CSRreg(
+	ysyx_23060236_CSRFile my_CSRreg(
 		.clock(clock),
 		.reset(reset),
 		.read_imm(imm[11:0]),

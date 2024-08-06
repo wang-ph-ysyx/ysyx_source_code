@@ -13,7 +13,6 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 	input  reg_wen,
 	input  inst_ecall,
-	input  inst_mret,
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 
