@@ -3,17 +3,12 @@ module ysyx_23060236_icache(
 	input         reset,
 
 	input  [31:0] icache_araddr,
-	input         icache_arvalid,
-
 	output [31:0] icache_rdata,
 	output        icache_hit,  
-	output        icache_rvalid,
 
 	input  [31:0] icache_awaddr,
 	input  [31:0] icache_wdata,
 	input         icache_wvalid,
-
-	output        icache_bvalid,
 
 	input         inst_fencei
 );
@@ -28,7 +23,6 @@ module ysyx_23060236_icache(
 	reg [TAG_LEN-1:0]      icache_tag  [2**INDEX_LEN-1:0];
 	reg [2**INDEX_LEN-1:0] icache_valid;
 
-	wire hit_icache;
 	wire [INDEX_LEN-1:0]  read_index;
 	wire [TAG_LEN-1:0]    read_tag;
 	wire [OFFSET_LEN-3:0] read_offset;
@@ -42,39 +36,8 @@ module ysyx_23060236_icache(
 	assign write_tag    = icache_awaddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign write_index  = icache_awaddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
 	assign write_offset = icache_awaddr[OFFSET_LEN-1 : 2];
-	assign hit_icache   = icache_valid[read_index] & (icache_tag[read_index] == read_tag);
-
-	ysyx_23060236_Reg #(32, 0) calculate_icache_rdata(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_data[read_index][read_offset[OFFSET_LEN-3:0]]),
-		.dout(icache_rdata),
-		.wen(icache_arvalid)
-	);
-
-	ysyx_23060236_Reg #(1, 0) calculate_icache_hit(
-		.clock(clock),
-		.reset(reset),
-		.din(hit_icache),
-		.dout(icache_hit),
-		.wen(icache_arvalid)
-	);
-
-	ysyx_23060236_Reg #(1, 0) calculate_icache_rvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_arvalid),
-		.dout(icache_rvalid),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 0) calculate_icache_bvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_wvalid),
-		.dout(icache_bvalid),
-		.wen(1)
-	);
+	assign icache_hit   = icache_valid[read_index] & (icache_tag[read_index] == read_tag);
+	assign icache_rdata = icache_data[read_index][read_offset[OFFSET_LEN-3:0]];
 
 	always @(posedge clock) begin
 		if (reset | inst_fencei) icache_valid <= 0;
