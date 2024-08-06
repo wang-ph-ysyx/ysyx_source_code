@@ -74,8 +74,6 @@ module ysyx_23060236(
 
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [31:0] exu_pc;
-	wire [31:0] lsu_pc;
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -95,7 +93,7 @@ module ysyx_23060236(
 	wire [3:0]  exu_rd;
 	wire [3:0]  lsu_rd;
 	wire [2:0]  funct3;
-	wire [6:0]  funct7;
+	wire        funct7_5;
 	wire [31:0] imm;
 	wire [31:0] src1;
 	wire [31:0] src2;
@@ -105,10 +103,9 @@ module ysyx_23060236(
 	wire idu_reg_wen;
 	wire exu_reg_wen;
 	wire lsu_reg_wen;
-	wire exu_csr_enable;
-	wire lsu_csr_enable;
-	wire idu_inst_ecall;
-	wire idu_inst_mret;
+	wire csr_enable;
+	wire inst_ecall;
+	wire inst_mret;
 	wire exu_inst_ecall;
 	wire lsu_inst_ecall;
 	wire inst_fencei;
@@ -116,18 +113,13 @@ module ysyx_23060236(
 	wire [31:0] csr_jump;
 	wire csr_jump_en;
 
-	wire [31:0] exu_csr_wdata;
-	wire [31:0] lsu_csr_wdata;
+	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
-	wire [31:0] exu_csr_val;
 	wire [31:0] exu_val;
 	wire [31:0] lsu_val;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
-	wire [3:0] wmask;
-	wire [11:0] exu_csr_imm;
-	wire [11:0] lsu_csr_imm;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -267,14 +259,11 @@ module ysyx_23060236(
 		.clock(clock),
 		.reset(reset),
 		.icache_araddr(icache_araddr),
-		.icache_arvalid(icache_arvalid),
 		.icache_rdata(icache_rdata),
 		.icache_hit(icache_hit),
-		.icache_rvalid(icache_rvalid),
 		.icache_awaddr(icache_awaddr),
 		.icache_wdata(icache_wdata),
 		.icache_wvalid(icache_wvalid),
-		.icache_bvalid(icache_bvalid),
 		.inst_fencei(inst_fencei)
 	);
 
@@ -292,14 +281,11 @@ module ysyx_23060236(
 		.ifu_rvalid(ifu_rvalid),
 		.ifu_rready(ifu_rready),
 		.icache_araddr(icache_araddr),
-		.icache_arvalid(icache_arvalid),
 		.icache_rdata(icache_rdata),
 		.icache_hit(icache_hit),
-		.icache_rvalid(icache_rvalid),
 		.icache_awaddr(icache_awaddr),
 		.icache_wdata(icache_wdata),
 		.icache_wvalid(icache_wvalid),
-		.icache_bvalid(icache_bvalid),
 		.wb_valid(wb_valid),
 		.jump_wrong(jump_wrong),
 		.pc(ifu_pc),
@@ -327,14 +313,14 @@ module ysyx_23060236(
 		.pc_next(idu_pc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
-		.funct7(funct7),
+		.funct7_5(funct7_5),
 		.rd(idu_rd),
 		.src1_next(idu_src1),
 		.src2_next(idu_src2),
 		.imm(imm),
 		.reg_wen(idu_reg_wen),
-		.inst_ecall(idu_inst_ecall),
-		.inst_mret(idu_inst_mret),
+		.inst_ecall(inst_ecall),
+		.inst_mret(inst_mret),
 		.inst_fencei(inst_fencei),
 		.idu_valid(idu_valid),
 		.idu_ready(idu_ready),
@@ -351,31 +337,23 @@ module ysyx_23060236(
 		.src2(idu_src2),
 		.imm(imm),
 		.funct3(funct3),
-		.funct7(funct7),
+		.funct7_5(funct7_5),
 		.pc(idu_pc),
-		.csr_val(csr_val),
 		.reg_wen(idu_reg_wen),
-		.inst_ecall(idu_inst_ecall),
-		.inst_mret(idu_inst_mret),
-		.csr_val_next(exu_csr_val),
 		.rd_next(exu_rd),
-		.pc_next(exu_pc),
 		.val(exu_val),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
-		.csr_wdata(exu_csr_wdata),
-		.wmask(wmask),
+		.csr_val(csr_val),
 		.lsu_data(lsu_data),
 		.funct3_next(exu_funct3),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
-		.csr_imm(exu_csr_imm),
 		.reg_wen_next(exu_reg_wen),
-		.csr_enable(exu_csr_enable),
-		.jal_enable(jal_enable),
-		.inst_ecall_next(exu_inst_ecall),
 		.jump_addr(jump_addr),
 		.jump_wrong(jump_wrong),
+		.csr_wdata(csr_wdata),
+		.csr_enable(csr_enable),
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
 		.lsu_valid(lsu_valid),
@@ -406,27 +384,14 @@ module ysyx_23060236(
 		.lsu_awsize(lsu_awsize),
 		.funct3(exu_funct3),
 		.lsu_data(lsu_data),
-		.wmask(wmask),
 		.rd(exu_rd),
 		.exu_val(exu_val),
-		.csr_val(exu_csr_val),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
-		.pc(exu_pc),
-		.csr_wdata(exu_csr_wdata),
-		.csr_imm(exu_csr_imm),
-		.csr_enable(exu_csr_enable),
-		.jal_enable(jal_enable),
 		.reg_wen(exu_reg_wen),
-		.inst_ecall(exu_inst_ecall),
-		.pc_next(lsu_pc),
 		.reg_wen_next(lsu_reg_wen),
 		.rd_next(lsu_rd),
 		.wb_val(wb_val),
-		.csr_enable_next(lsu_csr_enable),
-		.csr_imm_next(lsu_csr_imm),
-		.csr_wdata_next(lsu_csr_wdata),
-		.inst_ecall_next(lsu_inst_ecall),
 		.lsu_valid(lsu_valid),
 		.lsu_ready(lsu_ready),
 		.wb_valid(wb_valid)
@@ -445,21 +410,19 @@ module ysyx_23060236(
 		.valid(wb_valid)
 	);
 
-	ysyx_23060236_CSRFile #(32) my_CSRreg(
+	ysyx_23060236_CSRFile my_CSRreg(
 		.clock(clock),
 		.reset(reset),
-		.read_imm(imm[11:0]),
-		.write_imm(lsu_csr_imm),
-		.wdata(lsu_csr_wdata),
+		.imm(imm[11:0]),
+		.wdata(csr_wdata),
 		.rdata(csr_val),
-		.enable(lsu_csr_enable),
-		.inst_ecall(idu_inst_ecall),
-		.inst_ecall_write(lsu_inst_ecall),
-		.inst_mret(idu_inst_mret),
-		.epc(lsu_pc),
+		.enable(csr_enable),
+		.inst_ecall(inst_ecall),
+		.inst_mret(inst_mret),
+		.epc(idu_pc),
 		.jump(csr_jump),
 		.jump_en(csr_jump_en),
-		.valid(wb_valid)
+		.valid(exu_valid & exu_ready)
 	);
 /*
 	assign io_slave_awready = 0;

@@ -13,40 +13,31 @@ module ysyx_23060236_clint(
 );
 
 	wire [63:0] mtime;
-	wire [31:0] data_out;
+	wire idle;
+	reg  high_data;
 	
-	assign data_out = araddr[2] ? mtime[63:32] : mtime[31:0];
+	assign rdata = high_data ? mtime[63:32] : mtime[31:0];
 	assign rresp = 0;
+	assign arready = idle;
+	assign rvalid = ~idle;
+
+	always @(posedge clock) begin
+		if (arvalid & arready) high_data <= araddr[2];
+	end
+
+	ysyx_23060236_Reg #(1, 1) reg_idle(
+		.clock(clock),
+		.reset(reset),
+		.din(idle & ~arvalid | ~idle & rready),
+		.dout(idle),
+		.wen(1)
+	);
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
 		.clock(clock),
 		.reset(reset),
 		.din(mtime + 1),
 		.dout(mtime),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 1) reg_arready(
-		.clock(clock),
-		.reset(reset),
-		.din(~arready & rvalid & rready | arready & ~arvalid),
-		.dout(arready),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(32, 0) reg_rdata(
-		.clock(clock),
-		.reset(reset),
-		.din(data_out),
-		.dout(rdata),
-		.wen(arvalid & arready)
-	);
-
-	ysyx_23060236_Reg #(1, 0) reg_rvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(~rvalid & arvalid & arready | rvalid & ~rready),
-		.dout(rvalid),
 		.wen(1)
 	);
 

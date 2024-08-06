@@ -14,26 +14,24 @@ module ysyx_23060236_ifu(
 	output        ifu_rready,
 
 	output [31:0] icache_araddr,
-	output        icache_arvalid,
 	input  [31:0] icache_rdata,
 	input         icache_hit,
-	input         icache_rvalid,
 
-	output [31:0] icache_awaddr,
-	output [31:0] icache_wdata,
+	output reg [31:0] icache_awaddr,
+	output reg [31:0] icache_wdata,
 	output        icache_wvalid,
-	input         icache_bvalid,
 
 
 	input         wb_valid,
 	input         jump_wrong,
 	output [31:0] pc,
 	input  [31:0] jump_addr,
-	output [31:0] inst,
+	output reg [31:0] inst,
 	output        idu_valid,
 	input         idu_ready
 );
 
+	wire icache_rvalid;
 	wire ifu_valid;
 	wire ifu_over;
 	wire pc_in_sdram;
@@ -41,7 +39,7 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_icache_tmp;
 	wire [31:0] inst_ifu_tmp;
 	wire [31:0] icache_awaddr_tmp;
-	wire last;
+	reg last;
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
 
@@ -55,21 +53,17 @@ module ysyx_23060236_ifu(
 	assign inst_tmp = (ifu_rvalid & ifu_rready & ((pc[3:2] == icache_awaddr[3:2]) | ~pc_in_sdram)) ? ifu_rdata : 
 		                (icache_rvalid & icache_hit) ? icache_rdata : 
 										inst;
-	assign ifu_over = (icache_rvalid & icache_hit | icache_bvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
+	assign ifu_over = (icache_rvalid & icache_hit | icache_wvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
 	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit) ? (pc & ~32'hf) : 
-														 (icache_bvalid & ~last) ? (icache_awaddr + 4) : 
+														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
 									(idu_valid & idu_ready) ? (pc + 4) : 
 									pc;
 
-	ysyx_23060236_Reg #(1, 0) reg_last(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_rlast),
-		.dout(last),
-		.wen(ifu_rvalid & ifu_rready)
-	);
+	always @(posedge clock) begin
+		if (ifu_rvalid & ifu_rready) last <= ifu_rlast;
+	end
 
 	ysyx_23060236_Reg #(1, 1) reg_ifu_valid(
 		.clock(clock),
@@ -90,8 +84,8 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(~icache_arvalid & ifu_valid & pc_in_sdram),
-		.dout(icache_arvalid),
+		.din(~icache_rvalid & ifu_valid & pc_in_sdram),
+		.dout(icache_rvalid),
 		.wen(1)
 	);
 
@@ -103,13 +97,9 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(32, 0) reg_icache_awaddr(
-		.clock(clock),
-		.reset(reset),
-		.din(icache_awaddr_tmp),
-		.dout(icache_awaddr),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		icache_awaddr <= icache_awaddr_tmp;
+	end
 
 	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
 		.clock(clock),
@@ -119,21 +109,13 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(32, 0) reg_icache_wdata(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_rdata),
-		.dout(icache_wdata),
-		.wen(ifu_rvalid & ifu_rready)
-	);
+	always @(posedge clock) begin
+		if (ifu_rvalid & ifu_rready) icache_wdata <= ifu_rdata;
+	end
 
-	ysyx_23060236_Reg #(32, 0) reg_inst(
-		.clock(clock),
-		.reset(reset),
-		.din(inst_tmp),
-		.dout(inst),
-		.wen(1)
-	);
+	always @(posedge clock) begin
+		inst <= inst_tmp;
+	end
 
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),

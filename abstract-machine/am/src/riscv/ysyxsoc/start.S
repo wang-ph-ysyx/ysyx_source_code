@@ -46,9 +46,8 @@ _ssbl_loader:
 
 	la t0, _bss_start
 	la t1, _end
-	li t2, 0
 	_bss_clear:
-	sb t2, 0(t0)
+	sb x0, 0(t0)
 	addi t0, t0, 1
 	blt t0, t1, _bss_clear
 
