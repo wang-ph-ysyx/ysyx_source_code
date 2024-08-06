@@ -28,12 +28,14 @@ module ysyx_23060236_clint(
 
 	always @(posedge clock) begin
 		if (reset) arready <= 1;
-		else arready <= ~arready & rvalid & rready | arready & ~arvalid;
+		else if (arvalid & arready) arready <= 0;
+		else if (rvalid & rready) arready <= 1;
 	end
 
 	always @(posedge clock) begin
 		if (reset) rvalid <= 0;
-		else rvalid <= ~rvalid & arvalid & arready | rvalid & ~rready;
+		else if (rvalid & rready) rvalid <= 0;
+		else if (arvalid & arready) rvalid <= 1;
 	end
 
 	ysyx_23060236_Reg #(32, 0) reg_rdata(
