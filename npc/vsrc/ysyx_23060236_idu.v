@@ -16,7 +16,7 @@ module ysyx_23060236_idu(
 
 	output [3:0] rs1,
 	output [3:0] rs2,
-	output [31:0] pc_next,
+	output reg [31:0] pc,
 	output [9:0]  opcode_type,
 	output [2:0]  funct3,
 	output [3:0]  rd,
@@ -34,7 +34,6 @@ module ysyx_23060236_idu(
 );
 
 	reg [31:0] inst;
-	reg [31:0] pc;
 
 	wire raw_conflict;
 	wire exu_valid_tmp;

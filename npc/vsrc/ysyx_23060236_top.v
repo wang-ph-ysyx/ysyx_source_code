@@ -310,7 +310,7 @@ module ysyx_23060236(
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),
 		.rs2(rs2),
-		.pc_next(idu_pc),
+		.pc(idu_pc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7_5(funct7_5),
