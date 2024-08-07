@@ -97,7 +97,7 @@ void cpu_exec(unsigned long n) {
 		static int difftest = 0;
 		bool in_uart = (lsu_awaddr >= UART_BASE) && (lsu_awaddr < UART_BASE + UART_SIZE);
 		bool in_clint = (lsu_awaddr >= CLINT_BASE) && (lsu_awaddr < CLINT_BASE + CLINT_SIZE);
-		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (in_uart || in_clint)) {
+		if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_awvalid || top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__lsu_arvalid) && (in_uart || in_clint)) {
 			difftest_skip_ref();
 		}
 		if (difftest)
