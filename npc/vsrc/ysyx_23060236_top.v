@@ -97,6 +97,7 @@ module ysyx_23060236(
 	wire [2:0]  funct3;
 	wire        funct7_5;
 	wire [31:0] imm;
+	wire [11:0] csr_imm;
 	wire [31:0] src1;
 	wire [31:0] src2;
 	wire [31:0] idu_src1;
@@ -345,6 +346,7 @@ module ysyx_23060236(
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
 		.pc(exu_pc),
+		.csr_imm(csr_imm),
 		.rd(exu_rd),
 		.funct3(exu_funct3),
 		.reg_wen(exu_reg_wen),
@@ -418,7 +420,7 @@ module ysyx_23060236(
 	ysyx_23060236_CSRFile my_CSRreg(
 		.clock(clock),
 		.reset(reset),
-		.imm(imm[11:0]),
+		.imm(csr_imm),
 		.wdata(csr_wdata),
 		.rdata(csr_val),
 		.enable(csr_enable),

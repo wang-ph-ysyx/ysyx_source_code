@@ -29,6 +29,7 @@ module ysyx_23060236_exu(
 	output [31:0] lsu_data,
 	output [31:0] jump_addr,
 	output [31:0] csr_wdata,
+	output [11:0] csr_imm,
 	output lsu_ren,
 	output lsu_wen,
 	output jump_wrong,
@@ -67,6 +68,7 @@ module ysyx_23060236_exu(
 	wire        jal_enable;
 	wire [31:0] snpc;
 
+	assign csr_imm = imm[11:0];
 	assign snpc = pc + 4;
 	assign jump_wrong_tmp = (jump_addr != snpc);
 	assign jump_wrong = jump_wrong_tmp & exu_complete;
