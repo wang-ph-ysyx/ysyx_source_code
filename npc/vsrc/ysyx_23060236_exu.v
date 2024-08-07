@@ -22,7 +22,6 @@ module ysyx_23060236_exu(
 	output reg [3:0]  rd,
 	output reg [2:0]  funct3,
 	output reg reg_wen,
-	output reg jump_wrong,
 	output reg inst_ecall,
 	output reg inst_mret,
 	output [31:0] val,
@@ -31,6 +30,7 @@ module ysyx_23060236_exu(
 	output [31:0] csr_wdata,
 	output lsu_ren,
 	output lsu_wen,
+	output jump_wrong,
 	output csr_enable,
 
 	input  exu_valid,
@@ -61,6 +61,7 @@ module ysyx_23060236_exu(
 		.wen(1)
 	);
 
+	reg         jump_wrong_valid;
 	wire        jump_en;
 	wire        jump_wrong_tmp;
 	wire        jal_enable;
@@ -68,6 +69,7 @@ module ysyx_23060236_exu(
 
 	assign snpc = pc + 4;
 	assign jump_wrong_tmp = (jump_addr != snpc);
+	assign jump_wrong = jump_wrong_tmp & jump_wrong_valid;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
@@ -75,21 +77,21 @@ module ysyx_23060236_exu(
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
-			opcode_type     <= opcode_type_in;
-			rd              <= rd_in;
-			src1            <= src1_in;
-			src2            <= src2_in;
-			imm             <= imm_in;
-			funct3          <= funct3_in;
-			funct7_5        <= funct7_5_in;
-			pc              <= pc_in;
-			reg_wen         <= reg_wen_in;
-			inst_ecall      <= inst_ecall_in;
-			inst_mret       <= inst_mret_in;
-			jump_wrong      <= jump_wrong_tmp;
+			opcode_type      <= opcode_type_in;
+			rd               <= rd_in;
+			src1             <= src1_in;
+			src2             <= src2_in;
+			imm              <= imm_in;
+			funct3           <= funct3_in;
+			funct7_5         <= funct7_5_in;
+			pc               <= pc_in;
+			reg_wen          <= reg_wen_in;
+			inst_ecall       <= inst_ecall_in;
+			inst_mret        <= inst_mret_in;
+			jump_wrong_valid <= 1;
 		end
 		else begin
-			jump_wrong <= 0;
+			jump_wrong_valid <= 0;
 		end
 	end
 
