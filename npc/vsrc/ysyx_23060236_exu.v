@@ -2,30 +2,35 @@ module ysyx_23060236_exu(
 	input  clock,
 	input  reset,
 
-	input  [9:0]  opcode_type,
-	input  [3:0]  rd,
-	input  [31:0] src1,
-	input  [31:0] src2,
-	input  [31:0] imm,
-	input  [2:0]  funct3,
-	input         funct7_5,
-	input  [31:0] pc,
-	input  reg_wen,
+	input  [9:0]  opcode_type_in,
+	input  [3:0]  rd_in,
+	input  [31:0] src1_in,
+	input  [31:0] src2_in,
+	input  [31:0] imm_in,
+	input  [2:0]  funct3_in,
+	input         funct7_5_in,
+	input  [31:0] pc_in,
+	input  reg_wen_in,
+	input  inst_ecall_in,
+	input  inst_mret_in,
+
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 	input  [31:0] csr_val,
 
-	output reg [3:0]  rd_next,
-	output reg [31:0] val,
-	output reg [31:0] lsu_data,
-	output reg [2:0]  funct3_next,
-	output reg reg_wen_next,
-	output reg lsu_ren,
-	output reg lsu_wen,
-	output reg [31:0] jump_addr,
+	output reg [31:0] pc,
+	output reg [3:0]  rd,
+	output reg [2:0]  funct3,
+	output reg reg_wen,
 	output reg jump_wrong,
-
+	output reg inst_ecall,
+	output reg inst_mret,
+	output [31:0] val,
+	output [31:0] lsu_data,
+	output [31:0] jump_addr,
 	output [31:0] csr_wdata,
+	output lsu_ren,
+	output lsu_wen,
 	output csr_enable,
 
 	input  exu_valid,
@@ -33,6 +38,12 @@ module ysyx_23060236_exu(
 	output lsu_valid,
 	input  lsu_ready
 );
+
+	reg  [9:0]  opcode_type;
+	reg  [31:0] src1;
+	reg  [31:0] src2;
+	reg  [31:0] imm;
+	reg         funct7_5;
 
 	ysyx_23060236_Reg #(1, 1) reg_exu_ready(
 		.clock(clock),
@@ -53,28 +64,28 @@ module ysyx_23060236_exu(
 	wire        jump_en;
 	wire        jump_wrong_tmp;
 	wire        jal_enable;
-	wire [31:0] jump_addr_tmp;
-	wire [31:0] val_tmp;
-	wire [31:0] alu_tmp;
-	wire [31:0] csr_wdata_tmp;
-	wire [31:0] lsu_data_tmp;
 	wire [31:0] snpc;
 
 	assign snpc = pc + 4;
-	assign jump_wrong_tmp = (jump_addr_tmp != snpc);
+	assign jump_wrong_tmp = (jump_addr != snpc);
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
+	assign lsu_ren = opcode_type[INST_LW];
+	assign lsu_wen = opcode_type[INST_SW];
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
-			rd_next         <= rd;
-			val             <= val_tmp;
-      lsu_data        <= lsu_data_tmp;
-			funct3_next     <= funct3;
-			lsu_ren         <= opcode_type[INST_LW];
-			lsu_wen         <= opcode_type[INST_SW];
-			reg_wen_next    <= reg_wen;
-			jump_addr       <= jump_addr_tmp;
+			opcode_type     <= opcode_type_in;
+			rd              <= rd_in;
+			src1            <= src1_in;
+			src2            <= src2_in;
+			imm             <= imm_in;
+			funct3          <= funct3_in;
+			funct7_5        <= funct7_5_in;
+			pc              <= pc_in;
+			reg_wen         <= reg_wen_in;
+			inst_ecall      <= inst_ecall_in;
+			inst_mret       <= inst_mret_in;
 			jump_wrong      <= jump_wrong_tmp;
 		end
 		else begin
@@ -82,13 +93,13 @@ module ysyx_23060236_exu(
 		end
 	end
 
-	assign jump_addr_tmp = csr_jump_en ? csr_jump :
-												 jump_en ? exu_jump :
-												 snpc;
+	assign jump_addr = csr_jump_en ? csr_jump :
+										 jump_en ? exu_jump :
+										 snpc;
 
-	assign val_tmp = jal_enable ? snpc :
-									 csr_enable ? csr_val :
-									 alu_tmp;
+	assign val = jal_enable ? snpc :
+							 csr_enable ? csr_val :
+							 alu_val;
 
 	parameter INST_LUI   = 0;
 	parameter INST_AUIPC = 1;
@@ -114,6 +125,7 @@ module ysyx_23060236_exu(
 	wire op_less;
 	wire op_uless;
 
+	wire [31:0] alu_val;
 	wire [31:0] loperand;
 	wire [31:0] roperand;
 	wire [3:0]  operator;
@@ -162,7 +174,7 @@ module ysyx_23060236_exu(
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
-	assign alu_tmp = (operator == OP_ADD  ) ? op_sum : 
+	assign alu_val = (operator == OP_ADD  ) ? op_sum : 
 									 (operator == OP_SUB  ) ? op_compare : 
 									 (operator == OP_AND  ) ? (loperand & roperand) : 
 									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
@@ -196,6 +208,6 @@ module ysyx_23060236_exu(
 										 (funct3 == 3'b001) ? src1 :
 										 32'b0;
 
-	assign lsu_data_tmp = src2;
+	assign lsu_data = src2;
 
 endmodule
