@@ -24,6 +24,7 @@ module ysyx_23060236_exu(
 	output reg reg_wen,
 	output reg inst_ecall,
 	output reg inst_mret,
+	output reg exu_complete,
 	output [31:0] val,
 	output [31:0] lsu_data,
 	output [31:0] jump_addr,
@@ -61,7 +62,6 @@ module ysyx_23060236_exu(
 		.wen(1)
 	);
 
-	reg         jump_wrong_valid;
 	wire        jump_en;
 	wire        jump_wrong_tmp;
 	wire        jal_enable;
@@ -69,7 +69,7 @@ module ysyx_23060236_exu(
 
 	assign snpc = pc + 4;
 	assign jump_wrong_tmp = (jump_addr != snpc);
-	assign jump_wrong = jump_wrong_tmp & jump_wrong_valid;
+	assign jump_wrong = jump_wrong_tmp & exu_complete;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
@@ -88,10 +88,10 @@ module ysyx_23060236_exu(
 			reg_wen          <= reg_wen_in;
 			inst_ecall       <= inst_ecall_in;
 			inst_mret        <= inst_mret_in;
-			jump_wrong_valid <= 1;
+			exu_complete <= 1;
 		end
 		else begin
-			jump_wrong_valid <= 0;
+			exu_complete <= 0;
 		end
 	end
 

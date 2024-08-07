@@ -85,6 +85,7 @@ module ysyx_23060236(
 	wire wb_valid;
 	wire jal_enable;
 	wire jump_wrong;
+	wire exu_complete;
 
 	wire [31:0] inst;
 	wire [9:0]  opcode_type;
@@ -349,6 +350,7 @@ module ysyx_23060236(
 		.reg_wen(exu_reg_wen),
 		.inst_ecall(exu_inst_ecall),
 		.inst_mret(exu_inst_mret),
+		.exu_complete(exu_complete),
 		.val(exu_val),
 		.lsu_data(lsu_data),
 		.jump_addr(jump_addr),
@@ -425,7 +427,7 @@ module ysyx_23060236(
 		.epc(exu_pc),
 		.jump(csr_jump),
 		.jump_en(csr_jump_en),
-		.valid(lsu_valid)
+		.valid(exu_complete)
 	);
 /*
 	assign io_slave_awready = 0;
