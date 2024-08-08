@@ -27,6 +27,8 @@ static long total_ifu_readingcycle = 0;
 static long hit_icache = 0;
 static long miss_icache = 0;
 static long tmt = 0;
+static long raw_conflict = 0;
+static long raw_conflict_cycle = 0;
 static int lsu_awaddr = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
@@ -39,6 +41,7 @@ void nvboard_update();
 void print_statistic() {
 	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
+	//performance conter
 	printf("\nperformance counter:\n");
 	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
 	printf("total_ifu_readingcycle: %ld\n", total_ifu_readingcycle);
@@ -49,10 +52,16 @@ void print_statistic() {
 	printf("total_lsu_writedata: %ld\n", total_lsu_writedata);
 	printf("total_lsu_writingcycle: %ld\n", total_lsu_writingcycle);
 	printf("average lsu writing delay: %f\n", (double)total_lsu_writingcycle / total_lsu_writedata);
+	//cache performance
+	printf("\ncache performance:\n");
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
 	printf("TMT: %ld\n", tmt);
 	printf("average miss time: %f\n", (double)tmt / miss_icache);
+	//pipeline performance
+	printf("raw_conflict_cycle: %ld\n", raw_conflict_cycle);
+	printf("raw_conflict: %ld\n", raw_conflict);
+	printf("average raw conflict penalty: %f\n", (double)raw_conflict_cycle / raw_conflict);
 	printf("\n");
 }
 
@@ -67,6 +76,8 @@ extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 extern "C" void add_hit_icache() { ++hit_icache; }
 extern "C" void add_miss_icache() { ++miss_icache; }
 extern "C" void add_tmt() { ++tmt; }
+extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
+extern "C" void add_raw_conflict() { ++raw_conflict; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {

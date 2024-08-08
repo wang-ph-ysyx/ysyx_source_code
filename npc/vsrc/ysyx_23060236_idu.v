@@ -151,4 +151,16 @@ module ysyx_23060236_idu(
 									 (Type[TYPE_B]) ? {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0} :
 									 32'b0;
 
+	import "DPI-C" function void add_raw_conflict();
+	import "DPI-C" function void add_raw_conflict_cycle();
+
+	reg raw_conflict_state;
+	always @(posedge clock) begin
+		if (reset) raw_conflict_state <= 0;
+		else raw_conflict_state <= raw_conflict;
+
+		if (raw_conflict) add_raw_conflict_cycle();
+		if (~raw_conflict_state & raw_conflict) add_raw_conflict();
+	end
+
 endmodule
