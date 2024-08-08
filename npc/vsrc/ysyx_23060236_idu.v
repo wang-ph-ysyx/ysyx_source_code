@@ -51,7 +51,7 @@ module ysyx_23060236_idu(
 	wire rs2_lsu_conflict;
 
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
-	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI];
+	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type[INST_CSR];
 	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen;
 	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen;
 	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen;
