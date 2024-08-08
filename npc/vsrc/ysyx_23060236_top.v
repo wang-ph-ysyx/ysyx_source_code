@@ -164,14 +164,11 @@ module ysyx_23060236(
 	wire        clint_rready;
 
 	wire [31:0] icache_araddr;
-	wire        icache_arvalid;
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire        icache_rvalid;
 	wire [31:0] icache_awaddr;
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
-	wire        icache_bvalid;
 
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
@@ -441,12 +438,10 @@ module ysyx_23060236(
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
-import "DPI-C" function void add_ifu_getinst();
 import "DPI-C" function void add_lsu_writedata();
 
 	always @(posedge clock) begin
 		add_total_cycle();
-		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_hit) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 		if (lsu_bvalid & lsu_bready) add_lsu_writedata();
