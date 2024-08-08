@@ -16,6 +16,6 @@ void reg_display() {
 	printf("pc\t%#x\t%d\n", pc, pc);
 	for (int i = 1; i < 16; ++i) {
 		uint32_t reg_val = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i-1];
-		printf("%s\t%#x\t%d\n", regs[i-1], reg_val, reg_val);
+		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
 }
