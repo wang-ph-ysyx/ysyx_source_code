@@ -54,7 +54,7 @@ void print_difftest_reg () {
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 	printf("nemu reference\n");
 	printf("pc\t%#x\n", ref_pc);
-	for (int i = 0; i < 16; ++i) {
+	for (int i = 0; i < 15; ++i) {
 		printf("x%d\t%#x\n", i+1, ref_r[i]);
 	}
 }
