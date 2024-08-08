@@ -27,6 +27,10 @@ static long total_ifu_readingcycle = 0;
 static long hit_icache = 0;
 static long miss_icache = 0;
 static long tmt = 0;
+static long raw_conflict = 0;
+static long raw_conflict_cycle = 0;
+static long jump_wrong = 0;
+static long jump_wrong_cycle = 0;
 static int lsu_awaddr = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
@@ -39,6 +43,7 @@ void nvboard_update();
 void print_statistic() {
 	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
+	//performance conter
 	printf("\nperformance counter:\n");
 	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
 	printf("total_ifu_readingcycle: %ld\n", total_ifu_readingcycle);
@@ -49,10 +54,20 @@ void print_statistic() {
 	printf("total_lsu_writedata: %ld\n", total_lsu_writedata);
 	printf("total_lsu_writingcycle: %ld\n", total_lsu_writingcycle);
 	printf("average lsu writing delay: %f\n", (double)total_lsu_writingcycle / total_lsu_writedata);
+	//cache performance
+	printf("\ncache performance:\n");
 	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
 	printf("TMT: %ld\n", tmt);
 	printf("average miss time: %f\n", (double)tmt / miss_icache);
+	//pipeline performance
+	printf("\npipeline performance:\n");
+	printf("raw_conflict_cycle: %ld\n", raw_conflict_cycle);
+	printf("raw_conflict: %ld\n", raw_conflict);
+	printf("average raw conflict penalty: %f\n", (double)raw_conflict_cycle / raw_conflict);
+	printf("jump_wrong_cycle: %ld\n", jump_wrong_cycle);
+	printf("jump_wrong: %ld\n", jump_wrong);
+	printf("average jump wrong penalty: %f\n", (double)jump_wrong_cycle / jump_wrong);
 	printf("\n");
 }
 
@@ -67,6 +82,10 @@ extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
 extern "C" void add_hit_icache() { ++hit_icache; }
 extern "C" void add_miss_icache() { ++miss_icache; }
 extern "C" void add_tmt() { ++tmt; }
+extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
+extern "C" void add_raw_conflict() { ++raw_conflict; }
+extern "C" void add_jump_wrong() { ++jump_wrong; }
+extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {
@@ -114,7 +133,7 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 	if (!(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073)) return;
-	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[10])
+	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[9])
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc);
