@@ -120,6 +120,7 @@ module ysyx_23060236(
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
+	wire lsu_load;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -299,10 +300,12 @@ module ysyx_23060236(
 		.pc(ifu_pc),
 		.src1(src1),
 		.src2(src2),
+		.exu_val(exu_val),
+		.wb_val(wb_val),
 		.exu_rd(exu_rd),
-		.exu_reg_wen(exu_reg_wen),
 		.lsu_rd(lsu_rd),
-		.lsu_reg_wen(lsu_reg_wen),
+		.exu_load(lsu_ren),
+		.lsu_load(lsu_load),
 		.lsu_ready(lsu_ready),
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),
@@ -386,9 +389,10 @@ module ysyx_23060236(
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.reg_wen(exu_reg_wen),
+		.wb_val(wb_val),
 		.reg_wen_next(lsu_reg_wen),
 		.rd_next(lsu_rd),
-		.wb_val(wb_val),
+		.lsu_load(lsu_load),
 		.lsu_valid(lsu_valid),
 		.lsu_ready(lsu_ready),
 		.wb_valid(wb_valid)
