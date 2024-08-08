@@ -29,6 +29,8 @@ static long miss_icache = 0;
 static long tmt = 0;
 static long raw_conflict = 0;
 static long raw_conflict_cycle = 0;
+static long jump_wrong = 0;
+static long jump_wrong_cycle = 0;
 static int lsu_awaddr = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
@@ -63,6 +65,9 @@ void print_statistic() {
 	printf("raw_conflict_cycle: %ld\n", raw_conflict_cycle);
 	printf("raw_conflict: %ld\n", raw_conflict);
 	printf("average raw conflict penalty: %f\n", (double)raw_conflict_cycle / raw_conflict);
+	printf("jump_wrong_cycle: %ld\n", jump_wrong_cycle);
+	printf("jump_wrong: %ld\n", jump_wrong);
+	printf("average jump wrong penalty: %f\n", (double)jump_wrong_cycle / jump_wrong);
 	printf("\n");
 }
 
@@ -79,6 +84,8 @@ extern "C" void add_miss_icache() { ++miss_icache; }
 extern "C" void add_tmt() { ++tmt; }
 extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
 extern "C" void add_raw_conflict() { ++raw_conflict; }
+extern "C" void add_jump_wrong() { ++jump_wrong; }
+extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 
 static void one_cycle() {
