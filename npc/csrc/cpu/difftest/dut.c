@@ -58,7 +58,7 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 		printf("nemu reference\n");
 		printf("pc\t%#x\n", ref_pc);
 		for (int i = 1; i < 16; ++i) {
-			printf("x%d\t%#x\n", i, ref[i-1]);
+			printf("x%d\t%#x\n", i, ref[i]);
 		}
 	}
 }
