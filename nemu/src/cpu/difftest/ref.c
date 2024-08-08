@@ -38,7 +38,7 @@ __EXPORT void difftest_regcpy(void *dut, uint32_t *pc, bool direction) {
 	}
 	else {
 		for (int i = 1; i < 16; ++i) {
-			cpu_dut->gpr[i] = cpu.gpr[i-1];
+			cpu_dut->gpr[i-1] = cpu.gpr[i];
 		}
 		*pc = cpu.pc;
 	}
