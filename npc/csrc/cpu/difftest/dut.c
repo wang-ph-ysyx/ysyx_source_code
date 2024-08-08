@@ -49,7 +49,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
-	for (int i = 1; i < 16; ++i) {
+	for (int i = 0; i < 15; ++i) {
 		if (ref[i] != top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
 	}
