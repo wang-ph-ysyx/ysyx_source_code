@@ -59,6 +59,7 @@ void print_statistic() {
 	printf("TMT: %ld\n", tmt);
 	printf("average miss time: %f\n", (double)tmt / miss_icache);
 	//pipeline performance
+	printf("\npipeline performance:\n");
 	printf("raw_conflict_cycle: %ld\n", raw_conflict_cycle);
 	printf("raw_conflict: %ld\n", raw_conflict);
 	printf("average raw conflict penalty: %f\n", (double)raw_conflict_cycle / raw_conflict);
