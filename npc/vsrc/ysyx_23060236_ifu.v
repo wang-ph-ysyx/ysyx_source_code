@@ -96,7 +96,7 @@ module ysyx_23060236_ifu(
 		icache_awaddr <= icache_awaddr_tmp;
 	end
 
-	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
+	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & ~icache_hit | ifu_valid & ~npc_in_sdram)),
