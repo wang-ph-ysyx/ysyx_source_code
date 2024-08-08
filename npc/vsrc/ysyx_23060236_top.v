@@ -306,6 +306,8 @@ module ysyx_23060236(
 		.lsu_rd(lsu_rd),
 		.exu_load(lsu_ren),
 		.lsu_load(lsu_load),
+		.exu_reg_wen(exu_reg_wen),
+		.lsu_reg_wen(lsu_reg_wen),
 		.lsu_ready(lsu_ready),
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),

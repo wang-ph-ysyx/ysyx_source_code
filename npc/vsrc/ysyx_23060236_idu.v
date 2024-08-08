@@ -13,6 +13,8 @@ module ysyx_23060236_idu(
 	input  [3:0]  lsu_rd,
 	input  exu_load,
 	input  lsu_load,
+	input  exu_reg_wen,
+	input  lsu_reg_wen,
 	input  lsu_ready,
 	input  jump_wrong,
 
@@ -50,10 +52,10 @@ module ysyx_23060236_idu(
 
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
 	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI];
-	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1);
-	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2);
-	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1);
-	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2);
+	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen;
+	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen;
+	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen;
+	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen;
 	assign idu_ready = ~raw_conflict & idu_ready_tmp;
 	assign raw_conflict = (
 		exu_load & (rs1_exu_conflict | rs2_exu_conflict) |
