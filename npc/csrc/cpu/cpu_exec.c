@@ -39,6 +39,7 @@ void difftest_skip_ref();
 extern void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction);
 void reg_display();
 void nvboard_update();
+void print_difftest_reg();
 
 void print_statistic() {
 	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
@@ -116,11 +117,12 @@ void cpu_exec(unsigned long n) {
 		static int difftest = 0;
 		bool in_uart = (lsu_awaddr >= UART_BASE) && (lsu_awaddr < UART_BASE + UART_SIZE);
 		bool in_clint = (lsu_awaddr >= CLINT_BASE) && (lsu_awaddr < CLINT_BASE + CLINT_SIZE);
-		if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (in_uart || in_clint)) {
+		/*if ((((inst & 0x7f) == 0x23) || ((inst & 0x7f) == 0x03)) && (in_uart || in_clint)) {
 			difftest_skip_ref();
-		}
-		if (difftest)
+		}*/
+		if (difftest) {
 			difftest_step();
+		}
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (inst == 0x100073 || trigger_difftest) break;

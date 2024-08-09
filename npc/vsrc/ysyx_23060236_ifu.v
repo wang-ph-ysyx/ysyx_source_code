@@ -128,12 +128,13 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	import "DPI-C" function void add_ifu_readingcycle();
-	import "DPI-C" function void add_miss_icache();
-	import "DPI-C" function void add_hit_icache();
-	import "DPI-C" function void add_tmt();
-	import "DPI-C" function void add_jump_wrong();
-	import "DPI-C" function void add_jump_wrong_cycle();
+import "DPI-C" function void add_ifu_readingcycle();
+import "DPI-C" function void add_miss_icache();
+import "DPI-C" function void add_hit_icache();
+import "DPI-C" function void add_tmt();
+import "DPI-C" function void add_jump_wrong();
+import "DPI-C" function void add_jump_wrong_cycle();
+import "DPI-C" function void add_ifu_getinst();
 
 	reg ifu_reading;
 	reg ifu_miss_icache;
@@ -158,6 +159,8 @@ module ysyx_23060236_ifu(
 
 		if (jump_wrong | jump_wrong_state) add_jump_wrong_cycle();
 		if (jump_wrong) add_jump_wrong();
+
+		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_hit) add_ifu_getinst();
 	end
 
 endmodule

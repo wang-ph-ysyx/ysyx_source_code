@@ -34,6 +34,7 @@ module ysyx_23060236_lsu(
 	output reg [31:0] wb_val,
 	output reg reg_wen_next,
 	output reg [3:0]  rd_next,
+	output reg lsu_load,
 
 	input  lsu_valid,
 	output lsu_ready,
@@ -58,6 +59,7 @@ module ysyx_23060236_lsu(
 			lsu_data_reg    <= lsu_data;
 			funct3_reg      <= funct3;
 			wb_val          <= exu_val;
+			lsu_load        <= lsu_ren;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;

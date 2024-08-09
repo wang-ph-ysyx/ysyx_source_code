@@ -120,6 +120,7 @@ module ysyx_23060236(
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
+	wire lsu_load;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -164,14 +165,11 @@ module ysyx_23060236(
 	wire        clint_rready;
 
 	wire [31:0] icache_araddr;
-	wire        icache_arvalid;
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire        icache_rvalid;
 	wire [31:0] icache_awaddr;
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
-	wire        icache_bvalid;
 
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
@@ -302,9 +300,13 @@ module ysyx_23060236(
 		.pc(ifu_pc),
 		.src1(src1),
 		.src2(src2),
+		.exu_val(exu_val),
+		.wb_val(wb_val),
 		.exu_rd(exu_rd),
-		.exu_reg_wen(exu_reg_wen),
 		.lsu_rd(lsu_rd),
+		.exu_load(lsu_ren),
+		.lsu_load(lsu_load),
+		.exu_reg_wen(exu_reg_wen),
 		.lsu_reg_wen(lsu_reg_wen),
 		.lsu_ready(lsu_ready),
 		.jump_wrong(jump_wrong),
@@ -389,9 +391,10 @@ module ysyx_23060236(
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.reg_wen(exu_reg_wen),
+		.wb_val(wb_val),
 		.reg_wen_next(lsu_reg_wen),
 		.rd_next(lsu_rd),
-		.wb_val(wb_val),
+		.lsu_load(lsu_load),
 		.lsu_valid(lsu_valid),
 		.lsu_ready(lsu_ready),
 		.wb_valid(wb_valid)
@@ -441,12 +444,10 @@ module ysyx_23060236(
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
-import "DPI-C" function void add_ifu_getinst();
 import "DPI-C" function void add_lsu_writedata();
 
 	always @(posedge clock) begin
 		add_total_cycle();
-		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_hit) add_ifu_getinst();
 		if (wb_valid) add_total_inst();
 		if (lsu_rvalid & lsu_rready) add_lsu_getdata();
 		if (lsu_bvalid & lsu_bready) add_lsu_writedata();
