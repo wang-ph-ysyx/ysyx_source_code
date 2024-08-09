@@ -17,6 +17,7 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 
 	output reg [3:0]  rd_next,
+	output reg [31:0] pc_next,
 	output reg [31:0] val,
 	output reg [31:0] lsu_data,
 	output reg [2:0]  funct3_next,
@@ -77,6 +78,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
+			pc_next         <= pc;
 		end
 		else begin
 			jump_wrong <= 0;

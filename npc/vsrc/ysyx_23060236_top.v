@@ -360,6 +360,7 @@ module ysyx_23060236(
 		.dnpc(idu_dnpc),
 		.reg_wen(idu_reg_wen),
 		.rd_next(exu_rd),
+		.pc_next(exu_pc),
 		.val(exu_val),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
