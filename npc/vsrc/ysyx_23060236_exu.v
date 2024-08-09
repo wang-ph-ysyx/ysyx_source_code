@@ -10,6 +10,7 @@ module ysyx_23060236_exu(
 	input  [2:0]  funct3,
 	input         funct7_5,
 	input  [31:0] pc,
+	input  [31:0] dnpc,
 	input  reg_wen,
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
@@ -61,7 +62,7 @@ module ysyx_23060236_exu(
 	wire [31:0] snpc;
 
 	assign snpc = pc + 4;
-	assign jump_wrong_tmp = (jump_addr_tmp != snpc);
+	assign jump_wrong_tmp = (jump_addr_tmp != dnpc);
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 

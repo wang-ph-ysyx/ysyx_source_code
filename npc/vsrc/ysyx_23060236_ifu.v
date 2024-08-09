@@ -16,17 +16,18 @@ module ysyx_23060236_ifu(
 	output [31:0] icache_araddr,
 	input  [31:0] icache_rdata,
 	input         icache_hit,
-
 	output reg [31:0] icache_awaddr,
 	output reg [31:0] icache_wdata,
-	output        icache_wvalid,
-
+	output            icache_wvalid,
 
 	input         wb_valid,
 	input         jump_wrong,
-	output [31:0] pc,
 	input  [31:0] jump_addr,
+	input  [31:0] dnpc,
+
+	output [31:0] pc,
 	output reg [31:0] inst,
+
 	output        idu_valid,
 	input         idu_ready
 );
@@ -61,7 +62,7 @@ module ysyx_23060236_ifu(
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
-									(idu_valid & idu_ready) ? (pc + 4) : 
+									(idu_valid & idu_ready) ? dnpc : 
 									pc;
 
 	always @(posedge clock) begin
