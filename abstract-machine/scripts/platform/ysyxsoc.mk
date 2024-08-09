@@ -19,7 +19,7 @@ CACHETRACE = $(WORK_DIR)/build/icache_trace.bin
 CACHESIMFLAGS = -b -c $(CACHETRACE)
 CACHESIM_HOME = /home/ysyx/cachesim
 BRANCHTRACE = $(WORK_DIR)/build/branch_trace.bin
-BRANCHSIMFLAGS = -b -r $(BRANCHTRACE)
+BRANCHSIMFLAGS =  -r $(BRANCHTRACE)
 BRANCHSIM_HOME = /home/ysyx/branchsim
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
