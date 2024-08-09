@@ -152,6 +152,7 @@ static int decode_exec(Decode *s) {
 		bool jump = (s->dnpc != s->snpc);
 		branch_trace(forward, jump);
 	}
+	printf("%#x\n", s->isa.inst.val);
 #endif
 
   return 0;
