@@ -151,11 +151,6 @@ config CTRACE
 	bool "Enable icache tracer"
 	default n
 
-config BTRACE
-  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
-	bool "Enable branch tracer"
-	default n
-
 config MTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
 	bool "Eable memory tracer"

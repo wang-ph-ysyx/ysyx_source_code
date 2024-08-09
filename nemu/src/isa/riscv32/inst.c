@@ -23,8 +23,6 @@
 #define Mw vaddr_write
 #define CSR(i) *get_csr(i)
 
-void branch_trace(bool forward, bool jump);
-
 static vaddr_t *get_csr(word_t imm) {
 	switch (imm & 0xfff){
 		case 0x341: return &(cpu.csr.mepc);
@@ -145,14 +143,6 @@ static int decode_exec(Decode *s) {
   R(0) = 0; // reset $zero to 0
 	CSR(0xf11) = 0x79737978;
 	CSR(0xf12) = 0x015fdf0c;
-
-#ifdef CONFIG_BTRACE
-	if ((s->isa.inst.val & 0x7f) == 0x63) {
-		bool forward = (imm > 0);
-		bool jump = (s->dnpc != s->snpc);
-		branch_trace(forward, jump);
-	}
-#endif
 
   return 0;
 }

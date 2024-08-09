@@ -119,8 +119,8 @@ module ysyx_23060236_idu(
 	wire inst_mret_tmp;
 
 	wire [5:0] Type;
-	wire [6:0] opcode;
-	assign opcode         = in[6:0];
+	wire [4:0] opcode_5;
+	assign opcode_5       = in[6:2];
 	assign rs1            = in[18:15];
 	assign rs2            = in[23:20];
 	assign rd_tmp         = in[10:7];
@@ -130,7 +130,7 @@ module ysyx_23060236_idu(
 
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
-	assign inst_fencei_tmp = (opcode == 7'b0001111);
+	assign inst_fencei_tmp = (opcode_5 == 5'b00011);
 
 	parameter TYPE_R = 0;
 	parameter TYPE_I = 1;
@@ -150,16 +150,16 @@ module ysyx_23060236_idu(
 	parameter INST_ADD   = 8;
 	parameter INST_CSR   = 9;
 
-	assign opcode_type_tmp[INST_LUI  ] = (opcode == 7'b0110111);
-	assign opcode_type_tmp[INST_AUIPC] = (opcode == 7'b0010111);
-	assign opcode_type_tmp[INST_JAL  ] = (opcode == 7'b1101111);
-	assign opcode_type_tmp[INST_JALR ] = (opcode == 7'b1100111);
-	assign opcode_type_tmp[INST_BEQ  ] = (opcode == 7'b1100011);
-	assign opcode_type_tmp[INST_LW   ] = (opcode == 7'b0000011);
-	assign opcode_type_tmp[INST_SW   ] = (opcode == 7'b0100011);
-	assign opcode_type_tmp[INST_ADDI ] = (opcode == 7'b0010011);
-	assign opcode_type_tmp[INST_ADD  ] = (opcode == 7'b0110011);
-	assign opcode_type_tmp[INST_CSR  ] = (opcode == 7'b1110011);
+	assign opcode_type_tmp[INST_LUI  ] = (opcode_5 == 5'b01101);
+	assign opcode_type_tmp[INST_AUIPC] = (opcode_5 == 5'b00101);
+	assign opcode_type_tmp[INST_JAL  ] = (opcode_5 == 5'b11011);
+	assign opcode_type_tmp[INST_JALR ] = (opcode_5 == 5'b11001);
+	assign opcode_type_tmp[INST_BEQ  ] = (opcode_5 == 5'b11000);
+	assign opcode_type_tmp[INST_LW   ] = (opcode_5 == 5'b00000);
+	assign opcode_type_tmp[INST_SW   ] = (opcode_5 == 5'b01000);
+	assign opcode_type_tmp[INST_ADDI ] = (opcode_5 == 5'b00100);
+	assign opcode_type_tmp[INST_ADD  ] = (opcode_5 == 5'b01100);
+	assign opcode_type_tmp[INST_CSR  ] = (opcode_5 == 5'b11100);
 
 	assign Type[TYPE_R] = opcode_type_tmp[INST_ADD];
 	assign Type[TYPE_I] = opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];

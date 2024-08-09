@@ -31,11 +31,7 @@ static void restart() {
 #ifdef CONFIG_CTRACE
 	cpu.pc = FLASH_BASE;
 #else
-#ifdef CONFIG_BTRACE
-	cpu.pc = FLASH_BASE;
-#else
   cpu.pc = RESET_VECTOR;
-#endif
 #endif
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
@@ -49,11 +45,7 @@ void init_isa() {
 #ifdef CONFIG_CTRACE
 	memcpy(guest_to_host(FLASH_BASE), img, sizeof(img));
 #else
-#ifdef CONFIG_BTRACE
-	memcpy(guest_to_host(FLASH_BASE), img, sizeof(img));
-#else
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-#endif
 #endif
   /* Initialize this virtual computer system. */
   restart();

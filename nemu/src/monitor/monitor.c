@@ -25,7 +25,6 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_icachetrace(const char *icache_file);
-void init_branchtrace(const char *branch_file);
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -48,7 +47,6 @@ static char *img_file = NULL;
 static char *elf_file = NULL;
 static int difftest_port = 1234;
 static char *icache_file = NULL;
-static char *branch_file = NULL;
 
 static long load_img() {
   if (img_file == NULL) {
@@ -68,11 +66,7 @@ static long load_img() {
 #ifdef CONFIG_CTRACE
 	int ret = fread(guest_to_host(FLASH_BASE), size, 1, fp);
 #else
-#ifdef CONFIG_BTRACE
-	int ret = fread(guest_to_host(FLASH_BASE), size, 1, fp);
-#else
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
-#endif
 #endif
   assert(ret == 1);
 
@@ -88,12 +82,11 @@ static int parse_args(int argc, char *argv[]) {
     {"port"     , required_argument, NULL, 'p'},
 		{"elf"      , required_argument, NULL, 'e'},
 		{"icache"   , required_argument, NULL, 'c'},
-		{"branch"   , required_argument, NULL, 'r'},
     {"help"     , no_argument      , NULL, 'h'},
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:e:c:r:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:d:p:e:c:", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
@@ -101,7 +94,6 @@ static int parse_args(int argc, char *argv[]) {
       case 'd': diff_so_file = optarg; break;
 			case 'e': elf_file = optarg; break;
 			case 'c': icache_file = optarg; break;
-			case 'r': branch_file = optarg; break;
       case 1: img_file = optarg; return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
@@ -111,7 +103,6 @@ static int parse_args(int argc, char *argv[]) {
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
 				printf("\t-e,--elf=FILE           receive FILE as elf file\n");
 				printf("\t-c,--icache=FILE        output icache trace to FILE\n");
-				printf("\t-r,--branch=FILE        output branch trace to FILE\n");
         printf("\n");
         exit(0);
     }
@@ -133,9 +124,6 @@ void init_monitor(int argc, char *argv[]) {
 
 	/* Open the icache trace file*/
 	IFDEF(CONFIG_CTRACE, init_icachetrace(icache_file));
-
-	/* Open the branch trace file*/
-	IFDEF(CONFIG_BTRACE, init_branchtrace(branch_file));
 
   /* Initialize memory. */
   init_mem();
