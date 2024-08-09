@@ -40,6 +40,8 @@ module ysyx_23060236_idu(
 	input  exu_ready
 );
 
+	wire [31:0] src1_tmp;
+	wire [31:0] src2_tmp;
 	wire reg_wen_tmp;
 	wire raw_conflict;
 	wire idu_ready_tmp;
@@ -51,12 +53,18 @@ module ysyx_23060236_idu(
 	wire rs2_lsu_conflict;
 
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
-	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type[INST_CSR];
+	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];
 	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen;
 	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen;
 	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen;
 	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen;
 	assign idu_ready = ~raw_conflict & idu_ready_tmp;
+	assign src1_tmp = rs1_exu_conflict ? exu_val :
+                    rs1_lsu_conflict ? wb_val : 
+                    src1;                       
+	assign src2_tmp = rs2_exu_conflict ? exu_val :
+                    rs2_lsu_conflict ? wb_val : 
+                    src2;                       
 	assign raw_conflict = (
 		exu_load & (rs1_exu_conflict | rs2_exu_conflict) |
 		lsu_load & (rs1_lsu_conflict | rs2_lsu_conflict)
@@ -90,12 +98,8 @@ module ysyx_23060236_idu(
 			inst_ecall  <= inst_ecall_tmp;
 			inst_mret   <= inst_mret_tmp;
 			pc_next     <= pc;
-			src1_next   <= rs1_exu_conflict ? exu_val : 
-										 rs1_lsu_conflict ? wb_val : 
-										 src1;
-			src2_next   <= rs2_exu_conflict ? exu_val : 
-										 rs2_lsu_conflict ? wb_val : 
-										 src2;
+			src1_next   <= src1_tmp;
+			src2_next   <= src2_tmp;
 		end
 	end
 
