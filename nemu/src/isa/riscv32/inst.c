@@ -147,7 +147,7 @@ static int decode_exec(Decode *s) {
 	CSR(0xf12) = 0x015fdf0c;
 
 #ifdef CONFIG_BTRACE
-	if (s->isa.inst.val & 0x7f == 0x63) {
+	if ((s->isa.inst.val & 0x7f) == 0x63) {
 		bool forward = (imm > 0);
 		bool jump = (s->dnpc != s->snpc);
 		branch_trace(forward, jump);
