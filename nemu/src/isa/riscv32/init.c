@@ -31,7 +31,11 @@ static void restart() {
 #ifdef CONFIG_CTRACE
 	cpu.pc = FLASH_BASE;
 #else
+#ifdef CONFIG_BTRACE
+	cpu.pc = FLASH_BASE;
+#else
   cpu.pc = RESET_VECTOR;
+#endif
 #endif
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
