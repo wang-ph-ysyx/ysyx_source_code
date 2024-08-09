@@ -188,3 +188,20 @@ void icache_trace(uint32_t pc) {
 }
 
 #endif
+
+#ifdef CONFIG_BTRACH
+FILE *branch_fp;
+void init_branchtrace(const char *branch_file) {
+	branch_fp = stdout;
+	if (branch_file != NULL) {
+		FILE *fp = fopen(branch_file, "w");
+		Assert(fp, "Can not open '%s'", icache_file);
+		icache_fp = fp;
+	}
+}
+
+void branch_trace(bool forward, bool jump) {
+	fwrite(&older, 1, 1, branch_fp);
+	fwrite(&forward, 1, 1, branch_fp);
+}
+#endif
