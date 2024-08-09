@@ -51,13 +51,17 @@ module ysyx_23060236_idu(
 	wire rs2_exu_conflict;
 	wire rs1_lsu_conflict;
 	wire rs2_lsu_conflict;
+	wire exu_rdnzero;
+	wire lsu_rdnzero;
 
+	assign exu_rdnzero = (exu_rd != 0);
+	assign lsu_rdnzero = (lsu_rd != 0);
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
 	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];
-	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen;
-	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen;
-	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen;
-	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen;
+	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen & exu_rdnzero;
+	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen & exu_rdnzero;
+	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
+	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
 	assign idu_ready = ~raw_conflict & idu_ready_tmp;
 	assign src1_tmp = rs1_exu_conflict ? exu_val :
                     rs1_lsu_conflict ? wb_val : 
