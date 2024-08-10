@@ -170,14 +170,7 @@ module ysyx_23060236_idu(
 	assign Type[TYPE_B] = opcode_type_tmp[INST_BEQ];
 	assign Type[TYPE_U] = opcode_type_tmp[INST_LUI] | opcode_type_tmp[INST_AUIPC];
 	assign Type[TYPE_J] = opcode_type_tmp[INST_JAL];
-/*
-	assign imm_tmp = (Type[TYPE_I]) ? {{20{in[31]}}, in[31:20]} :
-									 (Type[TYPE_U]) ? {in[31:12], 12'b0} :
-									 (Type[TYPE_S]) ? {{20{in[31]}}, in[31:25], in[11:7]} :
-									 (Type[TYPE_J]) ? {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0} :
-									 (Type[TYPE_B]) ? {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0} :
-									 32'b0;
-*/
+
 	assign imm_tmp[31]    = in[31];
 	assign imm_tmp[30:20] = Type[TYPE_U] ? in[30:20] : {11{in[31]}};
 	assign imm_tmp[19:12] = (Type[TYPE_U] | Type[TYPE_J]) ? in[19:12] : {8{in[31]}};
