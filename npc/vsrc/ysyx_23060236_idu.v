@@ -170,14 +170,30 @@ module ysyx_23060236_idu(
 	assign Type[TYPE_B] = opcode_type_tmp[INST_BEQ];
 	assign Type[TYPE_U] = opcode_type_tmp[INST_LUI] | opcode_type_tmp[INST_AUIPC];
 	assign Type[TYPE_J] = opcode_type_tmp[INST_JAL];
-
+/*
 	assign imm_tmp = (Type[TYPE_I]) ? {{20{in[31]}}, in[31:20]} :
 									 (Type[TYPE_U]) ? {in[31:12], 12'b0} :
 									 (Type[TYPE_S]) ? {{20{in[31]}}, in[31:25], in[11:7]} :
 									 (Type[TYPE_J]) ? {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0} :
 									 (Type[TYPE_B]) ? {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0} :
 									 32'b0;
+*/
+	assign imm_tmp[31]    = in[31];
+	assign imm_tmp[30:20] = Type[TYPE_U] ? in[30:20] : {11{in[31]}};
+	assign imm_tmp[19:12] = (Type[TYPE_U] | Type[TYPE_J]) ? in[19:12] : {8{in[31]}};
+	assign imm_tmp[11]    = Type[TYPE_B] ? in[7] : 
+													Type[TYPE_U] ? 1'b0 : 
+													Type[TYPE_J] ? in[20] : 
+													in[31];
+	assign imm_tmp[10:5] = Type[TYPE_U] ? 6'b0 : in[30:25];
+	assign imm_tmp[4:1]  = (Type[TYPE_I] | Type[TYPE_J]) ? in[24:21] : 
+												 Type[TYPE_U] ? 4'b0 : 
+												 in[11:8];
+	assign imm_tmp[0]    = Type[TYPE_I] ? in[20] : 
+												 Type[TYPE_S] ? in[7] : 
+												 1'b0;
 
+/*
 	import "DPI-C" function void add_raw_conflict();
 	import "DPI-C" function void add_raw_conflict_cycle();
 
@@ -189,5 +205,5 @@ module ysyx_23060236_idu(
 		if (raw_conflict) add_raw_conflict_cycle();
 		if (~raw_conflict_state & raw_conflict) add_raw_conflict();
 	end
-
+*/
 endmodule
