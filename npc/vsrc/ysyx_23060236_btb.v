@@ -24,17 +24,13 @@ module ysyx_23060236_btb(
 	wire btb_hit;
 	wire [INDEX_LEN-1:0]  read_index;
 	wire [TAG_LEN-1:0]    read_tag;
-	wire [OFFSET_LEN-1:0] read_offset;
 	wire [INDEX_LEN-1:0]  write_index;
 	wire [TAG_LEN-1:0]    write_tag;
-	wire [OFFSET_LEN-1:0] write_offset;
 
 	assign read_tag     = btb_araddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign read_index   = btb_araddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
-	assign read_offset  = btb_araddr[OFFSET_LEN-1 : 0];
 	assign write_tag    = btb_awaddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign write_index  = btb_awaddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
-	assign write_offset = btb_awaddr[OFFSET_LEN-1 : 0];
 	assign btb_hit      = btb_valid[read_index] & (btb_tag[read_index] == read_tag);
 	assign btb_rdata    = btb_hit ? btb_data[read_index] : (btb_araddr + 4);
 
