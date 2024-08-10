@@ -72,8 +72,11 @@ module ysyx_23060236(
 	output [3:0]  io_slave_rid     
 );
 
+	wire [31:0] dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
+	wire [31:0] idu_dnpc;
+	wire [31:0] exu_pc;
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -109,6 +112,7 @@ module ysyx_23060236(
 	wire exu_inst_ecall;
 	wire lsu_inst_ecall;
 	wire inst_fencei;
+	wire btb_wvalid;
 
 	wire [31:0] csr_jump;
 	wire csr_jump_en;
@@ -265,6 +269,16 @@ module ysyx_23060236(
 		.inst_fencei(inst_fencei)
 	);
 
+	ysyx_23060236_btb my_btb(
+		.clock(clock),
+		.reset(reset),
+		.btb_araddr(ifu_pc),
+		.btb_rdata(dnpc),
+		.btb_wvalid(btb_wvalid),
+		.btb_awaddr(exu_pc),
+		.btb_wdata(jump_addr)
+	);
+
 	ysyx_23060236_ifu my_ifu(
 		.clock(clock),
 		.reset(reset),
@@ -286,6 +300,7 @@ module ysyx_23060236(
 		.icache_wvalid(icache_wvalid),
 		.wb_valid(wb_valid),
 		.jump_wrong(jump_wrong),
+		.dnpc(dnpc),
 		.pc(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
@@ -298,6 +313,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
+		.dnpc(dnpc),
 		.src1(src1),
 		.src2(src2),
 		.exu_val(exu_val),
@@ -313,6 +329,7 @@ module ysyx_23060236(
 		.rs1(rs1),
 		.rs2(rs2),
 		.pc_next(idu_pc),
+		.dnpc_next(idu_dnpc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7_5(funct7_5),
@@ -341,8 +358,10 @@ module ysyx_23060236(
 		.funct3(funct3),
 		.funct7_5(funct7_5),
 		.pc(idu_pc),
+		.dnpc(idu_dnpc),
 		.reg_wen(idu_reg_wen),
 		.rd_next(exu_rd),
+		.pc_next(exu_pc),
 		.val(exu_val),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
@@ -354,6 +373,7 @@ module ysyx_23060236(
 		.reg_wen_next(exu_reg_wen),
 		.jump_addr(jump_addr),
 		.jump_wrong(jump_wrong),
+		.btb_wvalid(btb_wvalid),
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
 		.exu_valid(exu_valid),
