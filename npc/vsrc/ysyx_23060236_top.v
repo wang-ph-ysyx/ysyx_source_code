@@ -112,6 +112,7 @@ module ysyx_23060236(
 	wire exu_inst_ecall;
 	wire lsu_inst_ecall;
 	wire inst_fencei;
+	wire btb_wvalid;
 
 	wire [31:0] csr_jump;
 	wire csr_jump_en;
@@ -273,7 +274,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.btb_araddr(ifu_pc),
 		.btb_rdata(dnpc),
-		.btb_wvalid(jump_wrong),
+		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
 		.btb_wdata(jump_addr)
 	);
@@ -372,6 +373,7 @@ module ysyx_23060236(
 		.reg_wen_next(exu_reg_wen),
 		.jump_addr(jump_addr),
 		.jump_wrong(jump_wrong),
+		.btb_wvalid(btb_wvalid),
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
 		.exu_valid(exu_valid),

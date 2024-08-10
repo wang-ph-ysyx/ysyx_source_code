@@ -26,6 +26,7 @@ module ysyx_23060236_exu(
 	output reg lsu_wen,
 	output reg [31:0] jump_addr,
 	output reg jump_wrong,
+	output btb_wvalid,
 
 	output [31:0] csr_wdata,
 	output csr_enable,
@@ -61,7 +62,9 @@ module ysyx_23060236_exu(
 	wire [31:0] csr_wdata_tmp;
 	wire [31:0] lsu_data_tmp;
 	wire [31:0] snpc;
+	reg  need_btb;
 
+	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
 	assign jump_wrong_tmp = (jump_addr_tmp != dnpc);
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
@@ -79,6 +82,7 @@ module ysyx_23060236_exu(
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
 			pc_next         <= pc;
+			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 		end
 		else begin
 			jump_wrong <= 0;
