@@ -325,6 +325,8 @@ module ysyx_23060236(
 		.exu_reg_wen(exu_reg_wen),
 		.lsu_reg_wen(lsu_reg_wen),
 		.lsu_ready(lsu_ready),
+		.wb_valid(wb_valid),
+		.lsu_valid(lsu_valid),
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),
 		.rs2(rs2),

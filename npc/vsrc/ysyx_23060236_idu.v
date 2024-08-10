@@ -17,6 +17,8 @@ module ysyx_23060236_idu(
 	input  exu_reg_wen,
 	input  lsu_reg_wen,
 	input  lsu_ready,
+	input  wb_valid,
+	input  lsu_valid,
 	input  jump_wrong,
 
 	output [3:0] rs1,
@@ -46,7 +48,6 @@ module ysyx_23060236_idu(
 	wire [31:0] src2_tmp;
 	wire reg_wen_tmp;
 	wire raw_conflict;
-	wire idu_ready_tmp;
 	wire need_rs2;
 	wire need_rs1;
 	wire rs1_exu_conflict;
@@ -60,11 +61,11 @@ module ysyx_23060236_idu(
 	assign lsu_rdnzero = (lsu_rd != 0);
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
 	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];
-	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen & exu_rdnzero;
-	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen & exu_rdnzero;
-	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
-	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
-	assign idu_ready = ~raw_conflict & idu_ready_tmp;
+	assign rs1_exu_conflict = lsu_valid & need_rs1 & (exu_rd == rs1) & exu_reg_wen & exu_rdnzero;
+	assign rs2_exu_conflict = lsu_valid & need_rs2 & (exu_rd == rs2) & exu_reg_wen & exu_rdnzero;
+	assign rs1_lsu_conflict = (~lsu_ready | wb_valid) & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
+	assign rs2_lsu_conflict = (~lsu_ready | wb_valid) & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
+	assign idu_ready = ~raw_conflict & (exu_ready | ~exu_valid);
 	assign src1_tmp = rs1_exu_conflict ? exu_val :
                     rs1_lsu_conflict ? wb_val : 
                     src1;                       
@@ -76,18 +77,10 @@ module ysyx_23060236_idu(
 		lsu_load & (rs1_lsu_conflict | rs2_lsu_conflict)
 	);
 
-	ysyx_23060236_Reg #(1, 1) reg_idu_ready_tmp(
-		.clock(clock),
-		.reset(reset),
-		.din((idu_ready_tmp & ~(idu_valid & idu_ready) | ~idu_ready_tmp & exu_valid & exu_ready) | jump_wrong),
-		.dout(idu_ready_tmp),
-		.wen(1)
-	);
-
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din((exu_valid & ~exu_ready | ~exu_valid & idu_valid & idu_ready) & ~jump_wrong),
+		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong),
 		.dout(exu_valid),
 		.wen(1)
 	);

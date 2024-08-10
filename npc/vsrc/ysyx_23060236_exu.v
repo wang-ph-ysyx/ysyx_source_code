@@ -37,18 +37,12 @@ module ysyx_23060236_exu(
 	input  lsu_ready
 );
 
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready(
-		.clock(clock),
-		.reset(reset),
-		.din(exu_ready & ~exu_valid | ~exu_ready & lsu_valid & lsu_ready),
-		.dout(exu_ready),
-		.wen(1)
-	);
+	assign exu_ready = (~lsu_valid | lsu_ready) & ~jump_wrong;
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_valid & ~lsu_ready | ~lsu_valid & exu_valid & exu_ready),
+		.din(lsu_valid & ~lsu_ready | exu_valid & exu_ready),
 		.dout(lsu_valid),
 		.wen(1)
 	);
