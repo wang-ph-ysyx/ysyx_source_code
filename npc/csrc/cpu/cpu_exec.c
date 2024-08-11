@@ -126,7 +126,7 @@ void cpu_exec(unsigned long n) {
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
 		if (inst == 0x100073 || trigger_difftest) {
-			for (int i = 0; i < 50; ++i) one_cycle();
+			for (volatile int i = 0; i < 50; ++i) one_cycle();
 			break;
 		}
 	}
