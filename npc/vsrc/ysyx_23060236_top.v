@@ -75,6 +75,7 @@ module ysyx_23060236(
 	wire [31:0] pc;
 	wire [31:0] dnpc;
 	wire [31:0] ifu_pc;
+	wire [31:0] ifu_dnpc;
 	wire [31:0] idu_pc;
 	wire [31:0] idu_dnpc;
 	wire [31:0] exu_pc;
@@ -303,6 +304,7 @@ module ysyx_23060236(
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
 		.pc(pc),
+		.dnpc_next(ifu_dnpc),
 		.pc_next(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
@@ -315,7 +317,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
-		.dnpc(dnpc),
+		.dnpc(ifu_dnpc),
 		.src1(src1),
 		.src2(src2),
 		.exu_val(exu_val),
