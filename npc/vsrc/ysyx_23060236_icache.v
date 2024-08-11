@@ -2,12 +2,12 @@ module ysyx_23060236_icache(
 	input         clock,
 	input         reset,
 
-	input  [31:0] icache_araddr,
-	output [31:0] icache_rdata,
+	input  [ADDR_LEN-1:0] icache_araddr,
+	output [DATA_LEN-1:0] icache_rdata,
 	output        icache_hit,  
 
-	input  [31:0] icache_awaddr,
-	input  [31:0] icache_wdata,
+	input  [ADDR_LEN-1:0] icache_awaddr,
+	input  [DATA_LEN-1:0] icache_wdata,
 	input         icache_wvalid,
 
 	input         inst_fencei
