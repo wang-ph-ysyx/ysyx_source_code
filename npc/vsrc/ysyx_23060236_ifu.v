@@ -92,7 +92,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_over & npc_in_sdram),
+		.din(ifu_over & npc_in_sdram | icache_rvalid & ~ifu_ready),
 		.dout(icache_rvalid),
 		.wen(1)
 	);
