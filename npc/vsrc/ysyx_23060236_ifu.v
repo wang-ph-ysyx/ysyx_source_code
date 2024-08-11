@@ -26,6 +26,7 @@ module ysyx_23060236_ifu(
 	input  [31:0] dnpc,
 
 	output [31:0] pc,
+	output reg [31:0] pc_next,
 	output reg [31:0] inst,
 
 	output        idu_valid,
@@ -34,6 +35,7 @@ module ysyx_23060236_ifu(
 
 	wire icache_rvalid;
 	wire ifu_valid;
+	wire ifu_ready;
 	wire ifu_over;
 	wire pc_in_sdram;
 	wire npc_in_sdram;
@@ -56,18 +58,23 @@ module ysyx_23060236_ifu(
 	assign inst_tmp = (ifu_rvalid & ifu_rready & ((pc[4:2] == icache_awaddr[4:2]) | ~pc_in_sdram)) ? ifu_rdata : 
 		                (icache_rvalid & icache_hit) ? icache_rdata : 
 										inst;
-	assign ifu_over = (icache_rvalid & icache_hit | icache_wvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
+	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
+	assign ifu_ready = ~idu_valid | idu_ready;
 	//与icache的块大小一致
 	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit) ? (pc & ~32'h1f) : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
-									(idu_valid & idu_ready) ? dnpc : 
+									ifu_over ? dnpc : 
 									pc;
 
 	always @(posedge clock) begin
 		if (ifu_rvalid & ifu_rready) last <= ifu_rlast;
+	end
+
+	always @(posedge clock) begin
+		if (ifu_over) pc_next <= pc;
 	end
 
 	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
@@ -78,10 +85,10 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
+	ysyx_23060236_Reg #(1, 0) reg_icache_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_valid & npc_in_sdram),
+		.din(ifu_over & npc_in_sdram),
 		.dout(icache_rvalid),
 		.wen(1)
 	);
