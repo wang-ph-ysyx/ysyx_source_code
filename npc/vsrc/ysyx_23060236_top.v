@@ -274,7 +274,7 @@ module ysyx_23060236(
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
-		.btb_araddr(pc),
+		.btb_araddr(pc[24:0]),
 		.btb_rdata(dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc[24:0]),
