@@ -125,7 +125,20 @@ void cpu_exec(unsigned long n) {
 		}
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
-		if (inst == 0x100073 || trigger_difftest) break;
+		if (inst == 0x100073 || trigger_difftest) {
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			one_cycle();
+			break;
+		}
 	}
 
 	if (trigger_difftest) {
