@@ -32,6 +32,7 @@ static long raw_conflict_cycle = 0;
 static long jump_wrong = 0;
 static long jump_wrong_cycle = 0;
 static int lsu_awaddr = 0;
+static int inst_ebreak = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -88,6 +89,7 @@ extern "C" void add_raw_conflict() { ++raw_conflict; }
 extern "C" void add_jump_wrong() { ++jump_wrong; }
 extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
+extern "C" void program_end() { inst_ebreak = 1; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
@@ -125,10 +127,7 @@ void cpu_exec(unsigned long n) {
 		}
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
-		if (inst == 0x100073 || trigger_difftest) {
-			for (volatile int i = 0; i < 50; ++i) one_cycle();
-			break;
-		}
+		if (inst_ebreak || trigger_difftest) break;
 	}
 
 	if (trigger_difftest) {

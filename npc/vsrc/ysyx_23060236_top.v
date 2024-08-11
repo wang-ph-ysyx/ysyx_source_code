@@ -366,12 +366,12 @@ module ysyx_23060236(
 		.pc(idu_pc),
 		.dnpc(idu_dnpc),
 		.reg_wen(idu_reg_wen),
-		.rd_next(exu_rd),
-		.pc_next(exu_pc),
-		.val(exu_val),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
+		.rd_next(exu_rd),
+		.pc_next(exu_pc),
+		.val(exu_val),
 		.lsu_data(lsu_data),
 		.funct3_next(exu_funct3),
 		.lsu_ren(lsu_ren),
@@ -485,4 +485,15 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 		record_lsu_awaddr(lsu_awaddr);
 	end
 */
+import "DPI-C" function void program_end();
+
+	reg [2:0] prog_end; //1:id, 2:ex, 3:ls, 4:wb
+	always @(posedge clock) begin
+		if (reset) prog_end <= 0;
+		else if ((inst == 32'h00100073) & (idu_valid & idu_ready)) prog_end <= 1;
+		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
+		else if ((prog_end == 2) & (lsu_valid & lsu_ready)) prog_end <= 3;
+		else if ((prog_end == 3) & wb_valid) program_end();
+	end
+
 endmodule
