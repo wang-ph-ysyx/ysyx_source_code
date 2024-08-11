@@ -2,7 +2,7 @@ module ysyx_23060236_btb(
 	input clock,
 	input reset,
 
-	input  [ADDR_LEN-1:0] btb_araddr,
+	input  [DATA_LEN-1:0] btb_araddr,
 	output [DATA_LEN-1:0] btb_rdata,
 
 	input  btb_wvalid,
@@ -28,7 +28,7 @@ module ysyx_23060236_btb(
 	assign read_tag     = btb_araddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign write_tag    = btb_awaddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign btb_hit      = btb_valid & (btb_tag == read_tag);
-	assign btb_rdata    = btb_hit ? btb_data : ({7'b1010000, btb_araddr} + 4);
+	assign btb_rdata    = btb_hit ? btb_data : (btb_araddr + 4);
 
 	always @(posedge clock) begin
 		if (reset) btb_valid <= 0;
