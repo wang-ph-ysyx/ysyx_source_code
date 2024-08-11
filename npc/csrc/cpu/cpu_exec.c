@@ -103,7 +103,7 @@ static void one_cycle() {
 }
 
 void cpu_exec(unsigned long n) {
-	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073 || trigger_difftest) {
+	if (inst_ebreak || trigger_difftest) {
 		printf("the program is ended.\n");
 		return;
 	}
@@ -135,7 +135,7 @@ void cpu_exec(unsigned long n) {
 		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", pc);
 		return;
 	}
-	if (!(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073)) return;
+	if (!inst_ebreak) return;
 	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[9])
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
