@@ -301,7 +301,7 @@ module ysyx_23060236(
 		.wb_valid(wb_valid),
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
-		.pc(ifu_pc),
+		.pc_next(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
 		.idu_valid(idu_valid),
