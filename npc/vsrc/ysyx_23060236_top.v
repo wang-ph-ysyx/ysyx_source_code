@@ -72,7 +72,6 @@ module ysyx_23060236(
 	output [3:0]  io_slave_rid     
 );
 
-	wire [31:0] pc;
 	wire [31:0] dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
@@ -273,7 +272,7 @@ module ysyx_23060236(
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
-		.btb_araddr(pc),
+		.btb_araddr(ifu_pc),
 		.btb_rdata(dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
@@ -302,8 +301,7 @@ module ysyx_23060236(
 		.wb_valid(wb_valid),
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
-		.pc(pc),
-		.pc_next(ifu_pc),
+		.pc(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
 		.idu_valid(idu_valid),
