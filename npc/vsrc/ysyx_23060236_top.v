@@ -78,7 +78,7 @@ module ysyx_23060236(
 	wire [31:0] ifu_dnpc;
 	wire [31:0] idu_pc;
 	wire [31:0] idu_dnpc;
-	wire [31:0] exu_pc;
+	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -274,7 +274,7 @@ module ysyx_23060236(
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
-		.btb_araddr(pc),
+		.btb_araddr(pc[24:0]), //与btb地址位宽一致
 		.btb_rdata(dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
