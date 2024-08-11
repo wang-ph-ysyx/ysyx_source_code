@@ -159,13 +159,13 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (~reset & ifu_reading) add_ifu_readingcycle();
 
-		if (icache_rvalid) begin
+		if (icache_rvalid & ifu_ready) begin
 			if (~icache_hit) add_miss_icache();
 			else add_hit_icache();
 		end
 
 		if (reset) ifu_miss_icache <= 0;
-		else if (icache_rvalid & ~icache_hit) ifu_miss_icache <= 1;
+		else if (icache_rvalid & ifu_ready & ~icache_hit) ifu_miss_icache <= 1;
 		else if (ifu_over) ifu_miss_icache <= 0;
 
 		if (ifu_miss_icache) add_tmt();
@@ -173,7 +173,7 @@ import "DPI-C" function void add_ifu_getinst();
 		if (jump_wrong | jump_wrong_state) add_jump_wrong_cycle();
 		if (jump_wrong) add_jump_wrong();
 
-		if (ifu_rvalid & ifu_rready | icache_rvalid & icache_hit) add_ifu_getinst();
+		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end
 
 endmodule
