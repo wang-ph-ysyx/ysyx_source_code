@@ -81,7 +81,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(~icache_rvalid & ifu_valid & npc_in_sdram),
+		.din(ifu_valid & npc_in_sdram),
 		.dout(icache_rvalid),
 		.wen(1)
 	);
