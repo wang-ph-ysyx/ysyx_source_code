@@ -25,6 +25,7 @@ module ysyx_23060236_ifu(
 	input  [31:0] jump_addr,
 	input  [31:0] dnpc,
 
+	output [31:0] pc,
 	output reg [31:0] pc_next,
 	output reg [31:0] inst,
 
@@ -32,7 +33,6 @@ module ysyx_23060236_ifu(
 	input         idu_ready
 );
 
-	wire [31:0] pc;
 	wire icache_rvalid;
 	wire ifu_valid;
 	wire ifu_over;
