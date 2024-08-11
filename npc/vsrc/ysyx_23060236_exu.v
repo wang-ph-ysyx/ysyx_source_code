@@ -17,7 +17,7 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 
 	output reg [3:0]  rd_next,
-	output reg [24:0] pc_next, //与btb地址位宽一致
+	output reg [31:0] pc_next,
 	output reg [31:0] val,
 	output reg [31:0] lsu_data,
 	output reg [2:0]  funct3_next,
@@ -75,7 +75,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
-			pc_next         <= pc[24:0]; //与btb地址位宽一致
+			pc_next         <= pc;
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 		end
 		else begin
