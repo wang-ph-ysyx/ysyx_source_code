@@ -70,7 +70,7 @@ module ysyx_23060236_idu(
 	assign rs1_lsu_conflict = (~lsu_ready | wb_valid) & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
 	assign rs2_lsu_conflict = (~lsu_ready | wb_valid) & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
 	assign rs1_idu_conflict = exu_valid & need_rs1 & (rd == rs1) & reg_wen & idu_rdnzero;
-	assign rs2_idu_conflict = exu_valid & need_rs2 & (rd == rs1) & reg_wen & idu_rdnzero;
+	assign rs2_idu_conflict = exu_valid & need_rs2 & (rd == rs2) & reg_wen & idu_rdnzero;
 	assign idu_ready = ~raw_conflict & (exu_ready | ~exu_valid);
 	assign src1_tmp = rs1_exu_conflict ? exu_val :
                     rs1_lsu_conflict ? wb_val : 
