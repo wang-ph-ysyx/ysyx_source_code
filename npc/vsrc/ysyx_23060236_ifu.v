@@ -51,7 +51,7 @@ module ysyx_23060236_ifu(
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign npc_in_sdram  = (pc_tmp >= 32'ha0000000) & (pc_tmp < 32'ha2000000);
 	assign icache_araddr = pc[24:0];
-	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'h1f; //与icache的块大小一致
+	assign ifu_araddr    = ~pc_in_sdram ? pc : {pc[31:5], 5'b0}; //与icache的块大小一致
 	assign ifu_arburst   = ~pc_in_sdram ? 2'b0 : 2'b01;
 	assign ifu_arlen     = ~pc_in_sdram ? 4'b0 : 4'b0111; //与icache的块大小一致
 	//与icache的块大小一致
