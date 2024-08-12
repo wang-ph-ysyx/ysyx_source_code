@@ -24,8 +24,6 @@ SECTIONS {
 
 	. = ORIGIN(sdram);
   .text : {
-		. = ALIGN(4);
-		. += 4;
 		_text_start = .;
     *(.text*)
   } > sdram AT> flash 
