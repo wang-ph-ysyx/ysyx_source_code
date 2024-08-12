@@ -186,7 +186,7 @@ module ysyx_23060236_idu(
 												 Type[TYPE_S] ? in[7] : 
 												 1'b0;
 
-
+/*
 	import "DPI-C" function void add_raw_conflict();
 	import "DPI-C" function void add_raw_conflict_cycle();
 
@@ -198,5 +198,5 @@ module ysyx_23060236_idu(
 		if (raw_conflict) add_raw_conflict_cycle();
 		if (~raw_conflict_state & raw_conflict) add_raw_conflict();
 	end
-
+*/
 endmodule

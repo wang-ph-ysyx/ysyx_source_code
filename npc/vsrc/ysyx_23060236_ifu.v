@@ -140,7 +140,7 @@ module ysyx_23060236_ifu(
 		.dout(jump_wrong_state),
 		.wen(1)
 	);
-
+/*
 import "DPI-C" function void add_ifu_readingcycle();
 import "DPI-C" function void add_miss_icache();
 import "DPI-C" function void add_hit_icache();
@@ -175,5 +175,5 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end
-
+*/
 endmodule
