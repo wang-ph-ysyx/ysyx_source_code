@@ -74,10 +74,9 @@ module ysyx_23060236(
 
 	wire [31:0] pc;
 	wire [31:0] dnpc;
+	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
-	wire [31:0] ifu_dnpc;
 	wire [31:0] idu_pc;
-	wire [31:0] idu_dnpc;
 	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
@@ -274,8 +273,10 @@ module ysyx_23060236(
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
-		.btb_araddr(pc),
+		.btb_araddr(pc[24:0]),
 		.btb_rdata(dnpc),
+		.btb_araddr_exu(exu_pc),
+		.btb_rdata_exu(exu_dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
 		.btb_wdata(jump_addr)
@@ -304,7 +305,6 @@ module ysyx_23060236(
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
 		.pc(pc),
-		.dnpc_next(ifu_dnpc),
 		.pc_next(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
@@ -317,7 +317,6 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
-		.dnpc(ifu_dnpc),
 		.src1(src1),
 		.src2(src2),
 		.exu_val(exu_val),
@@ -335,7 +334,6 @@ module ysyx_23060236(
 		.rs1(rs1),
 		.rs2(rs2),
 		.pc_next(idu_pc),
-		.dnpc_next(idu_dnpc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7_5(funct7_5),
@@ -364,7 +362,7 @@ module ysyx_23060236(
 		.funct3(funct3),
 		.funct7_5(funct7_5),
 		.pc(idu_pc),
-		.dnpc(idu_dnpc),
+		.dnpc(exu_dnpc),
 		.reg_wen(idu_reg_wen),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),

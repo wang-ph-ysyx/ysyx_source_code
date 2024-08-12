@@ -117,8 +117,11 @@ module ysyx_23060236_exu(
 
 	wire [31:0] loperand;
 	wire [31:0] roperand;
-	wire [8:0]  operator;
-	wire need_operator;
+	wire [3:0]  operator;
+	wire [3:0]  operator1;
+	wire [3:0]  operator2;
+	wire [3:0]  operator3;
+	wire [3:0]  operator4;
 	wire [62:0] val_sra;
 	wire jump_cond;
 
@@ -130,43 +133,47 @@ module ysyx_23060236_exu(
 	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
 										imm;  //lui/auipc/imm/jal/jalr/beq/lw/sw
 
-	localparam OP_SUB   = 0;
-	localparam OP_AND   = 1;
-	localparam OP_XOR   = 2;
-	localparam OP_OR    = 3;
-	localparam OP_SRL   = 4;
-	localparam OP_SRA   = 5;
-	localparam OP_SLL   = 6;
-	localparam OP_LESS  = 7;
-	localparam OP_ULESS = 8;
-	//default: OP_ADD
+	localparam OP_ADD   = 4'd0;
+	localparam OP_SUB   = 4'd1;
+	localparam OP_AND   = 4'd2;
+	localparam OP_XOR   = 4'd3;
+	localparam OP_OR    = 4'd4;
+	localparam OP_SRL   = 4'd5;
+	localparam OP_SRA   = 4'd6;
+	localparam OP_SLL   = 4'd7;
+	localparam OP_LESS  = 4'd8;
+	localparam OP_ULESS = 4'd9;
+	assign operator = (opcode_type[INST_ADDI] | opcode_type[INST_ADD]) ? operator1 : OP_ADD;
 
-	assign need_operator = (opcode_type[INST_ADDI] | opcode_type[INST_ADD]);
-	assign operator[OP_SUB  ] = need_operator & (funct3 == 3'b000) & opcode_type[INST_ADD] & funct7_5;
-	assign operator[OP_AND  ] = need_operator & (funct3 == 3'b111);
-	assign operator[OP_XOR  ] = need_operator & (funct3 == 3'b100);
-	assign operator[OP_OR   ] = need_operator & (funct3 == 3'b110);
-	assign operator[OP_SRL  ] = need_operator & (funct3 == 3'b101) & ~funct7_5;
-	assign operator[OP_SRA  ] = need_operator & (funct3 == 3'b101) & funct7_5;
-	assign operator[OP_SLL  ] = need_operator & (funct3 == 3'b001);
-	assign operator[OP_LESS ] = need_operator & (funct3 == 3'b010);
-	assign operator[OP_ULESS] = need_operator & (funct3 == 3'b011);
+	assign operator1 = (funct3 == 3'b000) ? operator2 :
+										 (funct3 == 3'b001) ? OP_SLL : 
+										 (funct3 == 3'b010) ? OP_LESS :
+										 (funct3 == 3'b011) ? OP_ULESS :
+										 (funct3 == 3'b100) ? OP_XOR :
+										 (funct3 == 3'b101) ? operator3 :
+										 (funct3 == 3'b110) ? OP_OR :
+										 (funct3 == 3'b111) ? OP_AND :
+										 OP_ADD;
+
+	assign operator2 = (opcode_type[INST_ADD] & funct7_5) ? OP_SUB : OP_ADD;
+	assign operator3 = funct7_5 ? OP_SRA : OP_SRL;
 
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_sum  = loperand + roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
-	assign alu_tmp = operator[OP_SUB  ] ? op_compare : 
-									 operator[OP_AND  ] ? (loperand & roperand) : 
-									 operator[OP_XOR  ] ? (loperand ^ roperand) :
-									 operator[OP_OR   ] ? (loperand | roperand) : 
-									 operator[OP_SRL  ] ? (loperand >> (roperand & 32'h1f)) : 
-									 operator[OP_SRA  ] ? val_sra[31:0] :
-									 operator[OP_SLL  ] ? (loperand << (roperand & 32'h1f)) : 
-									 operator[OP_LESS ] ? {31'b0, op_less} : 
-									 operator[OP_ULESS] ? {31'b0, op_uless} : 
-									 op_sum;
+	assign alu_tmp = (operator == OP_ADD  ) ? op_sum : 
+									 (operator == OP_SUB  ) ? op_compare : 
+									 (operator == OP_AND  ) ? (loperand & roperand) : 
+									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
+									 (operator == OP_OR   ) ? (loperand | roperand) : 
+									 (operator == OP_SRL  ) ? (loperand >> (roperand & 32'h1f)) : 
+									 (operator == OP_SRA  ) ? val_sra[31:0] :
+									 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
+									 (operator == OP_LESS ) ? {31'b0, op_less} : 
+									 (operator == OP_ULESS) ? {31'b0, op_uless} : 
+									 32'b0;
 
 	//jump
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;

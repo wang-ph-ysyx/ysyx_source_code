@@ -4,7 +4,6 @@ module ysyx_23060236_idu(
 
 	input  [31:0] in,
 	input  [31:0] pc,
-	input  [31:0] dnpc,
 	input  [31:0] src1,
 	input  [31:0] src2,
 
@@ -25,7 +24,6 @@ module ysyx_23060236_idu(
 	output [3:0] rs2,
 
 	output reg [31:0] pc_next,
-	output reg [31:0] dnpc_next,
 	output reg [9:0]  opcode_type,
 	output reg [2:0]  funct3,
 	output reg [3:0]  rd,
@@ -106,7 +104,6 @@ module ysyx_23060236_idu(
 			pc_next     <= pc;
 			src1_next   <= src1_tmp;
 			src2_next   <= src2_tmp;
-			dnpc_next   <= dnpc;
 		end
 	end
 

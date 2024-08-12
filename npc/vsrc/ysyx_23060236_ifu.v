@@ -26,7 +26,6 @@ module ysyx_23060236_ifu(
 	input  [31:0] dnpc,
 
 	output [31:0] pc,
-	output reg [31:0] dnpc_next,
 	output reg [31:0] pc_next,
 	output reg [31:0] inst,
 
@@ -77,7 +76,6 @@ module ysyx_23060236_ifu(
 	always @(posedge clock) begin
 		if (ifu_over) begin
 			pc_next   <= pc;
-			dnpc_next <= dnpc;
 		end
 	end
 
