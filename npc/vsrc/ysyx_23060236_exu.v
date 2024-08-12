@@ -163,8 +163,7 @@ module ysyx_23060236_exu(
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
 	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
-	assign alu_tmp = (operator == OP_ADD  ) ? op_sum : 
-									 (operator == OP_SUB  ) ? op_compare : 
+	assign alu_tmp = (operator == OP_SUB  ) ? op_compare : 
 									 (operator == OP_AND  ) ? (loperand & roperand) : 
 									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
 									 (operator == OP_OR   ) ? (loperand | roperand) : 
@@ -173,7 +172,7 @@ module ysyx_23060236_exu(
 									 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
 									 (operator == OP_LESS ) ? {31'b0, op_less} : 
 									 (operator == OP_ULESS) ? {31'b0, op_uless} : 
-									 32'b0;
+									 op_sum;
 
 	//jump
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;

@@ -154,10 +154,10 @@ import "DPI-C" function void add_ifu_getinst();
 
 	always @(posedge clock) begin
 		if (reset) ifu_reading <= 1;
-		else if (ifu_valid) ifu_reading <= 1;
-		else if (ifu_over) ifu_reading <= 0;
+		else if (ifu_arvalid) ifu_reading <= 1;
+		else if (ifu_rvalid & ifu_rready & ifu_rlast) ifu_reading <= 0;
 
-		if (~reset & ifu_reading) add_ifu_readingcycle();
+		if (~reset & (ifu_reading | icache_rvalid & ifu_ready)) add_ifu_readingcycle();
 
 		if (icache_rvalid & ifu_ready) begin
 			if (~icache_hit) add_miss_icache();
