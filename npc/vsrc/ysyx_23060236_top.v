@@ -482,7 +482,7 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
 	end
-
+*/
 import "DPI-C" function void program_end();
 
 	reg [2:0] prog_end; //1:id, 2:ex, 3:ls, 4:wb
@@ -493,5 +493,5 @@ import "DPI-C" function void program_end();
 		else if ((prog_end == 2) & (lsu_valid & lsu_ready)) prog_end <= 3;
 		else if ((prog_end == 3) & wb_valid) program_end();
 	end
-*/
+
 endmodule
