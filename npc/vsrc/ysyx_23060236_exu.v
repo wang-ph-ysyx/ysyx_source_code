@@ -17,7 +17,7 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 
 	output reg [3:0]  rd_next,
-	output reg [31:0] pc_next,
+	output reg [24:0] pc_next, //与btb地址位宽一致
 	output reg [31:0] val,
 	output reg [31:0] lsu_data,
 	output reg [2:0]  funct3_next,
@@ -37,18 +37,12 @@ module ysyx_23060236_exu(
 	input  lsu_ready
 );
 
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready(
-		.clock(clock),
-		.reset(reset),
-		.din(exu_ready & ~exu_valid | ~exu_ready & lsu_valid & lsu_ready),
-		.dout(exu_ready),
-		.wen(1)
-	);
+	assign exu_ready = (~lsu_valid | lsu_ready) & ~jump_wrong;
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_valid & ~lsu_ready | ~lsu_valid & exu_valid & exu_ready),
+		.din(lsu_valid & ~lsu_ready | exu_valid & exu_ready),
 		.dout(lsu_valid),
 		.wen(1)
 	);
@@ -81,7 +75,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
-			pc_next         <= pc;
+			pc_next         <= pc[24:0]; //与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 		end
 		else begin

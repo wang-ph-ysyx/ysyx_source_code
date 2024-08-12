@@ -17,6 +17,8 @@ module ysyx_23060236_idu(
 	input  exu_reg_wen,
 	input  lsu_reg_wen,
 	input  lsu_ready,
+	input  wb_valid,
+	input  lsu_valid,
 	input  jump_wrong,
 
 	output [3:0] rs1,
@@ -46,25 +48,30 @@ module ysyx_23060236_idu(
 	wire [31:0] src2_tmp;
 	wire reg_wen_tmp;
 	wire raw_conflict;
-	wire idu_ready_tmp;
 	wire need_rs2;
 	wire need_rs1;
 	wire rs1_exu_conflict;
 	wire rs2_exu_conflict;
 	wire rs1_lsu_conflict;
 	wire rs2_lsu_conflict;
+	wire rs1_idu_conflict;
+	wire rs2_idu_conflict;
 	wire exu_rdnzero;
 	wire lsu_rdnzero;
+	wire idu_rdnzero;
 
 	assign exu_rdnzero = (exu_rd != 0);
 	assign lsu_rdnzero = (lsu_rd != 0);
+	assign idu_rdnzero = (rd     != 0);
 	assign need_rs2 = opcode_type_tmp[INST_BEQ] | opcode_type_tmp[INST_SW] | opcode_type_tmp[INST_ADD];
 	assign need_rs1 = need_rs2 | opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];
-	assign rs1_exu_conflict = ~exu_ready & need_rs1 & (exu_rd == rs1) & exu_reg_wen & exu_rdnzero;
-	assign rs2_exu_conflict = ~exu_ready & need_rs2 & (exu_rd == rs2) & exu_reg_wen & exu_rdnzero;
-	assign rs1_lsu_conflict = ~lsu_ready & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
-	assign rs2_lsu_conflict = ~lsu_ready & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
-	assign idu_ready = ~raw_conflict & idu_ready_tmp;
+	assign rs1_exu_conflict = lsu_valid & need_rs1 & (exu_rd == rs1) & exu_reg_wen & exu_rdnzero;
+	assign rs2_exu_conflict = lsu_valid & need_rs2 & (exu_rd == rs2) & exu_reg_wen & exu_rdnzero;
+	assign rs1_lsu_conflict = (~lsu_ready | wb_valid) & need_rs1 & (lsu_rd == rs1) & lsu_reg_wen & lsu_rdnzero;
+	assign rs2_lsu_conflict = (~lsu_ready | wb_valid) & need_rs2 & (lsu_rd == rs2) & lsu_reg_wen & lsu_rdnzero;
+	assign rs1_idu_conflict = exu_valid & need_rs1 & (rd == rs1) & reg_wen & idu_rdnzero;
+	assign rs2_idu_conflict = exu_valid & need_rs2 & (rd == rs2) & reg_wen & idu_rdnzero;
+	assign idu_ready = ~raw_conflict & (exu_ready | ~exu_valid);
 	assign src1_tmp = rs1_exu_conflict ? exu_val :
                     rs1_lsu_conflict ? wb_val : 
                     src1;                       
@@ -73,21 +80,14 @@ module ysyx_23060236_idu(
                     src2;                       
 	assign raw_conflict = (
 		exu_load & (rs1_exu_conflict | rs2_exu_conflict) |
-		lsu_load & (rs1_lsu_conflict | rs2_lsu_conflict)
-	);
-
-	ysyx_23060236_Reg #(1, 1) reg_idu_ready_tmp(
-		.clock(clock),
-		.reset(reset),
-		.din((idu_ready_tmp & ~(idu_valid & idu_ready) | ~idu_ready_tmp & exu_valid & exu_ready) | jump_wrong),
-		.dout(idu_ready_tmp),
-		.wen(1)
+		lsu_load & (rs1_lsu_conflict | rs2_lsu_conflict) |
+		(rs1_idu_conflict | rs2_idu_conflict)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din((exu_valid & ~exu_ready | ~exu_valid & idu_valid & idu_ready) & ~jump_wrong),
+		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong),
 		.dout(exu_valid),
 		.wen(1)
 	);
@@ -171,12 +171,21 @@ module ysyx_23060236_idu(
 	assign Type[TYPE_U] = opcode_type_tmp[INST_LUI] | opcode_type_tmp[INST_AUIPC];
 	assign Type[TYPE_J] = opcode_type_tmp[INST_JAL];
 
-	assign imm_tmp = (Type[TYPE_I]) ? {{20{in[31]}}, in[31:20]} :
-									 (Type[TYPE_U]) ? {in[31:12], 12'b0} :
-									 (Type[TYPE_S]) ? {{20{in[31]}}, in[31:25], in[11:7]} :
-									 (Type[TYPE_J]) ? {{12{in[31]}}, in[19:12], in[20], in[30:21], 1'b0} :
-									 (Type[TYPE_B]) ? {{20{in[31]}}, in[7], in[30:25], in[11:8], 1'b0} :
-									 32'b0;
+	assign imm_tmp[31]    = in[31];
+	assign imm_tmp[30:20] = Type[TYPE_U] ? in[30:20] : {11{in[31]}};
+	assign imm_tmp[19:12] = (Type[TYPE_U] | Type[TYPE_J]) ? in[19:12] : {8{in[31]}};
+	assign imm_tmp[11]    = Type[TYPE_B] ? in[7] : 
+													Type[TYPE_U] ? 1'b0 : 
+													Type[TYPE_J] ? in[20] : 
+													in[31];
+	assign imm_tmp[10:5] = Type[TYPE_U] ? 6'b0 : in[30:25];
+	assign imm_tmp[4:1]  = (Type[TYPE_I] | Type[TYPE_J]) ? in[24:21] : 
+												 Type[TYPE_U] ? 4'b0 : 
+												 in[11:8];
+	assign imm_tmp[0]    = Type[TYPE_I] ? in[20] : 
+												 Type[TYPE_S] ? in[7] : 
+												 1'b0;
+
 
 	import "DPI-C" function void add_raw_conflict();
 	import "DPI-C" function void add_raw_conflict_cycle();

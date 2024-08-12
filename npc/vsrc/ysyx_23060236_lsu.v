@@ -46,6 +46,8 @@ module ysyx_23060236_lsu(
 
 	wire [31:0] lsu_addr;
 	wire [3:0] wmask;
+	wire lsu_over;
+	assign lsu_over = lsu_valid & lsu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
 								 (funct3_reg[1:0] == 2'b01) ? 4'h3 :
@@ -69,7 +71,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 1) reg_lsu_ready(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_ready & ~lsu_valid | ~lsu_ready & wb_valid),
+		.din(lsu_ready & ~lsu_valid | lsu_over),
 		.dout(lsu_ready),
 		.wen(1)
 	);
@@ -77,7 +79,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(~wb_valid & (lsu_valid & lsu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready)),
+		.din(lsu_over),
 		.dout(wb_valid),
 		.wen(1)
 	);

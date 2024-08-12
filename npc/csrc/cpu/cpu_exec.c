@@ -32,6 +32,7 @@ static long raw_conflict_cycle = 0;
 static long jump_wrong = 0;
 static long jump_wrong_cycle = 0;
 static int lsu_awaddr = 0;
+static int inst_ebreak = 0;
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -88,6 +89,7 @@ extern "C" void add_raw_conflict() { ++raw_conflict; }
 extern "C" void add_jump_wrong() { ++jump_wrong; }
 extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
+extern "C" void program_end() { inst_ebreak = 1; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
@@ -101,7 +103,7 @@ static void one_cycle() {
 }
 
 void cpu_exec(unsigned long n) {
-	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073 || trigger_difftest) {
+	if (inst_ebreak || trigger_difftest) {
 		printf("the program is ended.\n");
 		return;
 	}
@@ -125,8 +127,7 @@ void cpu_exec(unsigned long n) {
 		}
 		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
 #endif
-		if (inst == 0x100073 || trigger_difftest) break;
-		//if (pc == 0xa00000bc && top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__idu_valid == 1) break;
+		if (inst_ebreak || trigger_difftest) break;
 	}
 
 	if (trigger_difftest) {
@@ -134,7 +135,7 @@ void cpu_exec(unsigned long n) {
 		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", pc);
 		return;
 	}
-	if (!(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst == 0x100073)) return;
+	if (!inst_ebreak) return;
 	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[9])
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");

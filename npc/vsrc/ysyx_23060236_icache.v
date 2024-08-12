@@ -2,12 +2,12 @@ module ysyx_23060236_icache(
 	input         clock,
 	input         reset,
 
-	input  [31:0] icache_araddr,
-	output [31:0] icache_rdata,
+	input  [ADDR_LEN-1:0] icache_araddr,
+	output [DATA_LEN-1:0] icache_rdata,
 	output        icache_hit,  
 
-	input  [31:0] icache_awaddr,
-	input  [31:0] icache_wdata,
+	input  [ADDR_LEN-1:0] icache_awaddr,
+	input  [DATA_LEN-1:0] icache_wdata,
 	input         icache_wvalid,
 
 	input         inst_fencei
@@ -16,8 +16,8 @@ module ysyx_23060236_icache(
 	//此处ADDR_LEN减7与sdram地址范围相匹配
 	localparam ADDR_LEN   = 32 - 7;
 	localparam DATA_LEN   = 32;
-	localparam OFFSET_LEN = 4;
-	localparam INDEX_LEN  = 2;
+	localparam OFFSET_LEN = 5;
+	localparam INDEX_LEN  = 1;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 	localparam BLOCK_SIZE = 2**(OFFSET_LEN-2);
 

@@ -72,11 +72,13 @@ module ysyx_23060236(
 	output [3:0]  io_slave_rid     
 );
 
+	wire [31:0] pc;
 	wire [31:0] dnpc;
 	wire [31:0] ifu_pc;
+	wire [31:0] ifu_dnpc;
 	wire [31:0] idu_pc;
 	wire [31:0] idu_dnpc;
-	wire [31:0] exu_pc;
+	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -168,10 +170,10 @@ module ysyx_23060236(
 	wire        clint_rvalid;
 	wire        clint_rready;
 
-	wire [31:0] icache_araddr;
+	wire [24:0] icache_araddr; //与icache地址位宽一致
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire [31:0] icache_awaddr;
+	wire [24:0] icache_awaddr; //与icache地址位宽一致
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
@@ -272,7 +274,7 @@ module ysyx_23060236(
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
-		.btb_araddr(ifu_pc),
+		.btb_araddr(pc),
 		.btb_rdata(dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
@@ -301,7 +303,9 @@ module ysyx_23060236(
 		.wb_valid(wb_valid),
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
-		.pc(ifu_pc),
+		.pc(pc),
+		.dnpc_next(ifu_dnpc),
+		.pc_next(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
 		.idu_valid(idu_valid),
@@ -313,7 +317,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
-		.dnpc(dnpc),
+		.dnpc(ifu_dnpc),
 		.src1(src1),
 		.src2(src2),
 		.exu_val(exu_val),
@@ -325,6 +329,8 @@ module ysyx_23060236(
 		.exu_reg_wen(exu_reg_wen),
 		.lsu_reg_wen(lsu_reg_wen),
 		.lsu_ready(lsu_ready),
+		.wb_valid(wb_valid),
+		.lsu_valid(lsu_valid),
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),
 		.rs2(rs2),
@@ -360,12 +366,12 @@ module ysyx_23060236(
 		.pc(idu_pc),
 		.dnpc(idu_dnpc),
 		.reg_wen(idu_reg_wen),
-		.rd_next(exu_rd),
-		.pc_next(exu_pc),
-		.val(exu_val),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
+		.rd_next(exu_rd),
+		.pc_next(exu_pc),
+		.val(exu_val),
 		.lsu_data(lsu_data),
 		.funct3_next(exu_funct3),
 		.lsu_ren(lsu_ren),
@@ -477,6 +483,17 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 	always @(posedge clock) begin
 		record_lsu_awaddr(lsu_awaddr);
+	end
+
+import "DPI-C" function void program_end();
+
+	reg [2:0] prog_end; //1:id, 2:ex, 3:ls, 4:wb
+	always @(posedge clock) begin
+		if (reset) prog_end <= 0;
+		else if ((inst == 32'h00100073) & (idu_valid & idu_ready)) prog_end <= 1;
+		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
+		else if ((prog_end == 2) & (lsu_valid & lsu_ready)) prog_end <= 3;
+		else if ((prog_end == 3) & wb_valid) program_end();
 	end
 
 endmodule
