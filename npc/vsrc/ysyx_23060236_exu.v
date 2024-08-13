@@ -23,7 +23,6 @@ module ysyx_23060236_exu(
 	output reg jump_wrong,
 	output btb_wvalid,
 
-	output [31:0] lsu_data,
 	output [31:0] val,
 	output lsu_ren,
 	output lsu_wen,
@@ -58,7 +57,6 @@ module ysyx_23060236_exu(
 			jump_wrong      <= jump_wrong_tmp;
 			pc_next         <= pc[24:0]; //与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
-			lsu_data        <= src2;
 		end
 		else begin
 			jump_wrong <= 0;
