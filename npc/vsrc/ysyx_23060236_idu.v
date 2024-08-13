@@ -68,7 +68,7 @@ module ysyx_23060236_idu(
 	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong),
+		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong & ~inst_fencei),
 		.dout(exu_valid),
 		.wen(1)
 	);
@@ -81,12 +81,15 @@ module ysyx_23060236_idu(
 			rd          <= rd_tmp;
 			imm         <= imm_tmp;
 			reg_wen     <= reg_wen_tmp;
-			inst_fencei <= inst_fencei_tmp;
+			inst_fencei <= (opcode_5 == 5'b00011);
 			inst_ecall  <= inst_ecall_tmp;
 			inst_mret   <= inst_mret_tmp;
 			pc_next     <= pc;
 			src1_next   <= src1_tmp;
 			src2_next   <= src2_tmp;
+		end
+		else begin
+			inst_fencei <= 0;
 		end
 	end
 
@@ -97,7 +100,6 @@ module ysyx_23060236_idu(
 	wire [3:0]  rs1_tmp;
 	wire [3:0]  rs2_tmp;
 	wire [31:0] imm_tmp;
-	wire inst_fencei_tmp;
 	wire inst_ecall_tmp;
 	wire inst_mret_tmp;
 
@@ -113,7 +115,6 @@ module ysyx_23060236_idu(
 
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
-	assign inst_fencei_tmp = (opcode_5 == 5'b00011);
 
 	parameter TYPE_R = 0;
 	parameter TYPE_I = 1;

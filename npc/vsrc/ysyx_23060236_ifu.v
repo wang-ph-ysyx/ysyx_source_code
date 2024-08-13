@@ -21,7 +21,7 @@ module ysyx_23060236_ifu(
 	output            icache_wvalid,
 
 	input         wb_valid,
-	input         jump_wrong,
+	input         wrong,
 	input  [31:0] jump_addr,
 	input  [31:0] dnpc,
 
@@ -44,7 +44,7 @@ module ysyx_23060236_ifu(
 	wire [31:0] inst_ifu_tmp;
 	wire [24:0] icache_awaddr_tmp; //与icache地址位宽一致
 	reg last;
-	wire jump_wrong_state;
+	wire wrong_state;
 	wire [31:0] pc_tmp;
 
 	assign ifu_rready    = 1;
@@ -59,13 +59,13 @@ module ysyx_23060236_ifu(
 		                (icache_rvalid & icache_hit & ifu_ready) ? icache_rdata : 
 										inst;
 	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
-	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
+	assign ifu_valid = idu_valid & idu_ready | (wrong | wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
 	//与icache的块大小一致
 	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[24:5], 5'b0} : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
-	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
+	assign pc_tmp = ((wrong | wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
 									ifu_over ? dnpc : 
 									pc;
 
@@ -126,16 +126,16 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_over & ~jump_wrong & ~jump_wrong_state | idu_valid & ~idu_ready & ~jump_wrong),
+		.din(ifu_over & ~wrong & ~wrong_state | idu_valid & ~idu_ready & ~wrong),
 		.dout(idu_valid),
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_jump_wrong_state(
+	ysyx_23060236_Reg #(1, 0) reg_wrong_state(
 		.clock(clock),
 		.reset(reset),
-		.din(jump_wrong_state & ~ifu_over | ~jump_wrong_state & jump_wrong & ~ifu_over & ~idu_valid),
-		.dout(jump_wrong_state),
+		.din(wrong_state & ~ifu_over | ~wrong_state & wrong & ~ifu_over & ~idu_valid),
+		.dout(wrong_state),
 		.wen(1)
 	);
 
@@ -168,8 +168,8 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (ifu_miss_icache) add_tmt();
 
-		if (jump_wrong | jump_wrong_state) add_jump_wrong_cycle();
-		if (jump_wrong) add_jump_wrong();
+		if (wrong | wrong_state) add_jump_wrong_cycle();
+		if (wrong) add_jump_wrong();
 
 		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end

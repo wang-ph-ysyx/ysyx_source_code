@@ -296,7 +296,7 @@ module ysyx_23060236(
 		.icache_wdata(icache_wdata),
 		.icache_wvalid(icache_wvalid),
 		.wb_valid(wb_valid),
-		.jump_wrong(jump_wrong),
+		.wrong(jump_wrong | inst_fencei),
 		.dnpc(dnpc),
 		.pc(pc),
 		.pc_next(ifu_pc),
