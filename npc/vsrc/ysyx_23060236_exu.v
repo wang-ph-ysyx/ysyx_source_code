@@ -57,7 +57,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
-			pc_next         <= pc; 
+			pc_next         <= pc;
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 			inst_fencei_tmp <= inst_fencei;
 		end

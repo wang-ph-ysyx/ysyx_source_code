@@ -163,10 +163,10 @@ module ysyx_23060236(
 	wire        clint_rvalid;
 	wire        clint_rready;
 
-	wire [31:0] icache_araddr;
+	wire [24:0] icache_araddr; //与icache地址位宽一致
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire [31:0] icache_awaddr;
+	wire [24:0] icache_awaddr; //与icache地址位宽一致
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
