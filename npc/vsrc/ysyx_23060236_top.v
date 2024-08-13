@@ -77,14 +77,13 @@ module ysyx_23060236(
 	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [31:0] exu_pc;
+	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
 	wire exu_valid;
 	wire exu_ready;
 	wire wb_valid;
-	wire jal_enable;
 	wire jump_wrong;
 
 	wire [31:0] inst;
@@ -106,8 +105,6 @@ module ysyx_23060236(
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
-	wire exu_inst_ecall;
-	wire lsu_inst_ecall;
 	wire inst_fencei;
 	wire btb_wvalid;
 
@@ -117,7 +114,6 @@ module ysyx_23060236(
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
-	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
 
@@ -132,9 +128,6 @@ module ysyx_23060236(
 	wire [1:0]  ifu_arburst;
 	wire [3:0]  ifu_arlen;
 
-	wire [2:0]  exu_funct3;
-
-	wire [31:0] lsu_data;
 	wire [31:0] lsu_araddr;
 	wire        lsu_arvalid;
 	wire        lsu_arready;
@@ -313,7 +306,6 @@ module ysyx_23060236(
 		.pc(ifu_pc),
 		.src1(src1),
 		.src2(src2),
-		.exu_val(exu_val),
 		.wb_val(wb_val),
 		.exu_rd(exu_rd),
 		.exu_reg_wen(exu_reg_wen),
@@ -341,7 +333,6 @@ module ysyx_23060236(
 
 	ysyx_23060236_exu my_exu(
 		.clock(clock),
-		.reset(reset),
 		.opcode_type(opcode_type),
 		.rd(idu_rd),
 		.src1(idu_src1),
@@ -407,7 +398,6 @@ module ysyx_23060236(
 
 	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
-		.reset(reset),
 		.wdata(wb_val),
 		.waddr(exu_rd),
 		.rdata1(src1),
@@ -432,7 +422,7 @@ module ysyx_23060236(
 		.jump_en(csr_jump_en),
 		.valid(exu_valid & exu_ready)
 	);
-/*
+
 	assign io_slave_awready = 0;
 	assign io_slave_wready  = 0;
 	assign io_slave_bvalid  = 0;
@@ -444,7 +434,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-*/
+
 
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();

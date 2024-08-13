@@ -7,7 +7,6 @@ module ysyx_23060236_idu(
 	input  [31:0] src1,
 	input  [31:0] src2,
 
-	input  [31:0] exu_val,
 	input  [31:0] wb_val,
 	input  [3:0]  exu_rd,
 	input  exu_reg_wen,
@@ -94,8 +93,6 @@ module ysyx_23060236_idu(
 	wire [2:0]  funct3_tmp;
 	wire [6:0]  funct7_tmp;
 	wire [3:0]  rd_tmp;
-	wire [3:0]  rs1_tmp;
-	wire [3:0]  rs2_tmp;
 	wire [31:0] imm_tmp;
 	wire inst_fencei_tmp;
 	wire inst_ecall_tmp;

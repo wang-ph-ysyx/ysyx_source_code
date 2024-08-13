@@ -2,9 +2,9 @@ module ysyx_23060236_btb(
 	input clock,
 	input reset,
 
-	input  [ADDR_LEN-1:0] btb_araddr,
+	input  [DATA_LEN-1:0] btb_araddr,
 	output [DATA_LEN-1:0] btb_rdata,
-	input  [ADDR_LEN-1:0] btb_araddr_exu,
+	input  [DATA_LEN-1:0] btb_araddr_exu,
 	output [DATA_LEN-1:0] btb_rdata_exu,
 
 	input  btb_wvalid,
@@ -12,7 +12,8 @@ module ysyx_23060236_btb(
 	input  [DATA_LEN-1:0] btb_wdata
 );
 
-	localparam ADDR_LEN   = 32;
+	//此处ADDR_LEN减7与sdram地址范围匹配
+	localparam ADDR_LEN   = 32 - 7;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 2;
 	localparam INDEX_LEN  = 0;
