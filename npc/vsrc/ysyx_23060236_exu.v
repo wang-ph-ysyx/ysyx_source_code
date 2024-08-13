@@ -15,6 +15,7 @@ module ysyx_23060236_exu(
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 	input  [31:0] csr_val,
+	input  inst_fencei,
 
 	output reg [3:0]  rd_next,
 	output reg [24:0] pc_next, //与btb地址位宽一致
@@ -43,7 +44,7 @@ module ysyx_23060236_exu(
 
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
-	assign jump_wrong_tmp = (jump_addr_tmp != dnpc);
+	assign jump_wrong_tmp = (jump_addr_tmp != dnpc) | inst_fencei;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
