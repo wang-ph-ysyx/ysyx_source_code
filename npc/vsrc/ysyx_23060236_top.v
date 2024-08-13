@@ -74,18 +74,15 @@ module ysyx_23060236(
 
 	wire [31:0] pc;
 	wire [31:0] dnpc;
+	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
-	wire [31:0] ifu_dnpc;
 	wire [31:0] idu_pc;
-	wire [31:0] idu_dnpc;
 	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
 	wire exu_valid;
 	wire exu_ready;
-	wire lsu_valid;
-	wire lsu_ready;
 	wire wb_valid;
 	wire jal_enable;
 	wire jump_wrong;
@@ -96,7 +93,6 @@ module ysyx_23060236(
 	wire [3:0]  rs2;
 	wire [3:0]  idu_rd;
 	wire [3:0]  exu_rd;
-	wire [3:0]  lsu_rd;
 	wire [2:0]  funct3;
 	wire        funct7_5;
 	wire [31:0] imm;
@@ -107,7 +103,6 @@ module ysyx_23060236(
 	wire [31:0] wb_val;
 	wire idu_reg_wen;
 	wire exu_reg_wen;
-	wire lsu_reg_wen;
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
@@ -122,11 +117,9 @@ module ysyx_23060236(
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
-	wire [31:0] lsu_val;
 	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
-	wire lsu_load;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -276,6 +269,8 @@ module ysyx_23060236(
 		.reset(reset),
 		.btb_araddr(pc),
 		.btb_rdata(dnpc),
+		.btb_araddr_exu(idu_pc),
+		.btb_rdata_exu(exu_dnpc),
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
 		.btb_wdata(jump_addr)
@@ -304,7 +299,6 @@ module ysyx_23060236(
 		.jump_wrong(jump_wrong),
 		.dnpc(dnpc),
 		.pc(pc),
-		.dnpc_next(ifu_dnpc),
 		.pc_next(ifu_pc),
 		.jump_addr(jump_addr),
 		.inst(inst),
@@ -317,25 +311,17 @@ module ysyx_23060236(
 		.reset(reset),
 		.in(inst),
 		.pc(ifu_pc),
-		.dnpc(ifu_dnpc),
 		.src1(src1),
 		.src2(src2),
 		.exu_val(exu_val),
 		.wb_val(wb_val),
 		.exu_rd(exu_rd),
-		.lsu_rd(lsu_rd),
-		.exu_load(lsu_ren),
-		.lsu_load(lsu_load),
 		.exu_reg_wen(exu_reg_wen),
-		.lsu_reg_wen(lsu_reg_wen),
-		.lsu_ready(lsu_ready),
 		.wb_valid(wb_valid),
-		.lsu_valid(lsu_valid),
 		.jump_wrong(jump_wrong),
 		.rs1(rs1),
 		.rs2(rs2),
 		.pc_next(idu_pc),
-		.dnpc_next(idu_dnpc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
 		.funct7_5(funct7_5),
@@ -364,28 +350,24 @@ module ysyx_23060236(
 		.funct3(funct3),
 		.funct7_5(funct7_5),
 		.pc(idu_pc),
-		.dnpc(idu_dnpc),
+		.dnpc(exu_dnpc),
 		.reg_wen(idu_reg_wen),
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
-		.val(exu_val),
-		.lsu_data(lsu_data),
-		.funct3_next(exu_funct3),
-		.lsu_ren(lsu_ren),
-		.lsu_wen(lsu_wen),
 		.reg_wen_next(exu_reg_wen),
 		.jump_addr(jump_addr),
 		.jump_wrong(jump_wrong),
 		.btb_wvalid(btb_wvalid),
+		.val(exu_val),
+		.lsu_ren(lsu_ren),
+		.lsu_wen(lsu_wen),
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
 		.exu_valid(exu_valid),
-		.exu_ready(exu_ready),
-		.lsu_valid(lsu_valid),
-		.lsu_ready(lsu_ready)
+		.exu_ready(exu_ready)
 	);
 
 	ysyx_23060236_lsu my_lsu(
@@ -410,19 +392,15 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
-		.funct3(exu_funct3),
-		.lsu_data(lsu_data),
-		.rd(exu_rd),
 		.exu_val(exu_val),
+		.funct3(funct3),
+		.lsu_data(idu_src2),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
-		.reg_wen(exu_reg_wen),
+		.jump_wrong(jump_wrong),
 		.wb_val(wb_val),
-		.reg_wen_next(lsu_reg_wen),
-		.rd_next(lsu_rd),
-		.lsu_load(lsu_load),
-		.lsu_valid(lsu_valid),
-		.lsu_ready(lsu_ready),
+		.exu_valid(exu_valid),
+		.exu_ready(exu_ready),
 		.wb_valid(wb_valid)
 	);
 
@@ -430,12 +408,12 @@ module ysyx_23060236(
 		.clock(clock),
 		.reset(reset),
 		.wdata(wb_val),
-		.waddr(lsu_rd),
+		.waddr(exu_rd),
 		.rdata1(src1),
 		.rdata2(src2),
 		.raddr1(rs1),
 		.raddr2(rs2),
-		.wen(lsu_reg_wen),
+		.wen(exu_reg_wen),
 		.valid(wb_valid)
 	);
 
@@ -487,13 +465,12 @@ import "DPI-C" function void record_lsu_awaddr(input int lsu_awaddr);
 
 import "DPI-C" function void program_end();
 
-	reg [2:0] prog_end; //1:id, 2:ex, 3:ls, 4:wb
+	reg [2:0] prog_end; //1:id, 2:ex, 3:wb
 	always @(posedge clock) begin
 		if (reset) prog_end <= 0;
 		else if ((inst == 32'h00100073) & (idu_valid & idu_ready)) prog_end <= 1;
 		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
-		else if ((prog_end == 2) & (lsu_valid & lsu_ready)) prog_end <= 3;
-		else if ((prog_end == 3) & wb_valid) program_end();
+		else if ((prog_end == 2) & wb_valid) program_end();
 	end
 
 endmodule

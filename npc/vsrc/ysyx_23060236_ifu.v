@@ -26,7 +26,6 @@ module ysyx_23060236_ifu(
 	input  [31:0] dnpc,
 
 	output [31:0] pc,
-	output reg [31:0] dnpc_next,
 	output reg [31:0] pc_next,
 	output reg [31:0] inst,
 
@@ -52,7 +51,7 @@ module ysyx_23060236_ifu(
 	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
 	assign npc_in_sdram  = (pc_tmp >= 32'ha0000000) & (pc_tmp < 32'ha2000000);
 	assign icache_araddr = pc[24:0];
-	assign ifu_araddr    = ~pc_in_sdram ? pc : pc & ~32'h1f; //与icache的块大小一致
+	assign ifu_araddr    = ~pc_in_sdram ? pc : {pc[31:5], 5'b0}; //与icache的块大小一致
 	assign ifu_arburst   = ~pc_in_sdram ? 2'b0 : 2'b01;
 	assign ifu_arlen     = ~pc_in_sdram ? 4'b0 : 4'b0111; //与icache的块大小一致
 	//与icache的块大小一致
@@ -77,7 +76,6 @@ module ysyx_23060236_ifu(
 	always @(posedge clock) begin
 		if (ifu_over) begin
 			pc_next   <= pc;
-			dnpc_next <= dnpc;
 		end
 	end
 
@@ -154,10 +152,10 @@ import "DPI-C" function void add_ifu_getinst();
 
 	always @(posedge clock) begin
 		if (reset) ifu_reading <= 1;
-		else if (ifu_valid) ifu_reading <= 1;
-		else if (ifu_over) ifu_reading <= 0;
+		else if (ifu_arvalid) ifu_reading <= 1;
+		else if (ifu_rvalid & ifu_rready & ifu_rlast) ifu_reading <= 0;
 
-		if (~reset & ifu_reading) add_ifu_readingcycle();
+		if (~reset & (ifu_reading | icache_rvalid & ifu_ready)) add_ifu_readingcycle();
 
 		if (icache_rvalid & ifu_ready) begin
 			if (~icache_hit) add_miss_icache();

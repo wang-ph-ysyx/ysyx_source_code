@@ -18,43 +18,26 @@ module ysyx_23060236_exu(
 
 	output reg [3:0]  rd_next,
 	output reg [24:0] pc_next, //与btb地址位宽一致
-	output reg [31:0] val,
-	output reg [31:0] lsu_data,
-	output reg [2:0]  funct3_next,
 	output reg reg_wen_next,
-	output reg lsu_ren,
-	output reg lsu_wen,
 	output reg [31:0] jump_addr,
 	output reg jump_wrong,
 	output btb_wvalid,
 
+	output [31:0] val,
+	output lsu_ren,
+	output lsu_wen,
 	output [31:0] csr_wdata,
 	output csr_enable,
 
 	input  exu_valid,
-	output exu_ready,
-	output lsu_valid,
-	input  lsu_ready
+	input  exu_ready
 );
-
-	assign exu_ready = (~lsu_valid | lsu_ready) & ~jump_wrong;
-
-	ysyx_23060236_Reg #(1, 0) reg_lsu_valid(
-		.clock(clock),
-		.reset(reset),
-		.din(lsu_valid & ~lsu_ready | exu_valid & exu_ready),
-		.dout(lsu_valid),
-		.wen(1)
-	);
 
 	wire        jump_en;
 	wire        jump_wrong_tmp;
 	wire        jal_enable;
 	wire [31:0] jump_addr_tmp;
-	wire [31:0] val_tmp;
-	wire [31:0] alu_tmp;
-	wire [31:0] csr_wdata_tmp;
-	wire [31:0] lsu_data_tmp;
+	wire [31:0] alu_val;
 	wire [31:0] snpc;
 	reg  need_btb;
 
@@ -63,15 +46,12 @@ module ysyx_23060236_exu(
 	assign jump_wrong_tmp = (jump_addr_tmp != dnpc);
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
+	assign lsu_ren = opcode_type[INST_LW];
+	assign lsu_wen = opcode_type[INST_SW];
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			rd_next         <= rd;
-			val             <= val_tmp;
-      lsu_data        <= lsu_data_tmp;
-			funct3_next     <= funct3;
-			lsu_ren         <= opcode_type[INST_LW];
-			lsu_wen         <= opcode_type[INST_SW];
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong      <= jump_wrong_tmp;
@@ -87,9 +67,9 @@ module ysyx_23060236_exu(
 												 jump_en ? exu_jump :
 												 snpc;
 
-	assign val_tmp = jal_enable ? snpc :
-									 csr_enable ? csr_val :
-									 alu_tmp;
+	assign val = jal_enable ? snpc :
+							 csr_enable ? csr_val :
+							 alu_val;
 
 	parameter INST_LUI   = 0;
 	parameter INST_AUIPC = 1;
@@ -162,15 +142,15 @@ module ysyx_23060236_exu(
 	assign op_sum  = loperand + roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
-	assign val_sra = {{{31{loperand[31]}}, loperand} >> (roperand & 32'h1f)};
-	assign alu_tmp = (operator == OP_ADD  ) ? op_sum : 
+	assign val_sra = {{31{loperand[31]}}, loperand} >> roperand[4:0];
+	assign alu_val = (operator == OP_ADD  ) ? op_sum : 
 									 (operator == OP_SUB  ) ? op_compare : 
 									 (operator == OP_AND  ) ? (loperand & roperand) : 
 									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
 									 (operator == OP_OR   ) ? (loperand | roperand) : 
-									 (operator == OP_SRL  ) ? (loperand >> (roperand & 32'h1f)) : 
+									 (operator == OP_SRL  ) ? (loperand >> roperand[4:0]) : 
 									 (operator == OP_SRA  ) ? val_sra[31:0] :
-									 (operator == OP_SLL  ) ? (loperand << (roperand & 32'h1f)) : 
+									 (operator == OP_SLL  ) ? (loperand << roperand[4:0]) : 
 									 (operator == OP_LESS ) ? {31'b0, op_less} : 
 									 (operator == OP_ULESS) ? {31'b0, op_uless} : 
 									 32'b0;
@@ -196,7 +176,5 @@ module ysyx_23060236_exu(
 	assign csr_wdata = (funct3 == 3'b010) ? (src1 | csr_val) : 
 										 (funct3 == 3'b001) ? src1 :
 										 32'b0;
-
-	assign lsu_data_tmp = src2;
 
 endmodule
