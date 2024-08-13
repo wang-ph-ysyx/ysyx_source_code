@@ -21,7 +21,7 @@ module ysyx_23060236_exu(
 	output reg [24:0] pc_next, //与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
-	output reg jump_wrong,
+	output jump_wrong,
 	output btb_wvalid,
 
 	output [31:0] val,
@@ -34,33 +34,36 @@ module ysyx_23060236_exu(
 	input  exu_ready
 );
 
-	wire        jump_en;
-	wire        jump_wrong_tmp;
-	wire        jal_enable;
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] alu_val;
 	wire [31:0] snpc;
+	wire jump_en;
+	wire jal_enable;
 	reg  need_btb;
+	reg  jump_wrong_tmp;
+	reg  inst_fencei_tmp;
 
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
-	assign jump_wrong_tmp = (jump_addr_tmp != dnpc) | inst_fencei;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
 	assign lsu_wen = opcode_type[INST_SW];
+	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			rd_next         <= rd;
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
-			jump_wrong      <= jump_wrong_tmp;
+			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
 			pc_next         <= pc[24:0]; //与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
+			inst_fencei_tmp <= inst_fencei;
 		end
 		else begin
-			jump_wrong <= 0;
+			jump_wrong_tmp  <= 0;
+			inst_fencei_tmp <= 0;
 		end
 	end
 
@@ -98,8 +101,6 @@ module ysyx_23060236_exu(
 
 	wire [31:0] loperand;
 	wire [31:0] roperand;
-	wire [31:0] jloperand;
-	wire [31:0] jroperand;
 	wire [3:0]  operator;
 	wire [3:0]  operator1;
 	wire [3:0]  operator2;
@@ -109,12 +110,12 @@ module ysyx_23060236_exu(
 	wire jump_cond;
 
 	//exu_val
-	assign loperand = opcode_type[INST_AUIPC] ? pc : //auipc
+	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_BEQ]) ? pc : //auipc/jal/beq
 										opcode_type[INST_LUI] ? 32'b0 :   //lui
 										src1;   //imm/src2/jalr/lw/sw
 
 	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
-										imm;  //lui/auipc/imm/lw/sw
+										imm;  //lui/auipc/imm/jal/jalr/beq/lw/sw
 
 	localparam OP_ADD   = 4'd0;
 	localparam OP_SUB   = 4'd1;
@@ -159,10 +160,8 @@ module ysyx_23060236_exu(
 									 32'b0;
 
 	//jump
-	assign jloperand = opcode_type[INST_JALR] ? src1 : pc;
-	assign jroperand = imm;
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
-	assign exu_jump = jloperand + jroperand;
+	assign exu_jump = op_sum;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
