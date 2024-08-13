@@ -77,7 +77,7 @@ module ysyx_23060236(
 	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [24:0] exu_pc; //与btb地址位宽一致
+	wire [31:0] exu_pc;
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -163,10 +163,10 @@ module ysyx_23060236(
 	wire        clint_rvalid;
 	wire        clint_rready;
 
-	wire [24:0] icache_araddr; //与icache地址位宽一致
+	wire [31:0] icache_araddr;
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire [24:0] icache_awaddr; //与icache地址位宽一致
+	wire [31:0] icache_awaddr;
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
