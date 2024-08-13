@@ -40,8 +40,6 @@ module ysyx_23060236_ifu(
 	wire pc_in_sdram;
 	wire npc_in_sdram;
 	wire [31:0] inst_tmp;
-	wire [31:0] inst_icache_tmp;
-	wire [31:0] inst_ifu_tmp;
 	wire [24:0] icache_awaddr_tmp; //与icache地址位宽一致
 	reg last;
 	wire jump_wrong_state;

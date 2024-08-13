@@ -1,6 +1,5 @@
 module ysyx_23060236_exu(
 	input  clock,
-	input  reset,
 
 	input  [9:0]  opcode_type,
 	input  [3:0]  rd,
@@ -105,7 +104,6 @@ module ysyx_23060236_exu(
 	wire [3:0]  operator1;
 	wire [3:0]  operator2;
 	wire [3:0]  operator3;
-	wire [3:0]  operator4;
 	wire [62:0] val_sra;
 	wire jump_cond;
 
