@@ -15,12 +15,13 @@ module ysyx_23060236_exu(
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 	input  [31:0] csr_val,
+	input  inst_fencei,
 
 	output reg [3:0]  rd_next,
 	output reg [24:0] pc_next, //与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
-	output reg jump_wrong,
+	output jump_wrong,
 	output btb_wvalid,
 
 	output [31:0] val,
@@ -33,33 +34,36 @@ module ysyx_23060236_exu(
 	input  exu_ready
 );
 
-	wire        jump_en;
-	wire        jump_wrong_tmp;
-	wire        jal_enable;
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] alu_val;
 	wire [31:0] snpc;
+	wire jump_en;
+	wire jal_enable;
 	reg  need_btb;
+	reg  jump_wrong_tmp;
+	reg  inst_fencei_tmp;
 
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
-	assign jump_wrong_tmp = (jump_addr_tmp != dnpc);
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
 	assign lsu_wen = opcode_type[INST_SW];
+	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			rd_next         <= rd;
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
-			jump_wrong      <= jump_wrong_tmp;
+			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
 			pc_next         <= pc[24:0]; //与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
+			inst_fencei_tmp <= inst_fencei;
 		end
 		else begin
-			jump_wrong <= 0;
+			jump_wrong_tmp  <= 0;
+			inst_fencei_tmp <= 0;
 		end
 	end
 

@@ -355,6 +355,7 @@ module ysyx_23060236(
 		.csr_jump_en(csr_jump_en),
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
+		.inst_fencei(inst_fencei),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
 		.reg_wen_next(exu_reg_wen),
