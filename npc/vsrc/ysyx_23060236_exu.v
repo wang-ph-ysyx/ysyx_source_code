@@ -58,6 +58,7 @@ module ysyx_23060236_exu(
 			jump_wrong      <= jump_wrong_tmp;
 			pc_next         <= pc[24:0]; //与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
+			lsu_data        <= src2;
 		end
 		else begin
 			jump_wrong <= 0;
@@ -177,7 +178,5 @@ module ysyx_23060236_exu(
 	assign csr_wdata = (funct3 == 3'b010) ? (src1 | csr_val) : 
 										 (funct3 == 3'b001) ? src1 :
 										 32'b0;
-
-	assign lsu_data = src2;
 
 endmodule
