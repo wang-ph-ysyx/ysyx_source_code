@@ -164,7 +164,6 @@ module ysyx_23060236_CSRFile (
 endmodule
 module ysyx_23060236_exu(
 	input  clock,
-	input  reset,
 
 	input  [9:0]  opcode_type,
 	input  [3:0]  rd,
@@ -269,7 +268,6 @@ module ysyx_23060236_exu(
 	wire [3:0]  operator1;
 	wire [3:0]  operator2;
 	wire [3:0]  operator3;
-	wire [3:0]  operator4;
 	wire [62:0] val_sra;
 	wire jump_cond;
 
@@ -412,7 +410,6 @@ module ysyx_23060236_idu(
 	input  [31:0] src1,
 	input  [31:0] src2,
 
-	input  [31:0] exu_val,
 	input  [31:0] wb_val,
 	input  [3:0]  exu_rd,
 	input  exu_reg_wen,
@@ -499,8 +496,6 @@ module ysyx_23060236_idu(
 	wire [2:0]  funct3_tmp;
 	wire [6:0]  funct7_tmp;
 	wire [3:0]  rd_tmp;
-	wire [3:0]  rs1_tmp;
-	wire [3:0]  rs2_tmp;
 	wire [31:0] imm_tmp;
 	wire inst_fencei_tmp;
 	wire inst_ecall_tmp;
@@ -627,8 +622,6 @@ module ysyx_23060236_ifu(
 	wire pc_in_sdram;
 	wire npc_in_sdram;
 	wire [31:0] inst_tmp;
-	wire [31:0] inst_icache_tmp;
-	wire [31:0] inst_ifu_tmp;
 	wire [24:0] icache_awaddr_tmp; //与icache地址位宽一致
 	reg last;
 	wire jump_wrong_state;
@@ -890,7 +883,6 @@ module ysyx_23060236_lsu(
 endmodule
 module ysyx_23060236_RegisterFile #(ADDR_WIDTH = 4, DATA_WIDTH = 32) (
   input clock,
-	input reset,
   input [DATA_WIDTH-1:0] wdata,
   input [ADDR_WIDTH-1:0] waddr,
 	output [DATA_WIDTH-1:0] rdata1,
@@ -1011,7 +1003,6 @@ module ysyx_23060236(
 	wire exu_valid;
 	wire exu_ready;
 	wire wb_valid;
-	wire jal_enable;
 	wire jump_wrong;
 
 	wire [31:0] inst;
@@ -1033,8 +1024,6 @@ module ysyx_23060236(
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
-	wire exu_inst_ecall;
-	wire lsu_inst_ecall;
 	wire inst_fencei;
 	wire btb_wvalid;
 
@@ -1044,7 +1033,6 @@ module ysyx_23060236(
 	wire [31:0] csr_wdata;
 	wire [31:0] csr_val;
 	wire [31:0] exu_val;
-	wire csr_wen;
 	wire lsu_wen;
 	wire lsu_ren;
 
@@ -1059,9 +1047,6 @@ module ysyx_23060236(
 	wire [1:0]  ifu_arburst;
 	wire [3:0]  ifu_arlen;
 
-	wire [2:0]  exu_funct3;
-
-	wire [31:0] lsu_data;
 	wire [31:0] lsu_araddr;
 	wire        lsu_arvalid;
 	wire        lsu_arready;
@@ -1240,7 +1225,6 @@ module ysyx_23060236(
 		.pc(ifu_pc),
 		.src1(src1),
 		.src2(src2),
-		.exu_val(exu_val),
 		.wb_val(wb_val),
 		.exu_rd(exu_rd),
 		.exu_reg_wen(exu_reg_wen),
@@ -1268,7 +1252,6 @@ module ysyx_23060236(
 
 	ysyx_23060236_exu my_exu(
 		.clock(clock),
-		.reset(reset),
 		.opcode_type(opcode_type),
 		.rd(idu_rd),
 		.src1(idu_src1),
@@ -1334,7 +1317,6 @@ module ysyx_23060236(
 
 	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
-		.reset(reset),
 		.wdata(wb_val),
 		.waddr(exu_rd),
 		.rdata1(src1),
@@ -1359,7 +1341,7 @@ module ysyx_23060236(
 		.jump_en(csr_jump_en),
 		.valid(exu_valid & exu_ready)
 	);
-/*
+
 	assign io_slave_awready = 0;
 	assign io_slave_wready  = 0;
 	assign io_slave_bvalid  = 0;
@@ -1371,7 +1353,7 @@ module ysyx_23060236(
 	assign io_slave_rdata   = 0;
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
-*/
+
 
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
