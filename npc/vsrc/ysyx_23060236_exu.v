@@ -98,6 +98,8 @@ module ysyx_23060236_exu(
 
 	wire [31:0] loperand;
 	wire [31:0] roperand;
+	wire [31:0] jloperand;
+	wire [31:0] jroperand;
 	wire [3:0]  operator;
 	wire [3:0]  operator1;
 	wire [3:0]  operator2;
@@ -107,12 +109,12 @@ module ysyx_23060236_exu(
 	wire jump_cond;
 
 	//exu_val
-	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_BEQ]) ? pc : //auipc/jal/beq
+	assign loperand = opcode_type[INST_AUIPC] ? pc : //auipc
 										opcode_type[INST_LUI] ? 32'b0 :   //lui
 										src1;   //imm/src2/jalr/lw/sw
 
 	assign roperand = opcode_type[INST_ADD] ? src2 :   //src2
-										imm;  //lui/auipc/imm/jal/jalr/beq/lw/sw
+										imm;  //lui/auipc/imm/lw/sw
 
 	localparam OP_ADD   = 4'd0;
 	localparam OP_SUB   = 4'd1;
@@ -157,8 +159,10 @@ module ysyx_23060236_exu(
 									 32'b0;
 
 	//jump
+	assign jloperand = opcode_type[INST_JALR] ? src1 : pc;
+	assign jroperand = imm;
 	assign jump_en = opcode_type[INST_JAL] | opcode_type[INST_JALR] | opcode_type[INST_BEQ] & jump_cond;
-	assign exu_jump = op_sum;
+	assign exu_jump = jloperand + jroperand;
 	assign {overflow, compare} = src1 - src2;
 	assign less = (src1[31] & ~src2[31]) | ~(src1[31] ^ src2[31]) & compare[31];
 	assign unequal = |compare;
