@@ -13,6 +13,8 @@ int printf(const char *fmt, ...) {
 	int count = vsprintf(out, fmt, ap);
 	va_end(ap);
 
+	assert(count <= sizeof(out));
+
 	for (int i = 0; out[i] != '\0'; ++i) {
 		putch(out[i]);
 	}
