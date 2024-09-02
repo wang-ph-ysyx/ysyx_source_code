@@ -7,7 +7,7 @@
 
 int printf(const char *fmt, ...) {
 	va_list ap;
-	char out[2048] = {'\0'};
+	char out[1024] = {'\0'};
 
 	va_start(ap, fmt);
 	int count = vsprintf(out, fmt, ap);
