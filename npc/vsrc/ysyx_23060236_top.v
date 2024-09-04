@@ -88,10 +88,10 @@ module ysyx_23060236(
 
 	wire [31:0] inst;
 	wire [9:0]  opcode_type;
-	wire [4:0]  rs1;
-	wire [4:0]  rs2;
-	wire [4:0]  idu_rd;
-	wire [4:0]  exu_rd;
+	wire [3:0]  rs1;
+	wire [3:0]  rs2;
+	wire [3:0]  idu_rd;
+	wire [3:0]  exu_rd;
 	wire [2:0]  funct3;
 	wire        funct7_5;
 	wire [31:0] imm;
@@ -396,7 +396,7 @@ module ysyx_23060236(
 		.wb_valid(wb_valid)
 	);
 
-	ysyx_23060236_RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
 		.wdata(wb_val),
 		.waddr(exu_rd),
