@@ -49,18 +49,18 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 void print_difftest_reg () {
-	uint32_t ref_r[16];
+	uint32_t ref_r[32];
 	uint32_t ref_pc;
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 	printf("nemu reference\n");
 	printf("pc\t%#x\n", ref_pc);
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 31; ++i) {
 		printf("x%d\t%#x\n", i+1, ref_r[i]);
 	}
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 31; ++i) {
 		if (ref[i] != top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
 	}
@@ -71,7 +71,7 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 }
 
 void difftest_step() {
-	uint32_t ref_r[16];
+	uint32_t ref_r[32];
 	uint32_t ref_pc;
 
 	if (is_skip_ref) {

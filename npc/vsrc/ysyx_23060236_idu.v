@@ -8,18 +8,18 @@ module ysyx_23060236_idu(
 	input  [31:0] src2,
 
 	input  [31:0] wb_val,
-	input  [3:0]  exu_rd,
+	input  [4:0]  exu_rd,
 	input  exu_reg_wen,
 	input  wb_valid,
 	input  jump_wrong,
 
-	output [3:0] rs1,
-	output [3:0] rs2,
+	output [4:0] rs1,
+	output [4:0] rs2,
 
 	output reg [31:0] pc_next,
 	output reg [9:0]  opcode_type,
 	output reg [2:0]  funct3,
-	output reg [3:0]  rd,
+	output reg [4:0]  rd,
 	output reg [31:0] src1_next,
 	output reg [31:0] src2_next,
 	output reg [31:0] imm,
@@ -92,7 +92,7 @@ module ysyx_23060236_idu(
 	wire [9:0]  opcode_type_tmp;
 	wire [2:0]  funct3_tmp;
 	wire [6:0]  funct7_tmp;
-	wire [3:0]  rd_tmp;
+	wire [4:0]  rd_tmp;
 	wire [31:0] imm_tmp;
 	wire inst_fencei_tmp;
 	wire inst_ecall_tmp;
@@ -101,9 +101,9 @@ module ysyx_23060236_idu(
 	wire [5:0] Type;
 	wire [4:0] opcode_5;
 	assign opcode_5       = in[6:2];
-	assign rs1            = in[18:15];
-	assign rs2            = in[23:20];
-	assign rd_tmp         = in[10:7];
+	assign rs1            = in[19:15];
+	assign rs2            = in[24:20];
+	assign rd_tmp         = in[11:7];
 	assign funct3_tmp     = in[14:12];
 	assign funct7_tmp     = in[31:25];
 	assign reg_wen_tmp    = Type[TYPE_I] & ~((funct3_tmp == 3'b0) & opcode_type_tmp[INST_CSR]) | Type[TYPE_U] | Type[TYPE_J] | Type[TYPE_R];
