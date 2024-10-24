@@ -16,6 +16,7 @@ void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) 
 void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 
+#define TOTAL_REG 32
 #ifdef DIFFTEST
 
 static bool is_skip_ref = false;
@@ -54,13 +55,13 @@ void print_difftest_reg () {
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 	printf("nemu reference\n");
 	printf("pc\t%#x\n", ref_pc);
-	for (int i = 0; i < 31; ++i) {
+	for (int i = 0; i < TOTAL_REG - 1; ++i) {
 		printf("x%d\t%#x\n", i+1, ref_r[i]);
 	}
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
-	for (int i = 0; i < 31; ++i) {
+	for (int i = 0; i < TOTAL_REG - 1; ++i) {
 		if (ref[i] != top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i])
 			trigger_difftest = 1;
 	}
