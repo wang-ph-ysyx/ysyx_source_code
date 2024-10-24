@@ -1,1 +1,1 @@
-//`define SYN
+`define SYN
