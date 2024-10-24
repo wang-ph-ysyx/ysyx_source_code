@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236(
 	input  clock,
 	input  reset,
@@ -435,7 +436,7 @@ module ysyx_23060236(
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
 
-
+`ifndef SYN
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -463,5 +464,6 @@ import "DPI-C" function void program_end();
 		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
 		else if ((prog_end == 2) & wb_valid) program_end();
 	end
+`endif
 
 endmodule

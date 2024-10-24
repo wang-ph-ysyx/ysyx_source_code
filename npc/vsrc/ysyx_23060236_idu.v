@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_idu(
 	input  clock,
 	input  reset,
@@ -164,6 +165,7 @@ module ysyx_23060236_idu(
 												 1'b0;
 
 
+`ifndef SYN
 	import "DPI-C" function void add_raw_conflict();
 	import "DPI-C" function void add_raw_conflict_cycle();
 
@@ -175,5 +177,5 @@ module ysyx_23060236_idu(
 		if (raw_conflict) add_raw_conflict_cycle();
 		if (~raw_conflict_state & raw_conflict) add_raw_conflict();
 	end
-
+`endif
 endmodule

@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_CSRFile (
 	input  clock,
 	input  reset,
