@@ -140,7 +140,9 @@ void cpu_exec(unsigned long n) {
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc);
+#ifdef PRINT_PERF
 	print_statistic();
+#endif
 }
 
 void reset() {
