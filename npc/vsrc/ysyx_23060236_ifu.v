@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_ifu(
 	input  clock,
 	input  reset,
@@ -137,6 +138,7 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
+`ifndef SYN
 import "DPI-C" function void add_ifu_readingcycle();
 import "DPI-C" function void add_miss_icache();
 import "DPI-C" function void add_hit_icache();
@@ -171,5 +173,6 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end
+`endif
 
 endmodule

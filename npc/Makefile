@@ -12,7 +12,7 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH = $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
+VER_INC_PATH = $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl) $(abspath ./vsrc)
 
 default: $(BIN)
 
