@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_xbar(
 	input  clock,
 	input  reset,
@@ -145,6 +146,7 @@ module ysyx_23060236_xbar(
 	assign lsu_bvalid        = io_master_bvalid;
 	assign lsu_bresp         = io_master_bresp;
 
+`ifndef SYN
 import "DPI-C" function void add_lsu_readingcycle();
 import "DPI-C" function void add_lsu_writingcycle();
 
@@ -158,5 +160,5 @@ import "DPI-C" function void add_lsu_writingcycle();
 		if (lsu_writing) add_lsu_writingcycle();
 		if (lsu_reading) add_lsu_readingcycle();
 	end
-
+`endif
 endmodule

@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_btb(
 	input clock,
 	input reset,
@@ -12,8 +13,7 @@ module ysyx_23060236_btb(
 	input  [DATA_LEN-1:0] btb_wdata
 );
 
-	//此处ADDR_LEN减7与sdram地址范围匹配
-	localparam ADDR_LEN   = 32 - 7;
+	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 2;
 	localparam INDEX_LEN  = 0;
