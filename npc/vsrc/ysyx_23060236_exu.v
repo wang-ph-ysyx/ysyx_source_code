@@ -2,7 +2,7 @@ module ysyx_23060236_exu(
 	input  clock,
 
 	input  [9:0]  opcode_type,
-	input  [3:0]  rd,
+	input  [4:0]  rd,
 	input  [31:0] src1,
 	input  [31:0] src2,
 	input  [31:0] imm,
@@ -16,7 +16,7 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 	input  inst_fencei,
 
-	output reg [3:0]  rd_next,
+	output reg [4:0]  rd_next,
 	output reg [24:0] pc_next, //与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
