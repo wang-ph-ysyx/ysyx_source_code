@@ -46,18 +46,18 @@ module ysyx_23060236_ifu(
 
 	assign ifu_rready    = 1;
 	assign icache_araddr = pc[31:0];
-	assign ifu_araddr    = {pc[31:5], 5'b0}; //与icache的块大小一致
+	assign ifu_araddr    = {pc[31:6], 6'b0}; //与icache的块大小一致
 	assign ifu_arburst   = 2'b01;
-	assign ifu_arlen     = 4'b0111; //与icache的块大小一致
+	assign ifu_arlen     = 4'b1111; //与icache的块大小一致
 	//与icache的块大小一致
-	assign inst_tmp = (ifu_rvalid & ifu_rready & (pc[4:2] == icache_awaddr[4:2])) ? ifu_rdata : 
+	assign inst_tmp = (ifu_rvalid & ifu_rready & (pc[5:2] == icache_awaddr[5:2])) ? ifu_rdata : 
 		                (icache_rvalid & icache_hit & ifu_ready) ? icache_rdata : 
 										inst;
 	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last);
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
 	//与icache的块大小一致
-	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:5], 5'b0} : 
+	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:6], 6'b0} : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
