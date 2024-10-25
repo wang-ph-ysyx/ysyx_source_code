@@ -21,12 +21,17 @@ IMG ?=
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH = $(abspath ./vsrc)
 ifeq ($(PLATFORM),ysyxsoc)
+VER_INC_PATH = $(abspath ./vinclude/ysyxsoc)
 VER_INC_PATH += $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
+else ifeq ($(PLATFORM),npc)
+VER_INC_PATH = $(abspath ./vinclude/npc)
 endif
 
-default: $(BIN)
+default:
+	rm -f $(BIN)
+	rm -f $(SRC_AUTO_BIND)
+	make $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
 

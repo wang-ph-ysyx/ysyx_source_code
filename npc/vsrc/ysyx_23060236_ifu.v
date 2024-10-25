@@ -74,7 +74,7 @@ module ysyx_23060236_ifu(
 		end
 	end
 
-	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
+	ysyx_23060236_Reg #(32, `ENTRY_ADDR) pc_adder(
 		.clock(clock),
 		.reset(reset),
 		.din(pc_tmp),

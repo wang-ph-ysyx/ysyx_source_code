@@ -11,7 +11,7 @@
 #include <VysyxSoCFull.h>
 #define signal(s) ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
 #elif defined(__PLATFORM_npc_)
-#include <Vnpc__024root.h>
+#include <Vnpc___024root.h>
 #include <Vnpc.h>
 #define signal(s) npc__DOT__cpu__DOT__##s
 #endif
@@ -23,7 +23,7 @@
 #endif
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
-extern VysyxSoCFull* top;
+extern TOP_NAME* top;
 extern int trigger_difftest;
 
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;

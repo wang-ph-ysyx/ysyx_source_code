@@ -1,0 +1,2 @@
+//`define SYN
+`define ENTRY_ADDR 32'h30000000
