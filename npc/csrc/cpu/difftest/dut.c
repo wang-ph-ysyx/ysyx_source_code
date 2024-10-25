@@ -9,9 +9,11 @@
 #if defined(__PLATFORM_ysyxsoc_)
 #include <VysyxSoCFull___024root.h>
 #include <VysyxSoCFull.h>
+#define signal(s) ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
 #elif defined(__PLATFORM_npc_)
 #include <Vnpc__024root.h>
 #include <Vnpc.h>
+#define signal(s) npc__DOT__cpu__DOT__##s
 #endif
 
 #if defined(__ISA_riscv32_)
@@ -57,7 +59,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(FLASH_BASE, guest2host_flash(0), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&top->rootp->signal(my_reg__DOT__rf[0]), &top->rootp->signal(pc), DIFFTEST_TO_REF);
 }
 
 void print_difftest_reg () {
@@ -73,7 +75,7 @@ void print_difftest_reg () {
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	for (int i = 0; i < TOTAL_REG - 1; ++i) {
-		if (ref[i] != top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i])
+		if (ref[i] != top->rootp->signal(my_reg__DOT__rf[i]))
 			trigger_difftest = 1;
 	}
 	//if (pc != ref_pc) trigger_difftest = 1;
@@ -87,7 +89,7 @@ void difftest_step() {
 	uint32_t ref_pc;
 
 	if (is_skip_ref) {
-		ref_difftest_regcpy(&top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[0], &top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc, DIFFTEST_TO_REF);
+		ref_difftest_regcpy(&top->rootp->signal(my_reg__DOT__rf[0]), &top->rootp->signal(ifu_pc), DIFFTEST_TO_REF);
 		is_skip_ref = false;
 		return;
 	}
@@ -95,7 +97,7 @@ void difftest_step() {
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 
-  checkregs(ref_r, ref_pc, top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc);
+  checkregs(ref_r, ref_pc, top->rootp->signal(ifu_pc));
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) { }

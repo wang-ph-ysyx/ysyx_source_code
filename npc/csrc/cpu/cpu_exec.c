@@ -10,9 +10,11 @@
 #if defined(__PLATFORM_ysyxsoc_)
 #include <VysyxSoCFull___024root.h>
 #include <VysyxSoCFull.h>
+#define signal(s) ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
 #elif defined(__PLATFORM_npc_)
 #include <Vnpc___024root.h>
 #include <Vnpc.h>
+#define signal(s) npc__DOT__cpu__DOT__##s
 #endif
 
 TOP_NAME *top = NULL;
@@ -114,11 +116,11 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 
-	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
-	uint32_t inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
+	uint32_t pc = top->rootp->signal(ifu_pc);
+	uint32_t inst = top->rootp->signal(inst);
 	for (; n > 0; --n) {
-		pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
-		inst = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__inst;
+		pc = top->rootp->signal(ifu_pc);
+		inst = top->rootp->signal(inst);
 		nvboard_update();
 		one_cycle();
 #ifdef DIFFTEST
@@ -128,7 +130,7 @@ void cpu_exec(unsigned long n) {
 		if (difftest) {
 			difftest_step();
 		}
-		difftest = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wb_valid;
+		difftest = top->rootp->signal(wb_valid);
 #endif
 		if (inst_ebreak || trigger_difftest) break;
 	}
@@ -139,10 +141,10 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 	if (!inst_ebreak) return;
-	if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[9])
+	if (top->rootp->signal(my_reg__DOT__rf[9]))
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
-	printf("at pc = %#x\n", top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc);
+	printf("at pc = %#x\n", top->rootp->signal(ifu_pc));
 #ifdef PRINT_PERF
 	print_statistic();
 #endif
