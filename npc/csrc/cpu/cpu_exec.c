@@ -1,10 +1,8 @@
-#define TOP_ROOT_H "VysyxSoCFull___024root.h"
-#define TOP_H "VysyxSoCFull.h"
-#include TOP_ROOT_H
+#include <VysyxSoCFull___024root.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include TOP_H
+#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>

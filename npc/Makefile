@@ -30,15 +30,10 @@ CSRCS += $(SRC_AUTO_BIND)
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
-TOP_H := V$(TOPNAME).h
-TOP_ROOT_H := V$(TOPNAME)___024root.h
-
 CXX_INCFLAGS = $(addprefix -I, $(CXX_INC_PATH))
 VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
 CXXFLAGS += $(CXX_INCFLAGS) \
-						-DTOP_NAME=\"V$(TOPNAME)\"\
-						-DTOP_H=\"$(TOP_H)\"\
-						-DTOP_ROOT_H=\"$(TOP_ROOT_H)\"
+						-DTOP_NAME=\"V$(TOPNAME)\"
 VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
