@@ -11,7 +11,7 @@
 #include <VysyxSoCFull___024root.h>
 #include <VysyxSoCFull.h>
 #elif defined(__PLATFORM_npc_)
-#include <Vnpc__024root.h>
+#include <Vnpc___024root.h>
 #include <Vnpc.h>
 #endif
 

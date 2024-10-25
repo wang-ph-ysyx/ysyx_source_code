@@ -2,11 +2,12 @@ PLATFORM = npc
 ISA = riscv32e
 ifeq ($(PLATFORM),ysyxsoc)
 TOPNAME = ysyxSoCFull
+NXDC_FILES = constr/ysyxsoc.nxdc
 else ifeq ($(PLATFORM),npc)
 TOPNAME = npc
+NXDC_FILES = constr/npc.nxdc
 endif
 
-NXDC_FILES = constr/top.nxdc
 INC_PATH ?= 
 
 VERILATOR = verilator
@@ -71,7 +72,8 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 all: default
 
 sim: 
-	rm $(BIN)
+	rm -f $(BIN)
+	rm -f $(SRC_AUTO_BIND)
 	make $(BIN)
 	$(BIN) $(ARGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
