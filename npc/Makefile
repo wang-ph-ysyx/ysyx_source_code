@@ -55,7 +55,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 all: default
 
 sim:
-	@rm -rf $(OBJ_DIR)
+	rm -rf $(OBJ_DIR)
 	make $(BIN)
 	$(BIN) $(ARGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
