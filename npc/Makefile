@@ -33,7 +33,8 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 CXX_INCFLAGS = $(addprefix -I, $(CXX_INC_PATH))
 VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
 CXXFLAGS += $(CXX_INCFLAGS) \
-						-DTOP_NAME=\"V$(TOPNAME)\"
+						-DTOP_NAME=\"V$(TOPNAME)\"\
+						-D__PLATFORM_$(PLATFORM)_
 VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline

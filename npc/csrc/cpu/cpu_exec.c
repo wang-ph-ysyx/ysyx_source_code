@@ -1,13 +1,19 @@
-#include <VysyxSoCFull___024root.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <memory.h>
 #include <config.h>
 #include <nvboard.h>
 #include "verilated_vcd_c.h"
+
+#if defined(__PLATFORM_ysyxsoc_)
+#include <VysyxSoCFull___024root.h>
+#include <VysyxSoCFull.h>
+#elif defined(__PLATFORM_npc_)
+#include <Vnpc__024root.h>
+#include <Vnpc.h>
+#endif
 
 TOP_NAME *top = NULL;
 VerilatedVcdC *tfp = NULL;
