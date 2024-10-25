@@ -20,6 +20,9 @@ CACHESIMFLAGS = -b -c $(CACHETRACE)
 CACHESIM_HOME = /home/ysyx/cachesim
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
+# 批处理
+NPC_FLAGS += -b
+
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin

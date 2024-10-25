@@ -42,8 +42,6 @@ endif
 ifneq ($(DIFF_SO),)
   NPC_FLAGS += -d $(DIFF_SO)
 endif
-# 批处理
-NPC_FLAGS += -b
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rm -rf $(OBJ_DIR)
