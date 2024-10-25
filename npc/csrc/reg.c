@@ -1,8 +1,14 @@
-#include <VysyxSoCFull___024root.h>
 #include <stdio.h>
-#include <VysyxSoCFull.h>
-#include "verilated.h"
 #include <stdint.h>
+#include "verilated.h"
+
+#if defined(__PLATFORM_ysyxsoc_)
+#include <VysyxSoCFull___024root.h>
+#include <VysyxSoCFull.h>
+#elif defined(__PLATFORM_npc_)
+#include <Vnpc__024root.h>
+#include <Vnpc.h>
+#endif
 
 extern TOP_NAME* top;
 

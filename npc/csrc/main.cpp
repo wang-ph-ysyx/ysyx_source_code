@@ -1,8 +1,13 @@
-#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <nvboard.h>
 #include "verilated_vcd_c.h"
 #include <config.h>
+
+#if defined(__PLATFORM_ysyxsoc_)
+#include <VysyxSoCFull.h>
+#elif defined(__PLATFORM_npc_)
+#include <Vnpc.h>
+#endif
 
 extern TOP_NAME *top;
 extern VerilatedVcdC *tfp;
