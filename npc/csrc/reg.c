@@ -26,7 +26,6 @@ const char *regs[] = {
 };
 
 void reg_display() {
-	printf("TOTAL_REGS: %d\n", TOTAL_REGS);
 	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
 	printf("pc\t%#x\t%d\n", pc, pc);
 	for (int i = 1; i < TOTAL_REGS; ++i) {
