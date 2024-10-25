@@ -2,11 +2,23 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <VysyxSoCFull.h>
-#include <VysyxSoCFull___024root.h>
 #include <memory.h>
 #include <assert.h>
 #include <config.h>
+
+#if defined(__PLATFORM_ysyxsoc_)
+#include <VysyxSoCFull___024root.h>
+#include <VysyxSoCFull.h>
+#elif defined(__PLATFORM_npc_)
+#include <Vnpc__024root.h>
+#include <Vnpc.h>
+#endif
+
+#if defined(__ISA_riscv32_)
+#define TOTAL_REG 32
+#elif defined(__ISA_riscv32e_)
+#define TOTAL_REG 16
+#endif
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 extern VysyxSoCFull* top;
@@ -16,7 +28,6 @@ void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) 
 void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 
-#define TOTAL_REG 32
 #ifdef DIFFTEST
 
 static bool is_skip_ref = false;
