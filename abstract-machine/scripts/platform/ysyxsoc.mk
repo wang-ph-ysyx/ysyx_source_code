@@ -29,7 +29,7 @@ image: $(IMAGE).elf
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: image
-	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin
+	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin ARGS=$(NPC_FLAGS)
 
 cachetrace: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(CACHESIMFLAGS)" IMG=$(IMAGE).bin
