@@ -1,4 +1,8 @@
+ifeq ($(PLATFORM),ysyxsoc)
 TOPNAME = ysyxSoCFull
+else ifeq ($(PLATFORM),npc)
+TOPNAME = npc
+endif
 NXDC_FILES = constr/top.nxdc
 INC_PATH ?= 
 
