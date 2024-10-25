@@ -108,7 +108,7 @@ reg  [7:0]  read_len;
 
 assign io_master_rid = 0;
 assign io_master_rresp = 0;
-assign io_master_rlast = (read_len != 0);
+assign io_master_rlast = (read_len == 0);
 
 always @(posedge clock) begin
 // io_master_arready
