@@ -10,6 +10,12 @@
 #include <Vnpc.h>
 #endif
 
+#if defined(__ISA_riscv32_)
+#define TOTAL_REGS 32
+#elif defined(__ISA_riscv32e_)
+#define TOTAL_REGS 16
+#endif
+
 extern TOP_NAME* top;
 
 const char *regs[] = {
@@ -22,7 +28,7 @@ const char *regs[] = {
 void reg_display() {
 	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
 	printf("pc\t%#x\t%d\n", pc, pc);
-	for (int i = 1; i < 32; ++i) {
+	for (int i = 1; i < TOTAL_REGS; ++i) {
 		uint32_t reg_val = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i-1];
 		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
