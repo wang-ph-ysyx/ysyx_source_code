@@ -87,7 +87,7 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_icache_rvalid(
+	ysyx_23060236_Reg #(1, 1) reg_icache_rvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_over | icache_rvalid & ~ifu_ready),
@@ -107,7 +107,7 @@ module ysyx_23060236_ifu(
 		icache_awaddr <= icache_awaddr_tmp;
 	end
 
-	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
+	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
