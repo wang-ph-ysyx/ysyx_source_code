@@ -1,3 +1,5 @@
+PLATFORM = npc
+ISA = riscv32e
 ifeq ($(PLATFORM),ysyxsoc)
 TOPNAME = ysyxSoCFull
 else ifeq ($(PLATFORM),npc)
@@ -37,6 +39,8 @@ CSRCS += $(SRC_AUTO_BIND)
 ifeq ($(PLATFORM),ysyxsoc)
 VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
 VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
+else ifeq ($(PLATFORM),npc)
+VSRCS += $(abspath ./simtop/npc.v)
 endif
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
