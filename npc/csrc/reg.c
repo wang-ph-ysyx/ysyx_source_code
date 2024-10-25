@@ -4,7 +4,7 @@
 #include "verilated.h"
 #include <stdint.h>
 
-extern VysyxSoCFull* top;
+extern TOP_NAME* top;
 
 const char *regs[] = {
 	"$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",

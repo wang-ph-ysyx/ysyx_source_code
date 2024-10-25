@@ -4,7 +4,7 @@
 #include "verilated_vcd_c.h"
 #include <config.h>
 
-extern VysyxSoCFull *top;
+extern TOP_NAME *top;
 extern VerilatedVcdC *tfp;
 extern VerilatedContext *contextp;
 
