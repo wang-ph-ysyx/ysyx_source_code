@@ -21,7 +21,7 @@ CACHESIM_HOME = /home/ysyx/cachesim
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
 # 批处理
-NPC_FLAGS += -b
+#NPC_FLAGS += -b
 
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
