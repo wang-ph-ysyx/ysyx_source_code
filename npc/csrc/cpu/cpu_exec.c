@@ -9,7 +9,7 @@
 #include <nvboard.h>
 #include "verilated_vcd_c.h"
 
-VysyxSoCFull *top = NULL;
+TOP_NAME *top = NULL;
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
