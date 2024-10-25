@@ -1,4 +1,5 @@
 `include "ysyx_23060236_defines.v"
+`include "ysyx_23060236_defines_platform.v"
 module ysyx_23060236_ifu(
 	input  clock,
 	input  reset,
