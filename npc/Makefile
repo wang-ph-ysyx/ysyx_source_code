@@ -37,10 +37,10 @@ VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
 ifneq ($(IMG),)
-  NPC_FLAGS += -g $(IMG)
+  ARGS += -g $(IMG)
 endif
 ifneq ($(DIFF_SO),)
-  NPC_FLAGS += -d $(DIFF_SO)
+  ARGS += -d $(DIFF_SO)
 endif
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
@@ -53,7 +53,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 all: default
 
 sim: $(BIN)
-	@$(BIN) $(NPC_FLAGS)
+	$(BIN) $(ARGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 .PHONY: clean all default sim
