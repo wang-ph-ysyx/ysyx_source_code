@@ -1,5 +1,9 @@
 `include "ysyx_23060236_defines.v"
+`ifndef SYN
 `include "ysyx_23060236_defines_platform.v"
+`else
+`define ENTRY_ADDR 32'h30000000
+`endif
 module ysyx_23060236_ifu(
 	input  clock,
 	input  reset,
