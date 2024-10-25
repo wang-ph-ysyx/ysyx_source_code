@@ -3,6 +3,7 @@ TOPNAME = ysyxSoCFull
 else ifeq ($(PLATFORM),npc)
 TOPNAME = npc
 endif
+
 NXDC_FILES = constr/top.nxdc
 INC_PATH ?= 
 
@@ -15,8 +16,12 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
+
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH = $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl) $(abspath ./vsrc)
+VER_INC_PATH = $(abspath ./vsrc)
+ifeq ($(PLATFORM),ysyxsoc)
+VER_INC_PATH += $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
+endif
 
 default: $(BIN)
 
@@ -27,10 +32,12 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
-VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
+ifeq ($(PLATFORM),ysyxsoc)
+VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
+VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
+endif
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
