@@ -37,10 +37,10 @@ VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
 ifneq ($(IMG),)
-  ARGS += -g $(IMG)
+override ARGS += -g $(IMG)
 endif
 ifneq ($(DIFF_SO),)
-  ARGS += -d $(DIFF_SO)
+override ARGS += -d $(DIFF_SO)
 endif
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
