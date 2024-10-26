@@ -32,7 +32,20 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) {
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+	if (!start) return;
+	if (waddr == SERIAL) {
+		printf("%c", (char)wdata);
+		fflush(stdout);
+		return;
+	}
+
 	uint8_t *haddr = guest2host(waddr & ~0x3u);
+	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
+		printf("\nwrite %x out of bound\n\n", waddr);
+		reg_display();
+		assert(0);
+	}
+
 	if (wmask & 0x1) haddr[0] = wdata & 0xff;
 	if (wmask & 0x2) haddr[1] = (wdata >> 8) & 0xff;
 	if (wmask & 0x4) haddr[2] = (wdata >> 16) & 0xff;
@@ -41,10 +54,16 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 
 extern "C" int pmem_read(int raddr) {
 	if (!start) return 0;
+	if (raddr == RTC || raddr == RTC + 4) {
+		if (raddr == RTC) return (int) clock();
+		else return (int)(clock() >> 32);
+	}
+
 	uint8_t *haddr = guest2host(raddr & ~0x3u);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
 		printf("\nread %x out of bound\n\n", raddr);
 		reg_display();
+		assert(0);
 	}
 	return *(int *)haddr;
 }
