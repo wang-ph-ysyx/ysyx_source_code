@@ -20,13 +20,16 @@ CACHESIMFLAGS = -b -c $(CACHETRACE)
 CACHESIM_HOME = /home/ysyx/cachesim
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxsoc/trm.c
 
+# 批处理
+NPC_FLAGS += -b
+
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: image
-	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin
+	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin ARGS="$(NPC_FLAGS)" ISA=$(ISA) PLATFORM=$(PLATFORM)
 
 cachetrace: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(CACHESIMFLAGS)" IMG=$(IMAGE).bin
