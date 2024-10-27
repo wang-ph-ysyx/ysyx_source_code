@@ -42,7 +42,7 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	if (current == &pcb[0]) current = &pcb[1];
-	else current = &pcb[0];
+	if (current == &pcb[1]) current = &pcb[0];
+	else current = &pcb[1];
   return current->cp;
 }
