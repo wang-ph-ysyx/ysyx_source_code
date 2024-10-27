@@ -41,6 +41,11 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+	csrrw sp, mscratch, sp
+	bnez sp, save_context
+	csrrw sp, mscratch, sp
+
+save_context:
   addi sp, sp, -CONTEXT_SIZE
 
   MAP(REGS, PUSH)
@@ -53,6 +58,22 @@ __am_asm_trap:
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
+	csrr a0, mscratch
+	snez a1, a0
+	STORE a1, OFFSET_NP(sp)
+	bnez a0, save_sp
+	mv a0, sp
+	addi a0, a0, CONTEXT_SIZE
+
+save_sp:
+	STORE a0, OFFSET_SP(sp)
+	csrw mscratch, x0
+
+  # set mstatus.MPRV to pass difftest
+  li a0, (1 << 17)
+  or t1, t1, a0
+  csrw mstatus, t1
+
   mv a0, sp
   jal __am_irq_handle
 	mv sp, a0
@@ -62,7 +83,13 @@ __am_asm_trap:
   csrw mstatus, t1
   csrw mepc, t2
 
+	LOAD t0, OFFSET_NP(sp)
+	beqz t0, restore_sp
+	addi t1, sp, CONTEXT_SIZE
+	csrw mscratch, t1
+
+restore_sp:
   MAP(REGS, POP)
 
-  addi sp, sp, CONTEXT_SIZE
+  LOAD sp, OFFSET_SP(sp)
   mret
