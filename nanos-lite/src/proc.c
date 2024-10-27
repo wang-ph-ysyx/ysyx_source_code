@@ -42,7 +42,8 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	if (current == &pcb[1]) current = &pcb[0];
-	else current = &pcb[1];
+	static int proc_id = 0;
+	current = &pcb[proc_id];
+	proc_id = (proc_id + 1) % 2;
   return current->cp;
 }
