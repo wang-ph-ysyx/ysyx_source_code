@@ -85,6 +85,7 @@ static void execute(uint64_t n) {
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
 		word_t intr = isa_query_intr();
+		if (cpu.INTR == true) printf("cpu intr\n");
 		if (intr != INTR_EMPTY) {
 			printf("intr\n");
 			cpu.pc = isa_raise_intr(intr, cpu.pc);
