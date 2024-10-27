@@ -5,6 +5,7 @@
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
+static int proc_id = 0;
 
 void context_uload(PCB *_pcb, const char *filename, char *const argv[], char *const envp[]);
 void naive_uload(PCB *pcb, const char *filename);
@@ -42,7 +43,6 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	static int proc_id = 0;
 	current = &pcb[proc_id];
 	proc_id = (proc_id + 1) % 2;
   return current->cp;
