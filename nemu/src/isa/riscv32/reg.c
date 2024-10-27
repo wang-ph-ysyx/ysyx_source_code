@@ -32,6 +32,7 @@ void isa_reg_display() {
 	printf("satp\t%#x\t%d\n", cpu.csr.satp, cpu.csr.satp);
 	printf("mscratch\t%#x\t%d\n", cpu.csr.mscratch, cpu.csr.mscratch);
 	printf("mepc\t%#x\t%d\n", cpu.csr.mepc, cpu.csr.mepc);
+	printf("mstatus\t%#x\t%d\n", cpu.csr.mstatus, cpu.csr.mstatus);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
