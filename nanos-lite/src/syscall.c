@@ -44,7 +44,7 @@ void do_syscall(Context *c) {
 		case SYS_brk: c->GPRx = mm_brk(a[1]); break;
 		case SYS_execve: if (fs_open((char *)a[1], 0, 0) < 0) c->GPRx = -2;
 										else { context_uload(current, (char *)a[1], (char **)a[2], (char **)a[3]);
-										switch_boot_pcb(); /*yield();*/ } break;
+										/*switch_boot_pcb(); yield();*/ } break;
 		case SYS_gettimeofday: c->GPRx = sys_gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
