@@ -6,6 +6,8 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 
+int fg_pcb = 1;
+
 void context_uload(PCB *_pcb, const char *filename, char *const argv[], char *const envp[]);
 void naive_uload(PCB *pcb, const char *filename);
 
@@ -31,6 +33,10 @@ void init_proc() {
 	context_uload(&pcb[0], "/bin/hello", argv0, envp0);
 	char *argv1[] = {"/bin/nterm", NULL}, *envp1[] = {NULL};
 	context_uload(&pcb[1], "/bin/nterm", argv1, envp1);
+	char *argv2[] = {"/bin/pal", "--skip", NULL}, *envp2[] = {NULL};
+	context_uload(&pcb[2], "/bin/pal", argv2, envp2);
+	char *argv3[] = {"/bin/nterm", NULL}, *envp3[] = {NULL};
+	context_uload(&pcb[3], "/bin/nslider", argv3, envp3);
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -42,8 +48,7 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	static int proc_id = 0;
-	current = &pcb[proc_id];
-	proc_id = (proc_id + 1) % 2;
+	if (current == &pcb[0]) current = &pcb[fg_pcb];
+	else current = &pcb[0];
   return current->cp;
 }

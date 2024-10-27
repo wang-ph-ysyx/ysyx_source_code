@@ -21,10 +21,15 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
+extern int fg_pcb;
+
 size_t events_read(void *buf, size_t offset, size_t len) {
 	AM_INPUT_KEYBRD_T input = io_read(AM_INPUT_KEYBRD);
 	int keycode = input.keycode;
 	bool keydown = input.keydown;
+	if (keycode == AM_KEY_F1 && keydown == 1) fg_pcb = 1;
+	if (keycode == AM_KEY_F2 && keydown == 1) fg_pcb = 2;
+	if (keycode == AM_KEY_F3 && keydown == 1) fg_pcb = 3;
 	char *_buf = (char *)buf;
 	const char kd[] = "kd ", ku[] = "ku ";
 	if (keycode == 0)
