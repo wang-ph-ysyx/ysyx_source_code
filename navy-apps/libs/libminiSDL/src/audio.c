@@ -1,7 +1,6 @@
 #include <NDL.h>
 #include <SDL.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 static void (*callback)(void *userdata, uint8_t *stream, int len);
 static int audio_pause = 1;
@@ -51,18 +50,14 @@ void SDL_UnlockAudio() {
 
 void CallBackHelper() {
 	static int called = 0;
-	printf("call callbackhelper: %d, %d, %d\n", time_interval, audio_pause, called);
 	if (time_interval == 0 || audio_pause || called) return;
 	called = 1;
 
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
-	printf("test2\n");
 	if (now - start > time_interval && NDL_QueryAudio() > samples) {
-		printf("test\n");
 		start = now;
 		uint8_t *stream = malloc(samples);
-	printf("test3\n");
 		callback(NULL, stream, samples);
 		NDL_PlayAudio(stream, samples);
 		free(stream);
