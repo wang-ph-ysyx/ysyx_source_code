@@ -49,7 +49,10 @@ void SDL_UnlockAudio() {
 }
 
 void CallBackHelper() {
-	if (time_interval == 0 || audio_pause) return;
+	static int called = 0;
+	if (time_interval == 0 || audio_pause || called) return;
+	called = 1;
+
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
 	if (now - start > time_interval && NDL_QueryAudio() > samples) {
@@ -59,4 +62,6 @@ void CallBackHelper() {
 		NDL_PlayAudio(stream, samples);
 		free(stream);
 	}
+
+	called = 0;
 }
