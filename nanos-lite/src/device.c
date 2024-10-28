@@ -67,7 +67,6 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sb_write(const void *buf, size_t offset, size_t len) {
-	printf("write /dev/sb\n");
 	while (len > io_read(AM_AUDIO_STATUS).count);
 	uint8_t _buf[len];
 	for (int i = 0; i < len; ++i) {
@@ -79,6 +78,7 @@ size_t sb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sbctl_read(void *buf, size_t offset, size_t len) {
+	printf("read sbctl\n");
 	if (len < sizeof(int)) return 0;
 	int count = io_read(AM_AUDIO_STATUS).count;
 	*(int *) buf = count;
