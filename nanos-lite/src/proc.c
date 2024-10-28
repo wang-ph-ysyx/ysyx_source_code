@@ -54,7 +54,7 @@ Context* schedule(Context *prev) {
 	current->cp = prev;
 
 	static int count = 0;
-	if (current == &pcb[0]) {
+	if (current != &pcb[fg_pcb]) {
 		current = &pcb[fg_pcb];
 	}
 	else {
