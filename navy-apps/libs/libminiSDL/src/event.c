@@ -5,7 +5,7 @@
 #define keyname(k) #k,
 #define keysnap(k) [SDLK_##k] = 0,
 
-void CallBackHelper();
+void CallBackHelper(); //audio callback helper function
 
 static uint8_t keysnap[] = {
 	[SDLK_NONE] = 0,
