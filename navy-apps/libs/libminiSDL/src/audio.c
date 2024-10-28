@@ -56,7 +56,6 @@ void CallBackHelper() {
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
 	if (now - start > time_interval && NDL_QueryAudio() > samples) {
-		printf("time: %d\n", now - start);
 		start += time_interval;
 		uint8_t *stream = malloc(samples);
 		callback(NULL, stream, samples);
