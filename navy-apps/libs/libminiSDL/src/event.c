@@ -29,7 +29,6 @@ int SDL_PollEvent(SDL_Event *event) {
 	if (buf[1] == 'u') event->type = SDL_KEYUP;
 	else if (buf[1] == 'd') event->type = SDL_KEYDOWN;
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
-		CallBackHelper();
 		if (strcmp(buf + 3, keyname[i]) == 0) {
 			event->key.keysym.sym = i;
 			if (event->type == SDL_KEYUP)
@@ -50,7 +49,6 @@ int SDL_WaitEvent(SDL_Event *event) {
 	if (buf[1] == 'u') event->type = SDL_KEYUP;
 	else if (buf[1] == 'd') event->type = SDL_KEYDOWN;
 	for (int i = 1; i < sizeof(keyname) / sizeof(char *); ++i) {
-		CallBackHelper();
 		if (strcmp(buf + 3, keyname[i]) == 0) {
 			event->key.keysym.sym = i;
 			if (event->type == SDL_KEYUP)
