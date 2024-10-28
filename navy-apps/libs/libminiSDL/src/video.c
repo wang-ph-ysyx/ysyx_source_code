@@ -19,6 +19,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 	if (dstrect != NULL) { dst_x = dstrect->x; dst_y = dstrect->y; }
 	for (int i = 0; i < srcrect_h; ++i) {
 		for (int j = 0; j < srcrect_w; ++j) {
+			CallBackHelper();
 			if (src->format->BitsPerPixel == 32)
 				*((uint32_t *)dst->pixels + dst_w * (i + dst_y) + j + dst_x) = *((uint32_t *)src->pixels + src_w * (i + src_y) + j + src_x);
 			else if (src->format->BitsPerPixel == 8) {
@@ -35,6 +36,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 	int surface_w = dst->w;
 	for (int i = y; i < y + h; ++i) {
 		for (int j = x; j < x + w; ++j) {
+			CallBackHelper();
 			if (dst->format->BitsPerPixel == 32)
 				*((uint32_t *)dst->pixels + i * surface_w + j) = color;
 			else if (dst->format->BitsPerPixel == 8) {
@@ -59,6 +61,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		assert(pixels);
 		int times = 0;
 		for (int i = 0; i < size; ++i) {
+			CallBackHelper();
 			uint8_t index = *((uint8_t *)s->pixels + i);
 			SDL_Color *color = s->format->palette->colors + index;
 			++times;
