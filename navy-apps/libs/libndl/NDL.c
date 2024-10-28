@@ -91,7 +91,7 @@ int NDL_QueryAudio() {
 	int fd = open("dev/sbctl", 0, 0);
 	printf("test\n");
 	int count;
-	read(fd, count, sizeof(count));
+	read(fd, &count, sizeof(count));
   return count;
 }
 
