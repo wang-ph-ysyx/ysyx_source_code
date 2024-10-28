@@ -18,7 +18,7 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
 		obtained->userdata = desired->userdata;
 	}
 	samples = desired->samples;
-	time_interval = samples * 100 / desired->freq;
+	//time_interval = samples * 1000 / desired->freq;
 	NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
 	callback = desired->callback;
   return 0;
