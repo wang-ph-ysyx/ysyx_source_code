@@ -74,7 +74,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 	close(fd);
 	fd = open("/dev/fb", 0, 0);
 	size_t offset = 4 * (ctl->y * width + ctl->x);
-	printf("w: %d, h: %d, x: %d, y: %d, width: %d, height: %d", ctl->w, ctl->h, ctl->x, ctl->y, width, height);
+	printf("w: %d, h: %d, x: %d, y: %d, width: %d, height: %d\n", ctl->w, ctl->h, ctl->x, ctl->y, width, height);
 	for (int i = 0; i < ctl->h; ++i) {
 		lseek(fd, offset, SEEK_SET);
 		write(fd, ctl->pixels + ctl->w * i, 4 * ctl->w);
