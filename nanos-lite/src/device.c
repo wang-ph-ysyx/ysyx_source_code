@@ -67,6 +67,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sb_write(const void *buf, size_t offset, size_t len) {
+	printf("write /dev/sb\n");
 	while (len > io_read(AM_AUDIO_STATUS).count);
 	uint8_t _buf[len];
 	for (int i = 0; i < len; ++i) {
