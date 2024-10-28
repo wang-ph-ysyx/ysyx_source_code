@@ -69,7 +69,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 size_t sb_write(const void *buf, size_t offset, size_t len) {
 	while (len > io_read(AM_AUDIO_CONFIG).bufsize - io_read(AM_AUDIO_STATUS).count);
 	uint8_t _buf[len];
-	printf("write sb : %d\n, sizeof buf: %d\n", len, sizeof(_buf));
+	printf("write sb : %d, sizeof buf: %d\n", len, sizeof(_buf));
 	for (int i = 0; i < len; ++i) {
 		_buf[i] = *((uint8_t *)buf + i);
 	}
