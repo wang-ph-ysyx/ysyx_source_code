@@ -10,6 +10,7 @@ void call_main(uintptr_t *args) {
 	char **argv = (char **)args;
 	char *empty[] = {NULL };
   environ = empty;
+	__libc_init_array();
   exit(main(argc, argv, empty));
   assert(0);
 }
