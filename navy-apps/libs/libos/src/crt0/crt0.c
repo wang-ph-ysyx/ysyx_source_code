@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
+void __libc_init_array();
 int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
+
 void call_main(uintptr_t *args) {
 	int argc = *(int *)args;
 	args = (uintptr_t *)((int *)args + 1);
