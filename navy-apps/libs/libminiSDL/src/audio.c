@@ -1,6 +1,7 @@
 #include <NDL.h>
 #include <SDL.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 static void (*callback)(void *userdata, uint8_t *stream, int len);
 static int audio_pause = 1;
@@ -52,6 +53,7 @@ void CallBackHelper() {
 	static int called = 0;
 	if (time_interval == 0 || audio_pause || called) return;
 	called = 1;
+	printf("call callbackhelper\n");
 
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
