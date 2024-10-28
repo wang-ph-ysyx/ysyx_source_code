@@ -85,7 +85,6 @@ size_t sbctl_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t sbctl_write(const void *buf, size_t offset, size_t len) {
-	printf("write sbctl\n");
 	if (len < sizeof(int) * 3) return 0;
 	int freq = *(int *)buf, channels = *((int *) buf + 1), samples = *((int *) buf + 2);
 	io_write(AM_AUDIO_CTRL, freq, channels, samples);
