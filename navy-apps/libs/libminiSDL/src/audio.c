@@ -29,6 +29,7 @@ void SDL_CloseAudio() {
 }
 
 void SDL_PauseAudio(int pause_on) {
+	printf("pause_on: %d\n", pause_on);
 	audio_pause = pause_on;
 }
 
