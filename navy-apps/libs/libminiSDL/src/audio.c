@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 static void (*callback)(void *userdata, uint8_t *stream, int len);
-static int audio_pause = 0;
+static int audio_pause = 1;
 static uint32_t time_interval = 0;
 static int samples = 0;
 
@@ -70,7 +70,7 @@ SDL_AudioSpec *SDL_LoadWAV(const char *file, SDL_AudioSpec *spec, uint8_t **audi
 	fread(buf, 1, data_size, fp);
 	*audio_buf = buf;
 
-  return NULL;
+  return spec;
 }
 
 void SDL_FreeWAV(uint8_t *audio_buf) {
