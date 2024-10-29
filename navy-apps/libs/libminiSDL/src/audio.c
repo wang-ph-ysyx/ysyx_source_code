@@ -33,6 +33,7 @@ void SDL_PauseAudio(int pause_on) {
 }
 
 void SDL_MixAudio(uint8_t *dst, uint8_t *src, uint32_t len, int volume) {
+	printf("mix len: %d, volume: %d\n", len, volume);
 	for (uint32_t i = 0; i < len; ++i) {
 		uint16_t sum = (uint16_t)dst[i] + (uint16_t)src[i] * (volume / SDL_MIX_MAXVOLUME);
 		if (sum > SDL_MIX_MAXVOLUME) sum = SDL_MIX_MAXVOLUME;
