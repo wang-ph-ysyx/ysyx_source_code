@@ -38,8 +38,8 @@ void init_proc() {
 	char *argv2[] = {"/bin/pal", "--skip", NULL}, *envp2[] = {NULL};
 	context_uload(&pcb[2], "/bin/pal", argv2, envp2);
 
-	char *argv3[] = {"/bin/nslider", NULL}, *envp3[] = {NULL};
-	context_uload(&pcb[3], "/bin/nslider", argv3, envp3);
+	char *argv3[] = {"/bin/fceux", NULL}, *envp3[] = {NULL};
+	context_uload(&pcb[3], "/bin/fceux", argv3, envp3);
 
   switch_boot_pcb();
 
@@ -52,7 +52,18 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	if (current == &pcb[0]) current = &pcb[fg_pcb];
-	else current = &pcb[0];
+
+	static int count = 0;
+	if (current != &pcb[fg_pcb]) {
+		current = &pcb[fg_pcb];
+	}
+	else {
+		if (count == 100) {
+			current = &pcb[0];
+			count = 0;
+		}
+		++count;
+	}
+
   return current->cp;
 }
