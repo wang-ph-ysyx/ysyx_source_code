@@ -70,7 +70,7 @@ SDL_AudioSpec *SDL_LoadWAV(const char *file, SDL_AudioSpec *spec, uint8_t **audi
 	fread(buf, 1, data_size, fp);
 	*audio_buf = buf;
 
-	printf("load wav\n");
+	printf("load wav: %s, %d, %d, %d, %d\n", file, freq, sample_bit, channels, data_size);
 
   return NULL;
 }
