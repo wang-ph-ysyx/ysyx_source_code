@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 static void (*callback)(void *userdata, uint8_t *stream, int len);
-static int audio_pause = 1;
+static int audio_pause = 0;
 static uint32_t time_interval = 0;
 static int samples = 0;
 
@@ -29,7 +29,6 @@ void SDL_CloseAudio() {
 }
 
 void SDL_PauseAudio(int pause_on) {
-	printf("pause_on: %d\n", pause_on);
 	audio_pause = pause_on;
 }
 
