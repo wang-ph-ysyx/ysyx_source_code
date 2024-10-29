@@ -33,7 +33,6 @@ void SDL_PauseAudio(int pause_on) {
 }
 
 void SDL_MixAudio(uint8_t *dst, uint8_t *src, uint32_t len, int volume) {
-	printf("mix len: %d, volume: %d\n", len, volume);
 	for (uint32_t i = 0; i < len; ++i) {
 		uint16_t sum = (uint16_t)dst[i] + (uint16_t)src[i] * (volume / SDL_MIX_MAXVOLUME);
 		if (sum > SDL_MIX_MAXVOLUME) sum = SDL_MIX_MAXVOLUME;
@@ -71,8 +70,6 @@ SDL_AudioSpec *SDL_LoadWAV(const char *file, SDL_AudioSpec *spec, uint8_t **audi
 	fread(buf, 1, data_size, fp);
 	*audio_buf = buf;
 
-	printf("load wav: %s, %d, %d, %d, %d\n", file, freq, sample_bit, channels, data_size);
-
   return NULL;
 }
 
@@ -90,6 +87,7 @@ void CallBackHelper() {
 	static int called = 0;
 	if (time_interval == 0 || audio_pause || called) return;
 	called = 1;
+	printf("call back\n");
 
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
