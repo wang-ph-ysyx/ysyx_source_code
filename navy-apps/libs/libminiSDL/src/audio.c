@@ -84,7 +84,6 @@ void SDL_UnlockAudio() {
 }
 
 void CallBackHelper() {
-	printf("call back, time_interval: %d, audio_pause: %d\n", time_interval, audio_pause);
 	static int called = 0;
 	if (time_interval == 0 || audio_pause || called) return;
 	called = 1;
