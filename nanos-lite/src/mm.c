@@ -25,7 +25,7 @@ void free_page(void *p) {
 /* The brk() system call handler. */
 extern char end;
 int mm_brk(uintptr_t brk) {
-	printf("%p, %x\n", end, brk);
+	printf("%p, %x\n", &end, brk);
 	if (current->max_brk == 0) {
 		current->max_brk = brk;
 		void *va = (void *)ROUNDDOWN(brk, PGSIZE);
