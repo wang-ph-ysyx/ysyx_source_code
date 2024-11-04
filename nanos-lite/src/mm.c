@@ -27,12 +27,8 @@ int mm_brk(uintptr_t brk) {
 	if (current->max_brk == 0) {
 		current->max_brk = brk;
 		void *va = (void *)ROUNDDOWN(brk, PGSIZE);
-		void *pa = maped(&current->as, va);
-		if (pa == NULL) {
-			printf("map brk: %x\n", brk);
-			pa = new_page(1);
-			map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
-		}
+		void *pa = new_page(1);
+		map(&current->as, va, pa, PROT_WRITE | PROT_READ | PROT_EXEC);
 	}
 	for (void *va = (void*)ROUNDDOWN(current->max_brk, PGSIZE); (uintptr_t)va < ROUNDDOWN(brk, PGSIZE); va += PGSIZE) {
 		void *pa = new_page(1);
