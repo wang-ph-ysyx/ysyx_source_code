@@ -38,8 +38,8 @@ void init_proc() {
 	char *argv2[] = {"/bin/pal", "--skip", NULL}, *envp2[] = {NULL};
 	context_uload(&pcb[2], "/bin/pal", argv2, envp2);
 
-	char *argv3[] = {"/bin/nslide", NULL}, *envp3[] = {NULL};
-	context_uload(&pcb[3], "/bin/nslide", argv3, envp3);
+	char *argv3[] = {"/bin/nslider", NULL}, *envp3[] = {NULL};
+	context_uload(&pcb[3], "/bin/nslider", argv3, envp3);
 
   switch_boot_pcb();
 
