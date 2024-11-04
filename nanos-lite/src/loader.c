@@ -49,18 +49,22 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			void *va_file_end = va + phdr[i].p_filesz;
 			void *va_end = va + phdr[i].p_memsz;
 			fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
-			printf("filename: %s, vaddr: %x\n", filename, va);
-
-			void *pa = new_page(1);
-			map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			void *pa = maped(&pcb->as, va_start);
+			if (pa == NULL) {
+				pa = new_page(1);
+				map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			}
 			fs_read(fd, pa + (va - va_start), PGSIZE - (va - va_start));
 			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
 				pa = new_page(1);
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 				fs_read(fd, pa, PGSIZE);
 			}
-			pa = new_page(1);
-			map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			pa = maped(&pcb->as, va);
+			if (pa == NULL) {
+				pa = new_page(1);
+				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			}
 			if (va_end >= va)
 				fs_read(fd, pa, va_end - va);
 			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
