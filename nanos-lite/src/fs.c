@@ -63,6 +63,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 			return i;
 		}
 	}
+	printf("open failed\n");
 	return -1;
 }
 
