@@ -22,6 +22,7 @@ reg sign2_reg;
 reg div_busy;
 assign rem = ans[63:32];
 assign res = ans[31:0];
+assign div_ready = ~div_busy;
 
 wire sign1 = div_sign & div1[31];
 wire sign2 = div_sign & div2[31];
