@@ -251,4 +251,24 @@ module ysyx_23060236_exu(
 		.div_outvalid(div_outvalid)
 	);
 
+`ifndef SYN
+import "DPI-C" function void add_div_cycle();
+import "DPI-C" function void add_mul_cycle();
+
+reg div_doing;
+reg mul_doing;
+always @(posedge clock) begin
+	if (reset) mul_doing <= 0;
+	else if (exu_valid & exu_ready & inst_mul & mul_ready) mul_doing <= 1;
+	else if (mul_outvalid) mul_doing <= 0;
+
+	if (reset) div_doing <= 0;
+	else if (exu_valid & exu_ready & inst_div & div_ready) div_doing <= 1;
+	else if (div_outvalid) div_doing <= 0;
+
+	if (div_doing) add_div_cycle();
+	if (mul_doing) add_mul_cycle();
+end
+`endif
+
 endmodule

@@ -39,6 +39,8 @@ static long raw_conflict = 0;
 static long raw_conflict_cycle = 0;
 static long jump_wrong = 0;
 static long jump_wrong_cycle = 0;
+static long div_cycle = 0;
+static long mul_cycle = 0;
 static int lsu_awaddr = 0;
 static int inst_ebreak = 0;
 
@@ -78,6 +80,10 @@ void print_statistic() {
 	printf("jump_wrong_cycle: %ld\n", jump_wrong_cycle);
 	printf("jump_wrong: %ld\n", jump_wrong);
 	printf("average jump wrong penalty: %f\n", (double)jump_wrong_cycle / jump_wrong);
+	// muldiv performance
+	printf("\nmul/div performance:\n");
+	printf("div cycle: %ld\n", div_cycle);
+	printf("mul cycle: %ld\n", mul_cycle);
 	printf("\n");
 }
 
@@ -96,6 +102,8 @@ extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
 extern "C" void add_raw_conflict() { ++raw_conflict; }
 extern "C" void add_jump_wrong() { ++jump_wrong; }
 extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
+extern "C" void add_mul_cycle() { ++mul_cycle; }
+extern "C" void add_div_cycle() { ++div_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 extern "C" void program_end() { inst_ebreak = 1; }
 
