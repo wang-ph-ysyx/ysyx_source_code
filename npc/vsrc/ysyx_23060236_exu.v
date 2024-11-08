@@ -41,11 +41,25 @@ module ysyx_23060236_exu(
 	wire [31:0] snpc;
 	wire jump_en;
 	wire jal_enable;
+	wire inst_muldiv;
+	wire inst_mul;
+	wire inst_div;
+	wire mul_ready;
+	wire div_ready;
+	wire mul_outvalid;
+	wire div_outvalid;
 	reg  need_btb;
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
 	reg  exu_ready_reg;
+	reg  mul_doing;
+	reg  mul_valid;
+	reg  div_doing;
+	reg  div_valid;
 
+	assign inst_muldiv = opcode_type[INST_ADDI] & funct7_50[0];
+	assign inst_mul = inst_muldiv & ~funct3[2];
+	assign inst_div = inst_muldiv & funct3[2];
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
@@ -55,12 +69,30 @@ module ysyx_23060236_exu(
 	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
 	assign exu_ready = exu_ready_reg & ~jump_wrong;
 
+	// control signal register
 	always @(posedge clock) begin
 		if (reset) exu_ready_reg <= 1;
 		else if (lsu_over) exu_ready_reg <= 1;
 		else if (exu_ready & exu_valid) exu_ready_reg <= 0;
+
+		if (reset) mul_valid <= 0;
+		else if (exu_valid & exu_ready & inst_mul) mul_valid <= 1;
+		else if (mul_valid & mul_ready) mul_valid <= 0;
+
+		if (reset) mul_doing <= 0;
+		else if (mul_valid & mul_ready) mul_doing <= 1;
+		else if (mul_outvalid) mul_doing <= 0;
+
+		if (reset) div_valid <= 0;
+		else if (exu_valid & exu_ready & inst_div) div_valid <= 1;
+		else if (div_valid & div_ready) div_valid <= 0;
+
+		if (reset) div_doing <= 0;
+		else if (div_valid & div_ready) div_doing <= 1;
+		else if (div_outvalid) div_doing <= 0;
 	end
 
+	// data register
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			rd_next         <= rd;
