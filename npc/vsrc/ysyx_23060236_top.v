@@ -95,6 +95,7 @@ module ysyx_23060236(
 	wire [4:0]  idu_rd;
 	wire [4:0]  exu_rd;
 	wire [2:0]  funct3;
+	wire [2:0]  funct3_reg;
 	wire [1:0]  funct7_50;
 	wire [31:0] imm;
 	wire [31:0] src1;
@@ -353,6 +354,7 @@ module ysyx_23060236(
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
 		.inst_fencei(inst_fencei),
+		.funct3_reg(funct3_reg),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
 		.reg_wen_next(exu_reg_wen),
@@ -396,12 +398,12 @@ module ysyx_23060236(
 		.lsu_awsize(lsu_awsize),
 		.exu_val(exu_val),
 		.muldiv_val(muldiv_val),
-		.funct3(funct3),
 		.lsu_data(idu_src2),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.jump_wrong(jump_wrong),
 		.wb_val(wb_val),
+		.funct3_reg(funct3_reg),
 		.inst_muldiv(inst_muldiv),
 		.muldiv_outvalid(muldiv_outvalid),
 		.exu_valid(exu_valid),

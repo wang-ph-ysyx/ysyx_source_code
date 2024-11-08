@@ -18,6 +18,7 @@ module ysyx_23060236_exu(
 	input  [31:0] csr_val,
 	input  inst_fencei,
 
+	output reg [2:0]  funct3_reg,
 	output reg [4:0]  rd_next,
 	output reg [31:0] pc_next,
 	output reg reg_wen_next,
@@ -82,8 +83,8 @@ module ysyx_23060236_exu(
 										(funct3[1:0] == 2'b10) ? 2'b10 : 
 										2'b11;
 	assign div_sign = ~funct3[0];
-	assign mul_val = (funct3[1:0] == 2'b00) ? mul_low : mul_high;
-	assign div_val = funct3[1] ? div_rem : div_res;
+	assign mul_val = (funct3_reg[1:0] == 2'b00) ? mul_low : mul_high;
+	assign div_val = funct3_reg[1] ? div_rem : div_res;
 
 	// control signal register
 	always @(posedge clock) begin
@@ -95,6 +96,7 @@ module ysyx_23060236_exu(
 	// data register
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
+			funct3_reg      <= funct3;
 			rd_next         <= rd;
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;

@@ -26,11 +26,11 @@ module ysyx_23060236_lsu(
 
 	input  [31:0] exu_val,
 	input  [31:0] muldiv_val,
-	input  [2:0]  funct3,
 	input  [31:0] lsu_data,
 	input  lsu_ren,
 	input  lsu_wen,
 	input  jump_wrong,
+	input  [2:0]  funct3_reg,
 
 	output reg [31:0] wb_val,
 
@@ -42,7 +42,6 @@ module ysyx_23060236_lsu(
 	output wb_valid
 );
 
-	reg  [2:0]  funct3_reg;
 	reg  [31:0] lsu_data_reg;
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
@@ -60,7 +59,6 @@ module ysyx_23060236_lsu(
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			wb_val          <= exu_val;
-			funct3_reg      <= funct3;
 			lsu_data_reg    <= lsu_data;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
