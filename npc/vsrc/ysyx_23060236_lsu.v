@@ -25,28 +25,31 @@ module ysyx_23060236_lsu(
 	output        lsu_bready,
 
 	input  [31:0] exu_val,
-	input  [2:0]  funct3,
+	input  [31:0] muldiv_val,
 	input  [31:0] lsu_data,
 	input  lsu_ren,
 	input  lsu_wen,
 	input  jump_wrong,
+	input  [2:0]  funct3_reg,
 
 	output reg [31:0] wb_val,
 
+	input  inst_muldiv,
+	input  muldiv_outvalid,
 	input  exu_valid,
-	output exu_ready,
+	input  exu_ready,
+	output lsu_over,
 	output wb_valid
 );
 
-	reg  [2:0]  funct3_reg;
 	reg  [31:0] lsu_data_reg;
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
-	wire lsu_over;
-	wire exu_ready_tmp;
 
-	assign exu_ready = exu_ready_tmp & ~jump_wrong;
-	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
+	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen & ~inst_muldiv | 
+										lsu_rvalid & lsu_rready |	
+										lsu_bvalid & lsu_bready | 
+										muldiv_outvalid;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
 								 (funct3_reg[1:0] == 2'b01) ? 4'h3 :
@@ -56,21 +59,15 @@ module ysyx_23060236_lsu(
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
 			wb_val          <= exu_val;
-			funct3_reg      <= funct3;
 			lsu_data_reg    <= lsu_data;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
 		end
+		else if (muldiv_outvalid) begin
+			wb_val <= muldiv_val;
+		end
 	end
-
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready_tmp(
-		.clock(clock),
-		.reset(reset),
-		.din(exu_ready_tmp & ~(exu_ready & exu_valid) | lsu_over),
-		.dout(exu_ready_tmp),
-		.wen(1)
-	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),

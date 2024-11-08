@@ -40,7 +40,7 @@ paddr_t host_to_guest(uint8_t *haddr);
 
 #ifdef CONFIG_TARGET_SHARE
 static inline bool in_pmem(paddr_t addr) {
-  return (addr - MROM_BASE < MROM_SIZE) | (addr - SRAM_BASE < SRAM_SIZE) | (addr - FLASH_BASE < FLASH_SIZE) | (addr - SDRAM_BASE < SDRAM_SIZE);
+  return (addr - CONFIG_MBASE < CONFIG_MSIZE) | (addr - MROM_BASE < MROM_SIZE) | (addr - SRAM_BASE < SRAM_SIZE) | (addr - FLASH_BASE < FLASH_SIZE) | (addr - SDRAM_BASE < SDRAM_SIZE);
 }
 #elif defined(CONFIG_TARGET_NATIVE_ELF)
 static inline bool in_pmem(paddr_t addr) {

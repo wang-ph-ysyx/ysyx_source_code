@@ -24,7 +24,7 @@ module ysyx_23060236_idu(
 	output reg [31:0] src1_next,
 	output reg [31:0] src2_next,
 	output reg [31:0] imm,
-	output reg funct7_5,
+	output reg [1:0]  funct7_50,
 	output reg reg_wen,
 	output reg inst_fencei,
 	output reg inst_ecall,
@@ -77,7 +77,7 @@ module ysyx_23060236_idu(
 		if (idu_valid & idu_ready) begin
 			opcode_type <= opcode_type_tmp;
 			funct3      <= funct3_tmp;
-			funct7_5    <= funct7_tmp[5];
+			funct7_50   <= {funct7_tmp[5], funct7_tmp[0]};
 			rd          <= rd_tmp;
 			imm         <= imm_tmp;
 			reg_wen     <= reg_wen_tmp;
