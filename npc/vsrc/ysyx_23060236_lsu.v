@@ -44,7 +44,9 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
 
-	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
+	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | 
+										lsu_rvalid & lsu_rready |	
+										lsu_bvalid & lsu_bready;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
 								 (funct3_reg[1:0] == 2'b01) ? 4'h3 :
