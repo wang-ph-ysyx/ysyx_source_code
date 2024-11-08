@@ -16,7 +16,7 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
 # 批处理
-#NPC_FLAGS += -b
+NPC_FLAGS += -b
 
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
