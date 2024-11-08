@@ -57,6 +57,7 @@ always @(posedge clock) begin
 	if (count[5] & div_busy) begin
 		ans[63:32] <= sign1_reg               ? ~ans[63:32] + 1 : ans[63:32];
 		ans[31:0]  <= (sign1_reg ^ sign2_reg) ? ~ans[31:0]  + 1 : ans[31:0];
+		count <= 0;
 	end
 end
 

@@ -65,7 +65,7 @@ module ysyx_23060236_exu(
 	reg  mul_valid;
 	reg  div_valid;
 
-	assign inst_muldiv = opcode_type[INST_ADDI] & funct7_50[0];
+	assign inst_muldiv = opcode_type[INST_ADD] & funct7_50[0];
 	assign inst_mul = inst_muldiv & ~funct3[2];
 	assign inst_div = inst_muldiv & funct3[2];
 	assign muldiv_outvalid = mul_outvalid | div_outvalid;

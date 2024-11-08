@@ -50,12 +50,15 @@ always @(posedge clock) begin
 		res   <= {32'b0, mul2_unsign[31:0]};
 		mul1_reg <= mul1_unsign;
 	end
-	else if (~count[5] & mul_busy) begin
+
+	if (~count[5] & mul_busy) begin
 		res   <= res_unsign;
 		count <= count + 1;
 	end
-	else if (count[5] & mul_busy) begin
+
+	if (count[5] & mul_busy) begin
 		res <= sign ? ~res + 1 : res;
+		count <= 0;
 	end
 end
 
