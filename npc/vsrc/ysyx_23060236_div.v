@@ -34,6 +34,7 @@ wire [32:0] diff = ans[63:31] - {1'b0, div2_reg};
 always @(posedge clock) begin
 	if (reset) div_outvalid <= 0;
 	else if (count[5]) div_outvalid <= 1;
+	else if (div_outvalid) div_outvalid <= 0;
 
 	if (reset) div_busy <= 0;
 	else if (div_valid & div_ready) div_busy <= 1;
