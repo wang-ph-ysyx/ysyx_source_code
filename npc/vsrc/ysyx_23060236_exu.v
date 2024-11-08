@@ -1,6 +1,7 @@
 `include "ysyx_23060236_defines.v"
 module ysyx_23060236_exu(
 	input  clock,
+	input  reset,
 
 	input  [9:0]  opcode_type,
 	input  [4:0]  rd,
@@ -8,7 +9,7 @@ module ysyx_23060236_exu(
 	input  [31:0] src2,
 	input  [31:0] imm,
 	input  [2:0]  funct3,
-	input         funct7_5,
+	input  [1:0]  funct7_50,
 	input  [31:0] pc,
 	input  [31:0] dnpc,
 	input  reg_wen,
@@ -31,7 +32,8 @@ module ysyx_23060236_exu(
 	output csr_enable,
 
 	input  exu_valid,
-	input  exu_ready
+	output exu_ready,
+	input  lsu_over
 );
 
 	wire [31:0] jump_addr_tmp;
@@ -42,6 +44,7 @@ module ysyx_23060236_exu(
 	reg  need_btb;
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
+	reg  exu_ready_reg;
 
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
@@ -50,6 +53,13 @@ module ysyx_23060236_exu(
 	assign lsu_ren = opcode_type[INST_LW];
 	assign lsu_wen = opcode_type[INST_SW];
 	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
+	assign exu_ready = exu_ready_reg & ~jump_wrong;
+
+	always @(posedge clock) begin
+		if (reset) exu_ready_reg <= 1;
+		else if (lsu_over) exu_ready_reg <= 1;
+		else if (exu_ready & exu_valid) exu_ready_reg <= 0;
+	end
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
@@ -138,8 +148,8 @@ module ysyx_23060236_exu(
 										 (funct3 == 3'b111) ? OP_AND :
 										 OP_ADD;
 
-	assign operator2 = (opcode_type[INST_ADD] & funct7_5) ? OP_SUB : OP_ADD;
-	assign operator3 = funct7_5 ? OP_SRA : OP_SRL;
+	assign operator2 = (opcode_type[INST_ADD] & funct7_50[1]) ? OP_SUB : OP_ADD;
+	assign operator3 = funct7_50[1] ? OP_SRA : OP_SRL;
 
 	assign {op_overflow, op_compare} = loperand - roperand;
 	assign op_sum  = loperand + roperand;

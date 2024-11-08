@@ -84,6 +84,7 @@ module ysyx_23060236(
 	wire idu_ready;
 	wire exu_valid;
 	wire exu_ready;
+	wire lsu_over;
 	wire wb_valid;
 	wire jump_wrong;
 
@@ -94,7 +95,7 @@ module ysyx_23060236(
 	wire [4:0]  idu_rd;
 	wire [4:0]  exu_rd;
 	wire [2:0]  funct3;
-	wire        funct7_5;
+	wire [1:0]  funct7_50;
 	wire [31:0] imm;
 	wire [31:0] src1;
 	wire [31:0] src2;
@@ -317,7 +318,7 @@ module ysyx_23060236(
 		.pc_next(idu_pc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
-		.funct7_5(funct7_5),
+		.funct7_50(funct7_50),
 		.rd(idu_rd),
 		.src1_next(idu_src1),
 		.src2_next(idu_src2),
@@ -334,13 +335,14 @@ module ysyx_23060236(
 
 	ysyx_23060236_exu my_exu(
 		.clock(clock),
+		.reset(reset),
 		.opcode_type(opcode_type),
 		.rd(idu_rd),
 		.src1(idu_src1),
 		.src2(idu_src2),
 		.imm(imm),
 		.funct3(funct3),
-		.funct7_5(funct7_5),
+		.funct7_50(funct7_50),
 		.pc(idu_pc),
 		.dnpc(exu_dnpc),
 		.reg_wen(idu_reg_wen),
@@ -360,7 +362,8 @@ module ysyx_23060236(
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
 		.exu_valid(exu_valid),
-		.exu_ready(exu_ready)
+		.exu_ready(exu_ready),
+		.lsu_over(lsu_over)
 	);
 
 	ysyx_23060236_lsu my_lsu(
@@ -394,7 +397,8 @@ module ysyx_23060236(
 		.wb_val(wb_val),
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
-		.wb_valid(wb_valid)
+		.wb_valid(wb_valid),
+		.lsu_over(lsu_over)
 	);
 
 	ysyx_23060236_RegisterFile #(5, 32) my_reg(

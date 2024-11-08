@@ -34,7 +34,8 @@ module ysyx_23060236_lsu(
 	output reg [31:0] wb_val,
 
 	input  exu_valid,
-	output exu_ready,
+	input  exu_ready,
+	output lsu_over,
 	output wb_valid
 );
 
@@ -42,10 +43,7 @@ module ysyx_23060236_lsu(
 	reg  [31:0] lsu_data_reg;
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
-	wire lsu_over;
-	wire exu_ready_tmp;
 
-	assign exu_ready = exu_ready_tmp & ~jump_wrong;
 	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
@@ -63,14 +61,6 @@ module ysyx_23060236_lsu(
 			wb_val <= lsu_val_tmp;
 		end
 	end
-
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready_tmp(
-		.clock(clock),
-		.reset(reset),
-		.din(exu_ready_tmp & ~(exu_ready & exu_valid) | lsu_over),
-		.dout(exu_ready_tmp),
-		.wen(1)
-	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),

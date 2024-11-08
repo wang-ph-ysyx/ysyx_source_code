@@ -101,7 +101,7 @@ perf:
 	make -C ../am-kernels/benchmarks/microbench ARCH=riscv32e-ysyxsoc run mainargs=train
 
 CHECK_VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CHECKFLAGS = --lint-only -Wall
+CHECKFLAGS = --lint-only -Wall $(VER_INCFLAGS)
 
 check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
