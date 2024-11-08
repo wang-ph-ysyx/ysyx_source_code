@@ -102,8 +102,8 @@ extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
 extern "C" void add_raw_conflict() { ++raw_conflict; }
 extern "C" void add_jump_wrong() { ++jump_wrong; }
 extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
-extern "C" void add_mul_cycle() { ++mul_cycle; }
-extern "C" void add_div_cycle() { ++div_cycle; }
+extern "C" void add_mul_cycle() {printf("mul\n"); ++mul_cycle; }
+extern "C" void add_div_cycle() {printf("div\n"); ++div_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 extern "C" void program_end() { inst_ebreak = 1; }
 
