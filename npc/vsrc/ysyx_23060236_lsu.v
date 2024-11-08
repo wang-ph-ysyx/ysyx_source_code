@@ -25,6 +25,7 @@ module ysyx_23060236_lsu(
 	output        lsu_bready,
 
 	input  [31:0] exu_val,
+	input  [31:0] muldiv_val,
 	input  [2:0]  funct3,
 	input  [31:0] lsu_data,
 	input  lsu_ren,
@@ -33,6 +34,8 @@ module ysyx_23060236_lsu(
 
 	output reg [31:0] wb_val,
 
+	input  inst_muldiv,
+	input  muldiv_outvalid,
 	input  exu_valid,
 	input  exu_ready,
 	output lsu_over,
@@ -44,9 +47,10 @@ module ysyx_23060236_lsu(
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
 
-	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | 
+	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen & ~inst_muldiv | 
 										lsu_rvalid & lsu_rready |	
-										lsu_bvalid & lsu_bready;
+										lsu_bvalid & lsu_bready | 
+										muldiv_outvalid;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
 								 (funct3_reg[1:0] == 2'b01) ? 4'h3 :
@@ -61,6 +65,9 @@ module ysyx_23060236_lsu(
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
+		end
+		else if (muldiv_outvalid) begin
+			wb_val <= muldiv_val;
 		end
 	end
 

@@ -108,6 +108,9 @@ module ysyx_23060236(
 	wire inst_ecall;
 	wire inst_mret;
 	wire inst_fencei;
+	wire inst_muldiv;
+	wire [31:0] muldiv_val;
+	wire muldiv_outvalid;
 	wire btb_wvalid;
 
 	wire [31:0] csr_jump;
@@ -361,6 +364,9 @@ module ysyx_23060236(
 		.lsu_wen(lsu_wen),
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
+		.inst_muldiv(inst_muldiv),
+		.muldiv_outvalid(muldiv_outvalid),
+		.muldiv_val(muldiv_val),
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
 		.lsu_over(lsu_over)
@@ -389,12 +395,15 @@ module ysyx_23060236(
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
 		.exu_val(exu_val),
+		.muldiv_val(muldiv_val),
 		.funct3(funct3),
 		.lsu_data(idu_src2),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.jump_wrong(jump_wrong),
 		.wb_val(wb_val),
+		.inst_muldiv(inst_muldiv),
+		.muldiv_outvalid(muldiv_outvalid),
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
 		.wb_valid(wb_valid),

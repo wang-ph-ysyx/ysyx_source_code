@@ -30,6 +30,9 @@ module ysyx_23060236_exu(
 	output lsu_wen,
 	output [31:0] csr_wdata,
 	output csr_enable,
+	output inst_muldiv,
+	output muldiv_outvalid,
+	output [31:0] muldiv_val,
 
 	input  exu_valid,
 	output exu_ready,
@@ -39,9 +42,16 @@ module ysyx_23060236_exu(
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] alu_val;
 	wire [31:0] snpc;
+	wire [31:0] mul_val;
+	wire [31:0] div_val;
+	wire [31:0] mul_high;
+	wire [31:0] mul_low;
+	wire [31:0] div_res;
+	wire [31:0] div_rem;
+	wire [1:0]  mul_sign;
+	wire div_sign;
 	wire jump_en;
 	wire jal_enable;
-	wire inst_muldiv;
 	wire inst_mul;
 	wire inst_div;
 	wire mul_ready;
@@ -52,14 +62,13 @@ module ysyx_23060236_exu(
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
 	reg  exu_ready_reg;
-	reg  mul_doing;
 	reg  mul_valid;
-	reg  div_doing;
 	reg  div_valid;
 
 	assign inst_muldiv = opcode_type[INST_ADDI] & funct7_50[0];
 	assign inst_mul = inst_muldiv & ~funct3[2];
 	assign inst_div = inst_muldiv & funct3[2];
+	assign muldiv_outvalid = mul_outvalid | div_outvalid;
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
 	assign csr_enable = opcode_type[INST_CSR] & (funct3 != 3'b0);
@@ -68,6 +77,15 @@ module ysyx_23060236_exu(
 	assign lsu_wen = opcode_type[INST_SW];
 	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
 	assign exu_ready = exu_ready_reg & ~jump_wrong;
+	assign muldiv_val = mul_outvalid ? mul_val : 
+											div_outvalid ? div_val : 
+											32'b0;
+	assign mul_sign = (funct3[1:0] == 2'b11) ? 2'b00 : 
+										(funct3[1:0] == 2'b10) ? 2'b10 : 
+										2'b11;
+	assign div_sign = ~funct3[0];
+	assign mul_val = (funct3[1:0] == 2'b00) ? mul_low : mul_high;
+	assign div_val = funct3[1] ? div_rem : div_res;
 
 	// control signal register
 	always @(posedge clock) begin
@@ -79,17 +97,9 @@ module ysyx_23060236_exu(
 		else if (exu_valid & exu_ready & inst_mul) mul_valid <= 1;
 		else if (mul_valid & mul_ready) mul_valid <= 0;
 
-		if (reset) mul_doing <= 0;
-		else if (mul_valid & mul_ready) mul_doing <= 1;
-		else if (mul_outvalid) mul_doing <= 0;
-
 		if (reset) div_valid <= 0;
 		else if (exu_valid & exu_ready & inst_div) div_valid <= 1;
 		else if (div_valid & div_ready) div_valid <= 0;
-
-		if (reset) div_doing <= 0;
-		else if (div_valid & div_ready) div_doing <= 1;
-		else if (div_outvalid) div_doing <= 0;
 	end
 
 	// data register
@@ -221,5 +231,32 @@ module ysyx_23060236_exu(
 	assign csr_wdata = (funct3 == 3'b010) ? (src1 | csr_val) : 
 										 (funct3 == 3'b001) ? src1 :
 										 32'b0;
+
+	// mul/div
+	ysyx_23060236_mul my_mul(
+		.clock(clock),
+		.reset(reset),
+		.mul_valid(mul_valid),
+		.mul_ready(mul_ready),
+		.mul_sign(mul_sign),
+		.mul1(src1),
+		.mul2(src2),
+		.mul_high(mul_high),
+		.mul_low(mul_low),
+		.mul_outvalid(mul_outvalid)
+	);
+
+	ysyx_23060236_div my_div(
+		.clock(clock),
+		.reset(reset),
+		.div_valid(div_valid),
+		.div_ready(div_ready),
+		.div_sign(div_sign),
+		.div1(src1),
+		.div2(src2),
+		.res(div_res),
+		.rem(div_rem),
+		.div_outvalid(div_outvalid)
+	);
 
 endmodule
