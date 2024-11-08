@@ -62,8 +62,6 @@ module ysyx_23060236_exu(
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
 	reg  exu_ready_reg;
-	reg  mul_valid;
-	reg  div_valid;
 
 	assign inst_muldiv = opcode_type[INST_ADD] & funct7_50[0];
 	assign inst_mul = inst_muldiv & ~funct3[2];
@@ -92,14 +90,6 @@ module ysyx_23060236_exu(
 		if (reset) exu_ready_reg <= 1;
 		else if (lsu_over) exu_ready_reg <= 1;
 		else if (exu_ready & exu_valid) exu_ready_reg <= 0;
-
-		if (reset) mul_valid <= 0;
-		else if (exu_valid & exu_ready & inst_mul) mul_valid <= 1;
-		else if (mul_valid & mul_ready) mul_valid <= 0;
-
-		if (reset) div_valid <= 0;
-		else if (exu_valid & exu_ready & inst_div) div_valid <= 1;
-		else if (div_valid & div_ready) div_valid <= 0;
 	end
 
 	// data register
@@ -236,7 +226,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_mul my_mul(
 		.clock(clock),
 		.reset(reset),
-		.mul_valid(mul_valid),
+		.mul_valid(exu_valid & exu_ready & inst_mul),
 		.mul_ready(mul_ready),
 		.mul_sign(mul_sign),
 		.mul1(src1),
@@ -249,7 +239,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_div my_div(
 		.clock(clock),
 		.reset(reset),
-		.div_valid(div_valid),
+		.div_valid(exu_valid & exu_ready & inst_div),
 		.div_ready(div_ready),
 		.div_sign(div_sign),
 		.div1(src1),
