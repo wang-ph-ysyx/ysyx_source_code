@@ -58,9 +58,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_difftest_init);
 
   ref_difftest_init(port);
-#if defined(__PLATFOEM_npc_)
+#if defined(__PLATFORM_npc_)
   ref_difftest_memcpy(MEM_BASE, guest2host(MEM_BASE), img_size, DIFFTEST_TO_REF);
-	printf("test\n");
 #elif defined(__PLATFORM_ysyxsoc_)
   ref_difftest_memcpy(FLASH_BASE, guest2host_flash(0), img_size, DIFFTEST_TO_REF);
 #endif
