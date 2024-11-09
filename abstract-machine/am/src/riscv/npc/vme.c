@@ -8,7 +8,7 @@ static void (*pgfree_usr)(void*) = NULL;
 static int vme_enable = 0;
 
 static Area segments[] = {      // Kernel memory mappings
-  NEMU_PADDR_SPACE
+  NPC_PADDR_SPACE
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
