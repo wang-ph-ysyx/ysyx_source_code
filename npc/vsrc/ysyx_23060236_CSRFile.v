@@ -18,8 +18,9 @@ module ysyx_23060236_CSRFile (
 	reg [6:0]  mcause ;
 	reg [31:0] mstatus;
 	reg [31:0] mtvec  ;
+	reg [31:0] satp   ;
 
-	wire [5:0] choose;
+	wire [6:0] choose;
 
 	localparam CSR_MEPC      = 0;
 	localparam CSR_MCAUSE    = 1;
@@ -27,6 +28,7 @@ module ysyx_23060236_CSRFile (
 	localparam CSR_MTVEC     = 3;
 	localparam CSR_MVENDORID = 4;
 	localparam CSR_MARCHID   = 5;
+	localparam CSR_SATP      = 6;
 
 	assign choose[CSR_MEPC     ] = (imm == 12'h341);
 	assign choose[CSR_MCAUSE   ] = (imm == 12'h342);
@@ -34,6 +36,7 @@ module ysyx_23060236_CSRFile (
 	assign choose[CSR_MTVEC    ] = (imm == 12'h305);
 	assign choose[CSR_MVENDORID] = (imm == 12'hf11);
 	assign choose[CSR_MARCHID  ] = (imm == 12'hf12);
+	assign choose[CSR_SATP     ] = (imm == 12'h180);
 
 	always @(posedge clock) begin
 		if (reset) begin
@@ -45,6 +48,7 @@ module ysyx_23060236_CSRFile (
 				if (choose[CSR_MCAUSE   ]) mcause  <= {wdata[31], wdata[5:0]};
 				if (choose[CSR_MSTATUS  ]) mstatus <= wdata;
 				if (choose[CSR_MTVEC    ]) mtvec   <= wdata;
+				if (choose[CSR_SATP     ]) satp    <= wdata;
 			end
 			else if (inst_ecall) begin
 				mepc   <= epc;
@@ -54,9 +58,10 @@ module ysyx_23060236_CSRFile (
 	end
 
 	assign rdata = choose[CSR_MEPC     ] ? mepc    :
-                 choose[CSR_MCAUSE   ] ? {mcause[6], 25'b0, mcause[5:0]} :
                  choose[CSR_MSTATUS  ] ? mstatus :
                  choose[CSR_MTVEC    ] ? mtvec   :
+								 choose[CSR_SATP     ] ? satp    :
+                 choose[CSR_MCAUSE   ] ? {mcause[6], 25'b0, mcause[5:0]} :
                  choose[CSR_MVENDORID] ? 32'h79737978 :
                  choose[CSR_MARCHID  ] ? 32'h015fdf0c :
 								 32'b0;
