@@ -123,6 +123,8 @@ module ysyx_23060236(
 	wire lsu_wen;
 	wire lsu_ren;
 
+	wire mmu_on;
+
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
 	wire [31:0] ifu_rdata;
@@ -169,6 +171,31 @@ module ysyx_23060236(
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
+	wire        v_io_master_awready;
+  wire        v_io_master_awvalid;
+  wire [31:0] v_io_master_awaddr;
+	wire        v_io_master_arready;
+  wire        v_io_master_arvalid;
+  wire [31:0] v_io_master_araddr;
+
+	ysyx_23060236_mmu my_mmu(
+		.clock(clock),
+		.reset(reset),
+		.mmu_on(mmu_on),
+		.v_io_master_awready(v_io_master_awready),
+    .v_io_master_awvalid(v_io_master_awvalid),
+    .v_io_master_awaddr(v_io_master_awaddr),
+    .v_io_master_arready(v_io_master_arready),
+    .v_io_master_arvalid(v_io_master_arvalid),
+    .v_io_master_araddr(v_io_master_araddr),
+		.io_master_awready(io_master_awready),
+    .io_master_awvalid(io_master_awvalid),
+    .io_master_awaddr(io_master_awaddr),
+    .io_master_arready(io_master_arready),
+    .io_master_arvalid(io_master_arvalid),
+    .io_master_araddr(io_master_araddr)
+	);
+
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
 		.reset(reset),
@@ -201,9 +228,9 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
-		.io_master_awready(io_master_awready),
-    .io_master_awvalid(io_master_awvalid),
-    .io_master_awaddr(io_master_awaddr),
+		.v_io_master_awready(v_io_master_awready),
+    .v_io_master_awvalid(v_io_master_awvalid),
+    .v_io_master_awaddr(v_io_master_awaddr),
     .io_master_awid(io_master_awid),
     .io_master_awlen(io_master_awlen),
     .io_master_awsize(io_master_awsize),
@@ -217,9 +244,9 @@ module ysyx_23060236(
     .io_master_bvalid(io_master_bvalid),
     .io_master_bresp(io_master_bresp),
     .io_master_bid(io_master_bid),
-    .io_master_arready(io_master_arready),
-    .io_master_arvalid(io_master_arvalid),
-    .io_master_araddr(io_master_araddr),
+    .v_io_master_arready(v_io_master_arready),
+    .v_io_master_arvalid(v_io_master_arvalid),
+    .v_io_master_araddr(v_io_master_araddr),
     .io_master_arid(io_master_arid),
     .io_master_arlen(io_master_arlen),
     .io_master_arsize(io_master_arsize),
@@ -436,6 +463,7 @@ module ysyx_23060236(
 		.epc(idu_pc),
 		.jump(csr_jump),
 		.jump_en(csr_jump_en),
+		.mmu_on(mmu_on),
 		.valid(exu_valid & exu_ready)
 	);
 

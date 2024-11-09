@@ -10,7 +10,8 @@ module ysyx_23060236_CSRFile (
 	input  inst_mret,
 	input  [31:0] epc,
 	output [31:0] jump,
-	output        jump_en,
+	output jump_en,
+	output mmu_on,
 	input  valid
 );
 
@@ -38,9 +39,12 @@ module ysyx_23060236_CSRFile (
 	assign choose[CSR_MARCHID  ] = (imm == 12'hf12);
 	assign choose[CSR_SATP     ] = (imm == 12'h180);
 
+	assign mmu_on = satp[31];
+
 	always @(posedge clock) begin
 		if (reset) begin
-			mstatus <= 32'h1800;
+			mstatus  <= 32'h1800;
+			satp[31] <= 1'b0;
 		end
 		else if (valid) begin
 			if (enable) begin

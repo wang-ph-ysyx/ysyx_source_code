@@ -40,9 +40,9 @@ module ysyx_23060236_xbar(
 	input         lsu_bready,
 
 
-	input         io_master_awready,
-	output        io_master_awvalid,
-	output [31:0] io_master_awaddr,
+	input         v_io_master_awready,
+	output        v_io_master_awvalid,
+	output [31:0] v_io_master_awaddr,
 	output [3:0]  io_master_awid,
 	output [7:0]  io_master_awlen,
 	output [2:0]  io_master_awsize,
@@ -59,9 +59,9 @@ module ysyx_23060236_xbar(
 	input  [1:0]  io_master_bresp,
 	input  [3:0]  io_master_bid,
 	
-	input         io_master_arready,
-	output        io_master_arvalid,
-	output [31:0] io_master_araddr,
+	input         v_io_master_arready,
+	output        v_io_master_arvalid,
+	output [31:0] v_io_master_araddr,
 	output [3:0]  io_master_arid,
 	output [7:0]  io_master_arlen,
 	output [2:0]  io_master_arsize,
@@ -107,11 +107,11 @@ module ysyx_23060236_xbar(
 		.wen(1)
 	);
 
-	assign ifu_arready       = ifu_reading & io_master_arready;
-	assign lsu_arready       = lsu_reading & (soc_reading & io_master_arready | clint_reading & clint_arready);
-	assign io_master_arvalid = ifu_reading & ifu_arvalid | lsu_reading & soc_reading & lsu_arvalid;
+	assign ifu_arready       = ifu_reading & v_io_master_arready;
+	assign lsu_arready       = lsu_reading & (soc_reading & v_io_master_arready | clint_reading & clint_arready);
+	assign v_io_master_arvalid = ifu_reading & ifu_arvalid | lsu_reading & soc_reading & lsu_arvalid;
 	assign clint_arvalid     = lsu_reading & clint_reading & lsu_arvalid;
-	assign io_master_araddr  = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{soc_reading}} & lsu_araddr;
+	assign v_io_master_araddr  = {32{ifu_reading}} & ifu_araddr | {32{lsu_reading}} & {32{soc_reading}} & lsu_araddr;
 	assign clint_araddr      = {32{lsu_reading}} & {32{clint_reading}} & lsu_araddr;
 	assign io_master_arid    = 0;
 	assign io_master_arlen   = {4'b0, {{4{ifu_reading}} & ifu_arlen}};
@@ -128,9 +128,9 @@ module ysyx_23060236_xbar(
 	assign ifu_rdata         = {32{ifu_reading}} & io_master_rdata;
 	assign lsu_rdata         = {32{lsu_reading}} & ({32{soc_reading}} & io_master_rdata | {32{clint_reading}} & clint_rdata);
 
-	assign lsu_awready       = io_master_awready;
-	assign io_master_awvalid = lsu_awvalid;
-	assign io_master_awaddr  = lsu_awaddr;
+	assign lsu_awready       = v_io_master_awready;
+	assign v_io_master_awvalid = lsu_awvalid;
+	assign v_io_master_awaddr  = lsu_awaddr;
 	assign io_master_awid    = 0;
 	assign io_master_awlen   = 0;
 	assign io_master_awsize  = lsu_awsize;
