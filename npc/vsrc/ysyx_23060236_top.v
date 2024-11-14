@@ -124,6 +124,7 @@ module ysyx_23060236(
 	wire lsu_ren;
 
 	wire mmu_on;
+	wire [19:0] ppn;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -209,6 +210,7 @@ module ysyx_23060236(
 		.clock(clock),
 		.reset(reset),
 		.mmu_on(mmu_on),
+		.ppn(ppn),
 		.v_io_master_awready(v_io_master_awready),
     .v_io_master_awvalid(v_io_master_awvalid),
     .v_io_master_awaddr(v_io_master_awaddr),
@@ -537,6 +539,7 @@ module ysyx_23060236(
 		.jump(csr_jump),
 		.jump_en(csr_jump_en),
 		.mmu_on(mmu_on),
+		.ppn(ppn),
 		.valid(exu_valid & exu_ready)
 	);
 

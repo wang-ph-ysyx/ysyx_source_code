@@ -12,6 +12,7 @@ module ysyx_23060236_CSRFile (
 	output [31:0] jump,
 	output jump_en,
 	output mmu_on,
+	output [19:0] ppn,
 	input  valid
 );
 
@@ -40,6 +41,7 @@ module ysyx_23060236_CSRFile (
 	assign choose[CSR_SATP     ] = (imm == 12'h180);
 
 	assign mmu_on = satp[31];
+	assign ppn = satp[19:0];
 
 	always @(posedge clock) begin
 		if (reset) begin

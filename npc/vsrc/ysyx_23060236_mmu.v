@@ -3,6 +3,7 @@ module ysyx_23060236_mmu(
 	input reset,
 
 	input mmu_on,
+	input [19:0] ppn,
 
 
 	input         io_master_awready,
