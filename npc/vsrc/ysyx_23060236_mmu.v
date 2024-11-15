@@ -124,7 +124,7 @@ module ysyx_23060236_mmu(
 	always @(posedge clock) begin
 		if (reset) arvalid <= 0;
 		else if (io_master_arvalid & io_master_arready) arvalid <= 0;
-		else if ((state == IDLE) & v_io_master_arvalid & v_io_master_awvalid | 
+		else if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid) | 
 						 (state == STAGE1) & io_master_rvalid & io_master_rready) arvalid <= 1;
 	end
 
