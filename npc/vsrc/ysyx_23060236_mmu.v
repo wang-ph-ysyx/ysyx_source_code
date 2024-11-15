@@ -76,35 +76,97 @@ module ysyx_23060236_mmu(
 	output [3:0]  v_io_master_rid
 );
 
-	assign v_io_master_awready =   io_master_awready;
-	assign   io_master_awvalid = v_io_master_awvalid;
-	assign   io_master_awaddr  = v_io_master_awaddr;
+	localparam IDLE   = 2'd0;
+	localparam STAGE1 = 2'd1;
+	localparam STAGE2 = 2'd2;
+	localparam SEND   = 2'd3;
+
+	wire [9:0] vpn1;
+	wire [9:0] vpn0;
+	wire [11:0] offset;
+
+	assign vpn1 = v_io_master_awvalid ? v_io_master_awaddr[31:22] : v_io_master_araddr[31:22];
+	assign vpn0 = reading ? v_io_master_araddr[21:12] : v_io_master_awaddr[21:12];
+	assign offset = reading ? v_io_master_araddr[11:0] : v_io_master_awaddr[11:0];
+
+	reg  [1:0] state;
+	reg  [1:0] next_state;
+	reg  reading;
+
+	reg  arvalid;
+	reg  [31:0] address;
+
+	// state control signal register
+	always @(posedge clock) begin
+		if (reset) state <= IDLE;
+		else state <= next_state;
+
+		if (state == IDLE) begin
+			if (v_io_master_awvalid) reading <= 1;
+			else if (v_io_master_arvalid) reading <= 0;
+		end
+	end
+
+	always @(*) begin
+		case(state)
+			IDLE:   next_state = (v_io_master_arvalid | v_io_master_awvalid) ? STAGE1 : IDLE;
+			STAGE1: next_state = (io_master_rvalid & io_master_rready) ? STAGE2 : STAGE1;
+			STAGE2: next_state = (io_master_rvalid & io_master_rready) ? SEND : STAGE2;
+			SEND:   next_state = (io_master_rvalid & io_master_rready & io_master_rlast | 
+														io_master_bvalid & io_master_bready & io_master_wlast) ? 
+														IDLE : SEND;
+			default: next_state = IDLE;
+		endcase
+	end
+
+
+	// control signal register
+	always @(posedge clock) begin
+		if (reset) arvalid <= 0;
+		else if (io_master_arvalid & io_master_arready) arvalid <= 0;
+		else if ((state == IDLE) & v_io_master_arvalid & v_io_master_awvalid | 
+						 (state == STAGE1) & io_master_rvalid & io_master_rready) arvalid <= 1;
+	end
+
+	// data register
+	always @(posedge clock) begin
+		if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid))
+			address <= {ppn, vpn1, 2'b0};
+		else if ((state == STAGE1) & io_master_rvalid & io_master_rready)
+			address <= {io_master_rdata[29:10], vpn0, 2'b0};
+		else if ((state == STAGE2) & io_master_rvalid & io_master_rready)
+			address <= {io_master_rdata[29:10], offset};
+	end
+
+	assign v_io_master_awready = (~mmu_on | state == SEND) ?   io_master_awready : 1'b0;
+	assign   io_master_awvalid = (~mmu_on | state == SEND) ? v_io_master_awvalid : 1'b0;
+	assign   io_master_awaddr  = ~mmu_on ? v_io_master_awaddr : address;
 	assign   io_master_awid    = v_io_master_awid;
 	assign   io_master_awlen   = v_io_master_awlen;
 	assign   io_master_awsize  = v_io_master_awsize;
 	assign   io_master_awburst = v_io_master_awburst;
 
-	assign v_io_master_wready  =   io_master_wready;
-	assign   io_master_wvalid  = v_io_master_wvalid;
+	assign v_io_master_wready  = (~mmu_on | state == SEND) ?   io_master_wready : 1'b0;
+	assign   io_master_wvalid  = (~mmu_on | state == SEND) ? v_io_master_wvalid : 1'b0;
 	assign   io_master_wdata   = v_io_master_wdata;
 	assign   io_master_wstrb   = v_io_master_wstrb;
 	assign   io_master_wlast   = v_io_master_wlast;
 
-	assign   io_master_bready  = v_io_master_bready;
-	assign v_io_master_bvalid  =   io_master_bvalid;
+	assign   io_master_bready  = (~mmu_on | state == SEND) ? v_io_master_bready : 1'b0;
+	assign v_io_master_bvalid  = (~mmu_on | state == SEND) ?   io_master_bvalid : 1'b0;
 	assign v_io_master_bresp   =   io_master_bresp;
 	assign v_io_master_bid     =   io_master_bid;
 
-	assign v_io_master_arready =   io_master_arready;
-	assign   io_master_arvalid = v_io_master_arvalid;
-	assign   io_master_araddr  = v_io_master_araddr;
-	assign   io_master_arid    = v_io_master_arid;
-	assign   io_master_arlen   = v_io_master_arlen;
-	assign   io_master_arsize  = v_io_master_arsize;
-	assign   io_master_arburst = v_io_master_arburst;
+	assign v_io_master_arready = (~mmu_on | state == SEND) ?   io_master_arready : 1'b0;
+	assign   io_master_arvalid = (~mmu_on | state == SEND) ? v_io_master_arvalid : arvalid;
+	assign   io_master_araddr  = ~mmu_on ? v_io_master_araddr : address;
+	assign   io_master_arid    = ~mmu_on ? v_io_master_arid : 4'b0;
+	assign   io_master_arlen   = ~mmu_on ? v_io_master_arlen : 8'b0;
+	assign   io_master_arsize  = ~mmu_on ? v_io_master_arsize : 3'b010;
+	assign   io_master_arburst = ~mmu_on ? v_io_master_arburst : 2'b0;
 
-	assign   io_master_rready  = v_io_master_rready;
-	assign v_io_master_rvalid  =   io_master_rvalid;
+	assign   io_master_rready  = (~mmu_on | state == SEND) ? v_io_master_rready : 1'b1;
+	assign v_io_master_rvalid  = (~mmu_on | state == SEND) ?   io_master_rvalid : 1'b0;
 	assign v_io_master_rresp   =   io_master_rresp;
 	assign v_io_master_rdata   =   io_master_rdata;
 	assign v_io_master_rlast   =   io_master_rlast;
