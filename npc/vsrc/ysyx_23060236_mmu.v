@@ -102,8 +102,8 @@ module ysyx_23060236_mmu(
 		else state <= next_state;
 
 		if (state == IDLE) begin
-			if (v_io_master_awvalid) reading <= 1;
-			else if (v_io_master_arvalid) reading <= 0;
+			if (v_io_master_awvalid) reading <= 0;
+			else if (v_io_master_arvalid) reading <= 1;
 		end
 	end
 
