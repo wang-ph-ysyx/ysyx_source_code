@@ -138,35 +138,35 @@ module ysyx_23060236_mmu(
 			address <= {io_master_rdata[29:10], offset};
 	end
 
-	assign v_io_master_awready = (~mmu_on | state == SEND) ?   io_master_awready : 1'b0;
-	assign   io_master_awvalid = (~mmu_on | state == SEND) ? v_io_master_awvalid : 1'b0;
+	assign v_io_master_awready = (~mmu_on | ~reading & (state == SEND)) ?   io_master_awready : 1'b0;
+	assign   io_master_awvalid = (~mmu_on | ~reading & (state == SEND)) ? v_io_master_awvalid : 1'b0;
 	assign   io_master_awaddr  = ~mmu_on ? v_io_master_awaddr : address;
 	assign   io_master_awid    = v_io_master_awid;
 	assign   io_master_awlen   = v_io_master_awlen;
 	assign   io_master_awsize  = v_io_master_awsize;
 	assign   io_master_awburst = v_io_master_awburst;
 
-	assign v_io_master_wready  = (~mmu_on | state == SEND) ?   io_master_wready : 1'b0;
-	assign   io_master_wvalid  = (~mmu_on | state == SEND) ? v_io_master_wvalid : 1'b0;
+	assign v_io_master_wready  = (~mmu_on | ~reading & (state == SEND)) ?   io_master_wready : 1'b0;
+	assign   io_master_wvalid  = (~mmu_on | ~reading & (state == SEND)) ? v_io_master_wvalid : 1'b0;
 	assign   io_master_wdata   = v_io_master_wdata;
 	assign   io_master_wstrb   = v_io_master_wstrb;
 	assign   io_master_wlast   = v_io_master_wlast;
 
-	assign   io_master_bready  = (~mmu_on | state == SEND) ? v_io_master_bready : 1'b0;
-	assign v_io_master_bvalid  = (~mmu_on | state == SEND) ?   io_master_bvalid : 1'b0;
+	assign   io_master_bready  = (~mmu_on | ~reading & (state == SEND)) ? v_io_master_bready : 1'b0;
+	assign v_io_master_bvalid  = (~mmu_on | ~reading & (state == SEND)) ?   io_master_bvalid : 1'b0;
 	assign v_io_master_bresp   =   io_master_bresp;
 	assign v_io_master_bid     =   io_master_bid;
 
-	assign v_io_master_arready = (~mmu_on | state == SEND) ?   io_master_arready : 1'b0;
-	assign   io_master_arvalid = (~mmu_on | state == SEND) ? v_io_master_arvalid : arvalid;
+	assign v_io_master_arready = (~mmu_on | reading & (state == SEND)) ?   io_master_arready : 1'b0;
+	assign   io_master_arvalid = (~mmu_on | reading & (state == SEND)) ? v_io_master_arvalid : arvalid;
 	assign   io_master_araddr  = ~mmu_on ? v_io_master_araddr : address;
-	assign   io_master_arid    = ~mmu_on ? v_io_master_arid : 4'b0;
-	assign   io_master_arlen   = ~mmu_on ? v_io_master_arlen : 8'b0;
-	assign   io_master_arsize  = ~mmu_on ? v_io_master_arsize : 3'b010;
-	assign   io_master_arburst = ~mmu_on ? v_io_master_arburst : 2'b0;
+	assign   io_master_arid    = (~mmu_on | (state == SEND)) ? v_io_master_arid : 4'b0;
+	assign   io_master_arlen   = (~mmu_on | (state == SEND)) ? v_io_master_arlen : 8'b0;
+	assign   io_master_arsize  = (~mmu_on | (state == SEND)) ? v_io_master_arsize : 3'b010;
+	assign   io_master_arburst = (~mmu_on | (state == SEND)) ? v_io_master_arburst : 2'b0;
 
-	assign   io_master_rready  = (~mmu_on | state == SEND) ? v_io_master_rready : 1'b1;
-	assign v_io_master_rvalid  = (~mmu_on | state == SEND) ?   io_master_rvalid : 1'b0;
+	assign   io_master_rready  = (~mmu_on | reading & (state == SEND)) ? v_io_master_rready : 1'b1;
+	assign v_io_master_rvalid  = (~mmu_on | reading & (state == SEND)) ?   io_master_rvalid : 1'b0;
 	assign v_io_master_rresp   =   io_master_rresp;
 	assign v_io_master_rdata   =   io_master_rdata;
 	assign v_io_master_rlast   =   io_master_rlast;
