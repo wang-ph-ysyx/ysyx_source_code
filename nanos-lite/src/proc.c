@@ -31,7 +31,7 @@ void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
 void init_proc() {
 	char *argv0[] = {"/bin/hello", NULL}, *envp0[] = {NULL};
 	context_uload(&pcb[0], "/bin/hello", argv0, envp0);
-
+/*
 	char *argv1[] = {"/bin/bird", NULL}, *envp1[] = {NULL};
 	context_uload(&pcb[1], "/bin/bird", argv1, envp1);
 
@@ -40,7 +40,7 @@ void init_proc() {
 
 	char *argv3[] = {"/bin/nslider", NULL}, *envp3[] = {NULL};
 	context_uload(&pcb[3], "/bin/nslider", argv3, envp3);
-
+*/
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -52,7 +52,8 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-
+	current = &pcb[0];
+/*
 	static int count = 0;
 	if (current != &pcb[fg_pcb]) {
 		current = &pcb[fg_pcb];
@@ -64,6 +65,6 @@ Context* schedule(Context *prev) {
 		}
 		++count;
 	}
-
+*/
   return current->cp;
 }
