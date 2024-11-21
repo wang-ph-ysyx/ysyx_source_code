@@ -29,8 +29,8 @@ void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
 }
 
 void init_proc() {
-	char *argv0[] = {"/bin/hello", NULL}, *envp0[] = {NULL};
-	context_uload(&pcb[0], "/bin/hello", argv0, envp0);
+	char *argv0[] = {"/bin/nterm", NULL}, *envp0[] = {NULL};
+	context_uload(&pcb[0], "/bin/nterm", argv0, envp0);
 /*
 	char *argv1[] = {"/bin/bird", NULL}, *envp1[] = {NULL};
 	context_uload(&pcb[1], "/bin/bird", argv1, envp1);
