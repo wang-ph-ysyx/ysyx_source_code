@@ -70,7 +70,6 @@ void print_difftest_reg (int pc, int i) {
 	uint32_t ref_r[32];
 	uint32_t ref_pc;
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
-	printf("nemu reference\n");
 	if (pc) printf("pc\t%#x\n", ref_pc);
 	else printf("x%d\t%#x\n", i+1, ref_r[i]);
 }
@@ -85,6 +84,7 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	//if (pc != ref_pc) trigger_difftest = 1;
 	if (trigger_difftest) {
 		print_difftest_reg(1, 0);
+		printf("nemu reference above\n\n");
 	}
 }
 
