@@ -32,6 +32,6 @@ void reg_display() {
 	printf("pc\t%#x\t%d\n", pc, pc);
 	for (int i = 1; i < TOTAL_REGS; ++i) {
 		uint32_t reg_val = top->rootp->signal(my_reg__DOT__rf[i-1]);
-		printf("%d:%s\t%#x\t%d\n", i, regs[i], reg_val, reg_val);
+		printf("%2d:%s\t%#x\t%d\n", i, regs[i], reg_val, reg_val);
 	}
 }
