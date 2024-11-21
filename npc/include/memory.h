@@ -9,10 +9,18 @@
 #define SRAM_BASE   0x0f000000
 #define FLASH_BASE  0x30000000
 #define FLASH_SIZE  0x10000000
+
+#ifdef __PLATFORM_ysyxsoc_
 #define UART_BASE   0x10000000
 #define UART_SIZE   0x00001000
 #define CLINT_BASE  0x02000000
 #define CLINT_SIZE  0x00010000
+#elif defined(__PLATFORM_npc_)
+#define UART_BASE   0xa0000048
+#define UART_SIZE   0x00000008
+#define CLINT_BASE  0xa00003f8
+#define CLINT_SIZE  0x00000001
+#endif
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask);
 extern "C" int pmem_read(int raddr);

@@ -60,8 +60,7 @@ module ysyx_23060236_ifu(
 	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last);
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
-	//与icache的块大小一致
-	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:5], 5'b0} : 
+	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? ifu_araddr : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
