@@ -66,25 +66,25 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_regcpy(&top->rootp->signal(my_reg__DOT__rf[0]), &top->rootp->signal(pc), DIFFTEST_TO_REF);
 }
 
-void print_difftest_reg () {
+void print_difftest_reg (int pc, int i) {
 	uint32_t ref_r[32];
 	uint32_t ref_pc;
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 	printf("nemu reference\n");
-	printf("pc\t%#x\n", ref_pc);
-	for (int i = 0; i < TOTAL_REG - 1; ++i) {
-		printf("x%d\t%#x\n", i+1, ref_r[i]);
-	}
+	if (pc) printf("pc\t%#x\n", ref_pc);
+	else printf("x%d\t%#x\n", i+1, ref_r[i]);
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	for (int i = 0; i < TOTAL_REG - 1; ++i) {
-		if (ref[i] != top->rootp->signal(my_reg__DOT__rf[i]))
+		if (ref[i] != top->rootp->signal(my_reg__DOT__rf[i])) {
 			trigger_difftest = 1;
+			print_difftest_reg(0, i);
+		}
 	}
 	//if (pc != ref_pc) trigger_difftest = 1;
 	if (trigger_difftest) {
-		print_difftest_reg();
+		print_difftest_reg(1, 0);
 	}
 }
 
