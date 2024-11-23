@@ -62,12 +62,14 @@ wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
 // addr range
-localparam MEM_BASE = 32'h80000000;
-localparam MEM_END  = 32'h88000000;
-localparam VGA_BASE = 32'ha1000000;
-localparam VGA_END  = 32'ha1200000;
-wire addr_in_vga = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
-wire addr_in_mem = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
+localparam MEM_BASE    = 32'h80000000;
+localparam MEM_END     = 32'h88000000;
+localparam VGA_BASE    = 32'ha1000000;
+localparam VGA_END     = 32'ha1200000;
+localparam SERIAL_PORT = 32'ha00003f8;
+wire addr_in_vga    = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
+wire addr_in_mem    = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
+wire addr_in_serial = (write_addr == SERIAL_PORT);
 
 // write
 reg  [31:0] write_addr;
@@ -96,7 +98,7 @@ always @(posedge clock) begin
 		io_master_wready <= 1;
 
 // pmem_write & write_wstrb
-	if (io_master_wvalid & io_master_wready & addr_in_mem) begin
+	if (io_master_wvalid & io_master_wready & (addr_in_mem | addr_in_serial)) begin
 		pmem_write(write_addr, io_master_wdata, {4'b0, io_master_wstrb});
 	end
 

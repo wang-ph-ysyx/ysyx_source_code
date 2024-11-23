@@ -1,6 +1,5 @@
 #include <am.h>
 #include <npc.h>
-#include <riscv/riscv.h>
 
 static uint64_t start_us = 0;
 
