@@ -185,7 +185,7 @@ end
 	ps2 my_ps2(
 		.clock(clock),
 		.reset(reset),
-		.rvalid(io_master_rvalid & io_master_rready & raddr_in_kbd),
+		.rvalid(io_master_arvalid & io_master_arready & raddr_in_kbd),
 		.raddr(io_master_araddr),
 		.rdata(kbd_rdata),
 		.ps2_clk(externalPins_ps2_clk),
