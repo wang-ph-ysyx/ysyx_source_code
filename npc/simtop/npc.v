@@ -70,6 +70,8 @@ localparam VGA_BASE    = 32'ha1000000;
 localparam VGA_END     = 32'ha1200000;
 localparam KBD_ADDR    = 32'ha0000060;
 localparam SERIAL_PORT = 32'ha00003f8;
+localparam RTC_LOW     = 32'ha0000048;
+localparam RTC_HIGH    = 32'ha000004c;
 
 wire waddr_in_mem    = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
 wire waddr_in_vga    = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
@@ -77,6 +79,7 @@ wire waddr_in_serial = (write_addr == SERIAL_PORT);
 wire raddr_in_mem     = (io_master_araddr >= MEM_BASE) & (io_master_araddr < MEM_END);
 wire raddr_in_mem_reg = (read_addr >= MEM_BASE) & (read_addr < MEM_END);
 wire raddr_in_kbd     = (io_master_araddr == KBD_ADDR);
+wire raddr_in_time    = (io_master_araddr == RTC_LOW) | (io_master_araddr == RTC_HIGH);
 
 
 // write
@@ -159,7 +162,7 @@ always @(posedge clock) begin
 
 // io_master_rdata
 	if (io_master_arvalid & io_master_arready) begin
-		if (raddr_in_mem)
+		if (raddr_in_mem | raddr_in_time)
 			io_master_rdata <= pmem_read(io_master_araddr);
 		else if (raddr_in_kbd)
 			io_master_rdata <= kbd_rdata;
