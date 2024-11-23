@@ -13,6 +13,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 		return;
 	}
 
+	printf("%x\n", scancode);
 	kbd->keycode = 0;
 	if (scancode == 0xe0) {
 		while ((scancode = inb(KBD_ADDR)) == 0);
