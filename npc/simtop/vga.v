@@ -2,6 +2,10 @@ module vga(
   input         clock,
   input         reset,
 
+	input  [31:0] waddr,
+	input  [31:0] wdata,
+	input         wvalid,
+
   output [7:0]  vga_r,
   output [7:0]  vga_g,
   output [7:0]  vga_b,
@@ -29,12 +33,12 @@ module vga(
 	wire [9:0] h_addr;
 	wire h_valid;
 	wire v_valid;
-	wire addr_valid = (in_paddr >= 32'h21000000) & (in_paddr < 32'h21200000);
+	wire addr_valid = (waddr >= 32'ha1000000) & (waddr < 32'ha1200000);
 
 	//写入缓存
 	always @(posedge clock) begin
-		if (in_psel & in_penable & in_pwrite & addr_valid) begin
-			vmem[in_paddr[20:2]] <= in_pwdata[23:0];
+		if (wvalid & addr_valid) begin
+			vmem[waddr[20:2]] <= wdata[23:0];
 		end
 	end
 	

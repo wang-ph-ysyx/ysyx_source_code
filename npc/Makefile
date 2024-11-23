@@ -47,7 +47,7 @@ ifeq ($(PLATFORM),ysyxsoc)
 VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
 VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
 else ifeq ($(PLATFORM),npc)
-VSRCS += $(abspath ./simtop/npc.v)
+VSRCS += $(shell find $(abspath ./simtop) -name "*.v")
 endif
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk

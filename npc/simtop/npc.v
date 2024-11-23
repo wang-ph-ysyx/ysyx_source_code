@@ -61,6 +61,13 @@ reg  [31:0] io_master_rdata;
 wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
+// addr range
+localparam MEM_BASE = 32'h80000000;
+localparam MEM_END  = 32'h88000000;
+localparam VGA_BASE = 32'ha1000000;
+localparam VGA_END  = 32'ha1200000;
+wire addr_in_vga = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
+wire addr_in_mem = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
 
 // write
 reg  [31:0] write_addr;
@@ -89,7 +96,7 @@ always @(posedge clock) begin
 		io_master_wready <= 1;
 
 // pmem_write & write_wstrb
-	if (io_master_wvalid & io_master_wready) begin
+	if (io_master_wvalid & io_master_wready & addr_in_mem) begin
 		pmem_write(write_addr, io_master_wdata, {4'b0, io_master_wstrb});
 	end
 
@@ -146,6 +153,20 @@ always @(posedge clock) begin
 	else if (io_master_rvalid & io_master_rready & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
 end
+
+	vga my_vga(
+		.clock(clock),
+		.reset(reset),
+		.waddr(write_addr),
+		.wdata(io_master_wdata),
+		.wvalid(io_master_wvalid & io_master_wready),
+		.vga_r(externalPins_vga_r),
+		.vga_g(externalPins_vga_g),
+		.vga_b(externalPins_vga_b),
+		.vga_hsync(externalPins_vga_hsync),
+		.vga_vsync(externalPins_vga_vsync),
+		.vga_valid(externalPins_vga_valid)
+	);
 
   ysyx_23060236 cpu (	
     .clock             (clock),
