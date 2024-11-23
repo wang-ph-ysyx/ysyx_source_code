@@ -158,11 +158,12 @@ always @(posedge clock) begin
 		io_master_rvalid <= 1;
 
 // io_master_rdata
-	if (io_master_arvalid & io_master_arready)
+	if (io_master_arvalid & io_master_arready) begin
 		if (raddr_in_mem)
 			io_master_rdata <= pmem_read(io_master_araddr);
 		else if (raddr_in_kbd)
 			io_master_rdata <= kbd_rdata;
+	end
 	else if (io_master_rvalid & io_master_rready & raddr_in_mem_reg & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
 end
