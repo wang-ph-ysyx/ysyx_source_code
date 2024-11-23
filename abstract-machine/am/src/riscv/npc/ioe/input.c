@@ -1,5 +1,6 @@
 #include <am.h>
 #include <npc.h>
+#include <klib.h>
 
 int scan_to_keycode(int scancode);
 
@@ -113,6 +114,6 @@ int scan_to_keycode(int scancode) {
 		case 0xe069: return AM_KEY_END;
 		case 0xe07d: return AM_KEY_PAGEUP;
 		case 0xe07a: return AM_KEY_PAGEDOWN;
-		default: halt(1);
+		default: printf("undefined scancode %d\n", scancode); halt(1);
 	}
 }
