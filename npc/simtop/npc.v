@@ -61,15 +61,23 @@ reg  [31:0] io_master_rdata;
 wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
+wire [31:0] kbd_rdata;
+
 // addr range
 localparam MEM_BASE    = 32'h80000000;
 localparam MEM_END     = 32'h88000000;
 localparam VGA_BASE    = 32'ha1000000;
 localparam VGA_END     = 32'ha1200000;
+localparam KBD_ADDR    = 32'ha0000060;
 localparam SERIAL_PORT = 32'ha00003f8;
-wire addr_in_vga    = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
-wire addr_in_mem    = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
-wire addr_in_serial = (write_addr == SERIAL_PORT);
+
+wire waddr_in_mem    = (write_addr >= MEM_BASE) & (write_addr < MEM_END);
+wire waddr_in_vga    = (write_addr >= VGA_BASE) & (write_addr < VGA_END);
+wire waddr_in_serial = (write_addr == SERIAL_PORT);
+wire raddr_in_mem     = (io_master_araddr >= MEM_BASE) & (io_master_araddr < MEM_END);
+wire raddr_in_mem_reg = (read_addr >= MEM_BASE) & (read_addr < MEM_END);
+wire raddr_in_kbd     = (io_master_araddr == KBD_ADDR);
+
 
 // write
 reg  [31:0] write_addr;
@@ -98,7 +106,7 @@ always @(posedge clock) begin
 		io_master_wready <= 1;
 
 // pmem_write & write_wstrb
-	if (io_master_wvalid & io_master_wready & (addr_in_mem | addr_in_serial)) begin
+	if (io_master_wvalid & io_master_wready & (waddr_in_mem | waddr_in_serial)) begin
 		pmem_write(write_addr, io_master_wdata, {4'b0, io_master_wstrb});
 	end
 
@@ -151,8 +159,11 @@ always @(posedge clock) begin
 
 // io_master_rdata
 	if (io_master_arvalid & io_master_arready)
-		io_master_rdata <= pmem_read(io_master_araddr);
-	else if (io_master_rvalid & io_master_rready & (read_len != 0))
+		if (raddr_in_mem)
+			io_master_rdata <= pmem_read(io_master_araddr);
+		else if (raddr_in_kbd)
+			io_master_rdata <= kbd_rdata;
+	else if (io_master_rvalid & io_master_rready & raddr_in_mem_reg & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
 end
 
@@ -161,13 +172,23 @@ end
 		.reset(reset),
 		.waddr(write_addr),
 		.wdata(io_master_wdata),
-		.wvalid(io_master_wvalid & io_master_wready),
+		.wvalid(io_master_wvalid & io_master_wready & waddr_in_vga),
 		.vga_r(externalPins_vga_r),
 		.vga_g(externalPins_vga_g),
 		.vga_b(externalPins_vga_b),
 		.vga_hsync(externalPins_vga_hsync),
 		.vga_vsync(externalPins_vga_vsync),
 		.vga_valid(externalPins_vga_valid)
+	);
+
+	ps2 my_ps2(
+		.clock(clock),
+		.reset(reset),
+		.rvalid(io_master_rvalid & io_master_rready & raddr_in_kbd),
+		.raddr(io_master_araddr),
+		.rdata(kbd_rdata),
+		.ps2_clk(externalPins_ps2_clk),
+		.ps2_data(externalPins_ps2_data)
 	);
 
   ysyx_23060236 cpu (	
