@@ -27,10 +27,9 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 		kbd->keydown = 1;
 	}
 
-	printf("%x\n", scancode);
-	return;
-
 	kbd->keycode |= scancode;
+	printf("%x\n", kbd->keycode);
+	return;
 	kbd->keycode = scan_to_keycode(kbd->keycode);
 }
 
