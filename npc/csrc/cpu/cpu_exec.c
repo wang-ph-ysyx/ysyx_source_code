@@ -52,6 +52,7 @@ void reg_display();
 void nvboard_update();
 void print_difftest_reg();
 
+
 void print_statistic() {
 	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
@@ -106,6 +107,7 @@ extern "C" void add_mul_cycle() { ++mul_cycle; }
 extern "C" void add_div_cycle() { ++div_cycle; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 extern "C" void program_end() { inst_ebreak = 1; }
+extern "C" void difftest_skip() { difftest_skip_ref(); }
 
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
