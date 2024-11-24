@@ -1,8 +1,5 @@
 #include <am.h>
-
-#define RTC_ADDR 0xa0000048
-
-static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }
+#include <npc.h>
 
 static uint64_t start_us = 0;
 

@@ -1,8 +1,10 @@
 AM_SRCS := riscv/npc/start.S \
            riscv/npc/trm.c \
-           riscv/npc/ioe.c \
-           riscv/npc/timer.c \
-           riscv/npc/input.c \
+           riscv/npc/ioe/timer.c \
+           riscv/npc/ioe/input.c \
+           riscv/npc/ioe/gpu.c \
+           riscv/npc/ioe/uart.c \
+           riscv/npc/ioe/ioe.c \
            riscv/npc/cte.c \
            riscv/npc/trap.S \
            riscv/npc/vme.c \
