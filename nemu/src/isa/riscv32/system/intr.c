@@ -35,9 +35,11 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 #define IRQ_TIMER 0x80000007
 
 word_t isa_query_intr() {
+#ifdef CONFIG_TARGET_NATIVE_ELF
 	if (cpu.INTR == true && ((cpu.csr.mstatus >> 3) & 1) == 1) {
 		cpu.INTR = false;
 		return IRQ_TIMER;
 	}
+#endif
   return INTR_EMPTY;
 }

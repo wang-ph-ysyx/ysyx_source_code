@@ -61,8 +61,12 @@ module ysyx_23060236_CSRFile (
 				if (choose[CSR_MSCRATCH ]) mscratch <= wdata;
 			end
 			else if (inst_ecall) begin
-				mepc   <= epc;
-				mcause <= 7'd11;
+				mepc    <= epc;
+				mcause  <= 7'd11;
+				mstatus <= {mstatus[31:8], mstatus[3], mstatus[6:4], 1'b0, mstatus[2:0]};
+			end
+			else if (inst_mret) begin
+				mstatus <= {mstatus[31:8], 1'b1, mstatus[6:4], mstatus[7], mstatus[2:0]};
 			end
 		end
 	end
