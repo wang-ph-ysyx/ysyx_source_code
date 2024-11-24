@@ -19,7 +19,9 @@ CFLAGS += -I$(AM_HOME)/am/src/riscv/npc/include
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
 # 批处理
-#NPC_FLAGS += -b
+ifeq ($(DEBUG),0)
+NPC_FLAGS += -b
+endif
 
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
