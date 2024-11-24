@@ -67,7 +67,7 @@ end
 // read
 assign rempty = (rh_ptr == rt_ptr);
 assign rfull  = (rh_ptr == rt_ptr + 1);
-assign rdata  = rempty ? 32'b0 : {24'b0, rfifo[rh_ptr]};
+assign rdata  = rempty ? 32'hff : {24'b0, rfifo[rh_ptr]};
 assign nextrdata = (raddr == SERIAL_PORT) & rvalid;
 
 
