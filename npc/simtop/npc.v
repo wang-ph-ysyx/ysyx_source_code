@@ -62,6 +62,7 @@ wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
 wire [31:0] kbd_rdata;
+wire [31:0] uart_rdata;
 
 // addr range
 localparam MEM_BASE    = 32'h80000000;
@@ -80,6 +81,7 @@ wire raddr_in_mem     = (io_master_araddr >= MEM_BASE) & (io_master_araddr < MEM
 wire raddr_in_mem_reg = (read_addr >= MEM_BASE) & (read_addr < MEM_END);
 wire raddr_in_kbd     = (io_master_araddr == KBD_ADDR);
 wire raddr_in_time    = (io_master_araddr == RTC_LOW) | (io_master_araddr == RTC_HIGH);
+wire raddr_in_serial  = (io_master_araddr == SERIAL_PORT);
 
 
 // write
@@ -166,6 +168,8 @@ always @(posedge clock) begin
 			io_master_rdata <= pmem_read(io_master_araddr);
 		else if (raddr_in_kbd)
 			io_master_rdata <= kbd_rdata;
+		else if (raddr_in_serial)
+			io_master_rdata <= uart_rdata;
 	end
 	else if (io_master_rvalid & io_master_rready & raddr_in_mem_reg & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
@@ -193,6 +197,19 @@ end
 		.rdata(kbd_rdata),
 		.ps2_clk(externalPins_ps2_clk),
 		.ps2_data(externalPins_ps2_data)
+	);
+
+	uart my_uart(
+		.clock(clock),
+		.reset(reset),
+		.raddr(io_master_araddr),
+		.rdata(uart_rdata),
+		.rvalid(io_master_arvalid & io_master_arready & raddr_in_serial),
+		.waddr(write_addr),
+		.wdata(io_master_wdata),
+		.wvalid(io_master_wvalid & io_master_wready & waddr_in_serial),
+		.rx(externalPins_uart_rx),
+		.tx(externalPins_uart_tx)
 	);
 
   ysyx_23060236 cpu (	
