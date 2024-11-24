@@ -6,7 +6,7 @@ AM_SRCS := riscv/npc/start.S \
            riscv/npc/ioe/uart.c \
            riscv/npc/ioe/ioe.c \
            riscv/npc/cte.c \
-           riscv/npc/trap.S \
+           riscv/nemu/trap.S \
            riscv/npc/vme.c \
            platform/dummy/mpe.c
 
