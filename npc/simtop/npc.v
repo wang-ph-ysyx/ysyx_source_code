@@ -35,7 +35,7 @@ assign externalPins_gpio_seg_4 = ~8'b10111110;
 assign externalPins_gpio_seg_3 = ~8'b11111100;
 assign externalPins_gpio_seg_2 = ~8'b11011010;
 assign externalPins_gpio_seg_1 = ~8'b11110010;
-assign externalPins_gpio_seg_0 = ~8'b11111010;
+assign externalPins_gpio_seg_0 = ~8'b10111110;
 
 reg         io_master_awready;
 wire        io_master_awvalid;
