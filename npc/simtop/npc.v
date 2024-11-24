@@ -1,7 +1,6 @@
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
 	  input int waddr, input int wdata, input byte wmask);
-import "DPI-C" function void difftest_skip();
 module npc(
 	input  clock,
 	input  reset,
@@ -177,14 +176,10 @@ always @(posedge clock) begin
 	if (io_master_arvalid & io_master_arready) begin
 		if (raddr_in_mem | raddr_in_time)
 			io_master_rdata <= pmem_read(io_master_araddr);
-		else if (raddr_in_kbd) begin
-			difftest_skip();
+		else if (raddr_in_kbd)
 			io_master_rdata <= kbd_rdata;
-		end
-		else if (raddr_in_serial) begin
-			difftest_skip();
+		else if (raddr_in_serial)
 			io_master_rdata <= uart_rdata;
-		end
 	end
 	else if (io_master_rvalid & io_master_rready & raddr_in_mem_reg & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
