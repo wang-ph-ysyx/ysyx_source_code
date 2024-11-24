@@ -27,6 +27,9 @@ module npc(
   output        externalPins_uart_tx	
 );
 
+assign externalPins_gpio_out   = externalPins_gpio_in;
+assign externalPins_gpio_seg_0 = 8'b10101010;
+
 reg         io_master_awready;
 wire        io_master_awvalid;
 wire [31:0] io_master_awaddr;
