@@ -18,8 +18,8 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/riscv/npc/include
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
-# 批处理
-ifeq ($(DEBUG),0)
+ifeq ($(DEBUG),1)
+else
 NPC_FLAGS += -b
 endif
 
