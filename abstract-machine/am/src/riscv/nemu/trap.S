@@ -38,6 +38,9 @@ f(30) f(31)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
 #define OFFSET_NP     ((NR_REGS + 3) * XLEN)
 
+
+#ifdef STACK_SWITCH
+
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
@@ -93,3 +96,36 @@ restore_sp:
 
   LOAD sp, OFFSET_SP(sp)
   mret
+
+#else
+
+.align 3
+.globl __am_asm_trap
+__am_asm_trap:
+  addi sp, sp, -CONTEXT_SIZE
+
+  MAP(REGS, PUSH)
+
+  csrr t0, mcause
+  csrr t1, mstatus
+  csrr t2, mepc
+
+  STORE t0, OFFSET_CAUSE(sp)
+  STORE t1, OFFSET_STATUS(sp)
+  STORE t2, OFFSET_EPC(sp)
+
+  mv a0, sp
+  jal __am_irq_handle
+	mv sp, a0
+
+  LOAD t1, OFFSET_STATUS(sp)
+  LOAD t2, OFFSET_EPC(sp)
+  csrw mstatus, t1
+  csrw mepc, t2
+
+  MAP(REGS, POP)
+
+  addi sp, sp, CONTEXT_SIZE
+  mret
+
+#endif
