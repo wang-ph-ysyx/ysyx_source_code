@@ -15,7 +15,7 @@ static const char *keyname[256] __attribute__((used)) = {
 };
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {
-	yield();
+	MULTIPROGRAM_YIELD();
 	for (int i = 0; i < len; ++i) {
 		putch(*((uint8_t *)buf + i));
 	}
@@ -25,7 +25,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 extern int fg_pcb;
 
 size_t events_read(void *buf, size_t offset, size_t len) {
-	yield();
+	MULTIPROGRAM_YIELD();
 	AM_INPUT_KEYBRD_T input = io_read(AM_INPUT_KEYBRD);
 	int keycode = input.keycode;
 	bool keydown = input.keydown;
@@ -57,6 +57,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
+	MULTIPROGRAM_YIELD();
 	AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
 	int width = gpu.width;
 	int x = offset / 4 % width;
@@ -69,6 +70,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sb_write(const void *buf, size_t offset, size_t len) {
+	MULTIPROGRAM_YIELD();
 	while (len > io_read(AM_AUDIO_CONFIG).bufsize - io_read(AM_AUDIO_STATUS).count);
 	uint8_t _buf[len];
 	for (int i = 0; i < len; ++i) {
@@ -80,6 +82,7 @@ size_t sb_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t sbctl_read(void *buf, size_t offset, size_t len) {
+	MULTIPROGRAM_YIELD();
 	if (len < sizeof(int)) return 0;
 	int count = io_read(AM_AUDIO_CONFIG).bufsize - io_read(AM_AUDIO_STATUS).count;
 	*(int *) buf = count;
