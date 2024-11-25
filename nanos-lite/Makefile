@@ -4,6 +4,7 @@ RAMDISK_FILE = build/ramdisk.img
 NAME = nanos-lite
 SRCS = $(shell find -L ./src/ -name "*.c" -o -name "*.cpp" -o -name "*.S")
 include $(AM_HOME)/Makefile
+CFLAGS += -DSTACK_SWITCH
 
 ifeq ($(ARCH),native)
 ISA = am_native
