@@ -5,7 +5,10 @@
 #define HAS_CTE
 #define HAS_VME
 #define MULTIPROGRAM
+
+#ifdef __PLATFORM_nemu_
 #define TIME_SHARING
+#endif
 
 #include <am.h>
 #include <klib.h>
