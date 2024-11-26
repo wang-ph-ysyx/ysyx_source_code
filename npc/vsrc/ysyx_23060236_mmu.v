@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_mmu(
 	input clock,
 	input reset,
@@ -73,28 +74,51 @@ module ysyx_23060236_mmu(
 	output [1:0]  v_io_master_rresp,
 	output [31:0] v_io_master_rdata,
 	output        v_io_master_rlast,
-	output [3:0]  v_io_master_rid
+	output [3:0]  v_io_master_rid,
+
+	output [19:0] tlb_araddr,
+	input  [19:0] tlb_rdata,
+	output        tlb_rvalid,
+	input         tlb_hit,
+	output [19:0] tlb_awaddr,
+	output [19:0] tlb_wdata,
+	output reg    tlb_wvalid
 );
 
-	localparam IDLE   = 2'd0;
-	localparam STAGE1 = 2'd1;
-	localparam STAGE2 = 2'd2;
-	localparam SEND   = 2'd3;
+	localparam IDLE   = 3'd0;
+	localparam TLB    = 3'd1;
+	localparam STAGE1 = 3'd2;
+	localparam STAGE2 = 3'd3;
+	localparam SEND   = 3'd4;
 
 	wire [9:0] vpn1;
 	wire [9:0] vpn0;
 	wire [11:0] offset;
 
-	assign vpn1 = v_io_master_awvalid ? v_io_master_awaddr[31:22] : v_io_master_araddr[31:22];
+	assign vpn1 = reading ? v_io_master_araddr[31:22] : v_io_master_awaddr[31:22];
 	assign vpn0 = reading ? v_io_master_araddr[21:12] : v_io_master_awaddr[21:12];
 	assign offset = reading ? v_io_master_araddr[11:0] : v_io_master_awaddr[11:0];
 
-	reg  [1:0] state;
-	reg  [1:0] next_state;
+	assign tlb_araddr = v_io_master_awvalid ? v_io_master_awaddr[31:12] : v_io_master_araddr[31:12];
+	assign tlb_rvalid = (state == IDLE) & mmu_on & (v_io_master_arvalid | v_io_master_awvalid);
+
+	reg  [2:0] state;
+	reg  [2:0] next_state;
 	reg  reading;
 
 	reg  arvalid;
 	reg  [31:0] address;
+
+	// tlb write
+	always @(posedge clock) begin
+		if (reset) tlb_wvalid <= 0;
+		else if ((state == STAGE2) & (io_master_rvalid & io_master_rready)) 
+			tlb_wvalid <= 1;
+		else tlb_wvalid <= 0;
+	end
+
+	assign tlb_awaddr = {vpn1, vpn0};
+	assign tlb_wdata  = io_master_rdata[29:10];
 
 	// state control signal register
 	always @(posedge clock) begin
@@ -109,7 +133,8 @@ module ysyx_23060236_mmu(
 
 	always @(*) begin
 		case(state)
-			IDLE:   next_state = (v_io_master_arvalid | v_io_master_awvalid) ? STAGE1 : IDLE;
+			IDLE:   next_state = mmu_on & (v_io_master_arvalid | v_io_master_awvalid) ? TLB : IDLE;
+			TLB:    next_state = tlb_hit ? SEND : STAGE1;
 			STAGE1: next_state = (io_master_rvalid & io_master_rready) ? STAGE2 : STAGE1;
 			STAGE2: next_state = (io_master_rvalid & io_master_rready) ? SEND : STAGE2;
 			SEND:   next_state = (io_master_rvalid & io_master_rready & io_master_rlast | 
@@ -124,14 +149,16 @@ module ysyx_23060236_mmu(
 	always @(posedge clock) begin
 		if (reset) arvalid <= 0;
 		else if (io_master_arvalid & io_master_arready) arvalid <= 0;
-		else if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid) | 
+		else if ((state == TLB) & ~tlb_hit | 
 						 (state == STAGE1) & io_master_rvalid & io_master_rready) arvalid <= 1;
 	end
 
 	// data register
 	always @(posedge clock) begin
-		if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid))
-			address <= {ppn, vpn1, 2'b0};
+		if (state == TLB) begin
+			if (tlb_hit) address <= {tlb_rdata, offset};
+			else address <= {ppn, vpn1, 2'b0};
+		end
 		else if ((state == STAGE1) & io_master_rvalid & io_master_rready)
 			address <= {io_master_rdata[29:10], vpn0, 2'b0};
 		else if ((state == STAGE2) & io_master_rvalid & io_master_rready)
@@ -171,5 +198,19 @@ module ysyx_23060236_mmu(
 	assign v_io_master_rdata   =   io_master_rdata;
 	assign v_io_master_rlast   =   io_master_rlast;
 	assign v_io_master_rid     =   io_master_rid;
+
+`ifndef SYN
+
+	import "DPI-C" function void add_hit_tlb();
+	import "DPI-C" function void add_miss_tlb();
+	
+	always @(posedge clock) begin
+		if (state == TLB) begin
+			if (tlb_hit) add_hit_tlb();
+			else add_miss_tlb();
+		end
+	end
+
+`endif
 
 endmodule
