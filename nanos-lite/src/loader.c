@@ -58,7 +58,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
 				pa = new_page(1);
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
-				fs_read(fd, va, PGSIZE);
+				fs_read(fd, pa, PGSIZE);
 			}
 			pa = maped(&pcb->as, va);
 			if (pa == NULL) {
