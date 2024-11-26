@@ -67,7 +67,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			}
 			if (va_end >= va)
 				fs_read(fd, pa, va_end - va);
-			memset(va + (va_file_end - va), 0, va_end - va_file_end);
+			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
 		}
 	}
   return ehdr.e_entry;
