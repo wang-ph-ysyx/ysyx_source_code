@@ -17,34 +17,46 @@
 #define signal(s) npc__DOT__cpu__DOT__##s
 #endif
 
+#define TOTAL_COUNTER(_) \
+	_(total_cycle) _(total_inst)
+#define PERFORMANCE_COUNTER(_) \
+ 	_(ifu_getinst) _(ifu_readingcycle) \
+	_(lsu_getdata) _(lsu_readingcycle) _(lsu_writedata) _(lsu_writingcycle)
+#define CACHE_PERFORMANCE(_) \
+	_(hit_icache) _(miss_icache) _(tmt)
+#define PIPELINE_PERFORMANCE(_) \
+	_(raw_conflict_cycle) _(raw_conflict) \
+	_(jump_wrong_cycle) _(jump_wrong)
+#define MULDIV_PERFORMANCE(_) \
+	_(div_cycle) _(mul_cycle)
+#define TLB_PERFORMANCE(_) \
+	_(hit_tlb) _(miss_tlb)
+
+#define DECLARE_COUNTER(counter) \
+	static long counter = 0; \
+	extern "C" void add_##counter() { ++counter; }
+
+#define PRINT_COUNTER(counter) \
+	printf("counter: %ld\n", counter); \
+
 TOP_NAME *top = NULL;
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
 extern int wave_trace;
 
-//performance register
-static long total_inst = 0;
-static long total_cycle = 0;
-static long total_lsu_getdata = 0;
-static long total_lsu_writedata = 0;
-static long total_ifu_getinst = 0;
-static long total_lsu_readingcycle = 0;
-static long total_lsu_writingcycle = 0;
-static long total_ifu_readingcycle = 0;
-static long hit_icache = 0;
-static long miss_icache = 0;
-static long tmt = 0;
-static long raw_conflict = 0;
-static long raw_conflict_cycle = 0;
-static long jump_wrong = 0;
-static long jump_wrong_cycle = 0;
-static long div_cycle = 0;
-static long mul_cycle = 0;
-static long hit_tlb = 0;
-static long miss_tlb = 0;
 static int lsu_awaddr = 0;
 static int inst_ebreak = 0;
+
+TOTAL_COUNTER(DECLARE_COUNTER)
+PERFORMANCE_COUNTER(DECLARE_COUNTER)
+CACHE_PERFORMANCE(DECLARE_COUNTER)
+PIPELINE_PERFORMANCE(DECLARE_COUNTER)
+MULDIV_PERFORMANCE(DECLARE_COUNTER)
+TLB_PERFORMANCE(DECLARE_COUNTER)
+
+extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
+extern "C" void program_end() { inst_ebreak = 1; }
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
@@ -55,64 +67,35 @@ void nvboard_update();
 void print_difftest_reg();
 
 void print_statistic() {
-	printf("\ntotal_cycle: %ld\ntotal_inst: %ld\n", total_cycle, total_inst);
+	printf("\ntotal counter\n");
+	TOTAL_COUNTER(PRINT_COUNTER)
 	printf("IPC: %f\n", (double)total_inst / total_cycle);
-	//performance conter
+
 	printf("\nperformance counter:\n");
-	printf("total_ifu_getinst: %ld\n", total_ifu_getinst);
-	printf("total_ifu_readingcycle: %ld\n", total_ifu_readingcycle);
-	printf("average ifu reading delay: %f\n", (double)total_ifu_readingcycle / total_ifu_getinst);
-	printf("total_lsu_getdata: %ld\n", total_lsu_getdata);
-	printf("total_lsu_readingcycle: %ld\n", total_lsu_readingcycle);
-	printf("average lsu reading delay: %f\n", (double)total_lsu_readingcycle / total_lsu_getdata);
-	printf("total_lsu_writedata: %ld\n", total_lsu_writedata);
-	printf("total_lsu_writingcycle: %ld\n", total_lsu_writingcycle);
-	printf("average lsu writing delay: %f\n", (double)total_lsu_writingcycle / total_lsu_writedata);
-	//cache performance
+	PERFORMANCE_COUNTER(PRINT_COUNTER)
+	printf("average ifu reading delay: %f\n", (double)ifu_readingcycle / ifu_getinst);
+	printf("average lsu reading delay: %f\n", (double)lsu_readingcycle / lsu_getdata);
+	printf("average lsu writing delay: %f\n", (double)lsu_writingcycle / lsu_writedata);
+
 	printf("\ncache performance:\n");
-	printf("hit_icache: %ld\nmiss_icache: %ld\n", hit_icache, miss_icache);
+	CACHE_PERFORMANCE(PRINT_COUNTER)
 	printf("hit rate: %f\n", (double)hit_icache / (hit_icache + miss_icache));
-	printf("TMT: %ld\n", tmt);
 	printf("average miss time: %f\n", (double)tmt / miss_icache);
-	//pipeline performance
+
 	printf("\npipeline performance:\n");
-	printf("raw_conflict_cycle: %ld\n", raw_conflict_cycle);
-	printf("raw_conflict: %ld\n", raw_conflict);
+	PIPELINE_PERFORMANCE(PRINT_COUNTER)
 	printf("average raw conflict penalty: %f\n", (double)raw_conflict_cycle / raw_conflict);
-	printf("jump_wrong_cycle: %ld\n", jump_wrong_cycle);
-	printf("jump_wrong: %ld\n", jump_wrong);
 	printf("average jump wrong penalty: %f\n", (double)jump_wrong_cycle / jump_wrong);
-	// muldiv performance
+
 	printf("\nmul/div performance:\n");
-	printf("div cycle: %ld\n", div_cycle);
-	printf("mul cycle: %ld\n", mul_cycle);
+	MULDIV_PERFORMANCE(PRINT_COUNTER)
+
 	printf("\ntlb performance:\n");
-	printf("hit_tlb: %ld\nmiss_tlb: %ld\n", hit_tlb, miss_tlb);
+	TLB_PERFORMANCE(PRINT_COUNTER)
 	printf("tlb hit rate: %f\n", (double)hit_tlb / (hit_tlb + miss_tlb));
+
 	printf("\n");
 }
-
-extern "C" void add_total_inst() { ++total_inst; }
-extern "C" void add_total_cycle() { ++total_cycle; }
-extern "C" void add_lsu_getdata() { ++total_lsu_getdata; }
-extern "C" void add_lsu_writedata() { ++total_lsu_writedata; }
-extern "C" void add_ifu_getinst() { ++total_ifu_getinst; }
-extern "C" void add_lsu_readingcycle() { ++total_lsu_readingcycle; }
-extern "C" void add_lsu_writingcycle() { ++total_lsu_writingcycle; }
-extern "C" void add_ifu_readingcycle() { ++total_ifu_readingcycle; }
-extern "C" void add_hit_icache() { ++hit_icache; }
-extern "C" void add_miss_icache() { ++miss_icache; }
-extern "C" void add_tmt() { ++tmt; }
-extern "C" void add_raw_conflict_cycle() { ++raw_conflict_cycle; }
-extern "C" void add_raw_conflict() { ++raw_conflict; }
-extern "C" void add_jump_wrong() { ++jump_wrong; }
-extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
-extern "C" void add_mul_cycle() { ++mul_cycle; }
-extern "C" void add_div_cycle() { ++div_cycle; }
-extern "C" void add_hit_tlb() { ++hit_tlb; }
-extern "C" void add_miss_tlb() { ++miss_tlb; }
-extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
-extern "C" void program_end() { inst_ebreak = 1; }
 
 static void one_cycle() {
 	top->clock = 0; top->eval(); 
@@ -123,6 +106,13 @@ static void one_cycle() {
 #ifdef WAVE_TRACE
 	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
+}
+
+void reset() {
+	top->reset = 1;
+	for (int i = 0; i < 10; ++i)
+		one_cycle();
+	top->reset = 0;
 }
 
 void cpu_exec(unsigned long n) {
@@ -164,20 +154,4 @@ void cpu_exec(unsigned long n) {
 #ifdef PRINT_PERF
 	print_statistic();
 #endif
-}
-
-void reset() {
-	top->reset = 1;
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	one_cycle();
-	top->reset = 0;
 }
