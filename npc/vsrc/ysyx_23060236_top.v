@@ -174,6 +174,7 @@ module ysyx_23060236(
 
 	wire [19:0] tlb_araddr;
 	wire [19:0] tlb_rdata;
+	wire        tlb_rvalid;
 	wire        tlb_hit;
 	wire [19:0] tlb_awaddr;
 	wire [19:0] tlb_wdata;
@@ -279,6 +280,7 @@ module ysyx_23060236(
     .io_master_rid(io_master_rid),
 		.tlb_araddr(tlb_araddr),
 		.tlb_rdata(tlb_rdata),
+		.tlb_rvalid(tlb_rvalid),
 		.tlb_hit(tlb_hit),
 		.tlb_awaddr(tlb_awaddr),
 		.tlb_wdata(tlb_wdata),
@@ -396,6 +398,7 @@ module ysyx_23060236(
 		.reset(reset),
 		.tlb_araddr(tlb_araddr),
 		.tlb_rdata(tlb_rdata),
+		.tlb_rvalid(tlb_rvalid),
 		.tlb_hit(tlb_hit),
 		.tlb_awaddr(tlb_awaddr),
 		.tlb_wdata(tlb_wdata),

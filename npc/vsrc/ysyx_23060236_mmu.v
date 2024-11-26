@@ -78,6 +78,7 @@ module ysyx_23060236_mmu(
 
 	output [19:0] tlb_araddr,
 	input  [19:0] tlb_rdata,
+	output        tlb_rvalid,
 	input         tlb_hit,
 	output [19:0] tlb_awaddr,
 	output [19:0] tlb_wdata,
@@ -98,7 +99,8 @@ module ysyx_23060236_mmu(
 	assign vpn0 = reading ? v_io_master_araddr[21:12] : v_io_master_awaddr[21:12];
 	assign offset = reading ? v_io_master_araddr[11:0] : v_io_master_awaddr[11:0];
 
-	assign tlb_araddr = {vpn1, vpn0};
+	assign tlb_araddr = v_io_master_arvalid ? v_io_master_araddr[31:12] : v_io_master_awaddr[31:12];
+	assign tlb_rvalid = (state == IDLE) & mmu_on & (v_io_master_arvalid | v_io_master_awvalid);
 
 	reg  [2:0] state;
 	reg  [2:0] next_state;

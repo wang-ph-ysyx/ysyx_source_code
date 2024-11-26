@@ -5,6 +5,7 @@ module ysyx_23060236_tlb(
 
 	input  [ADDR_LEN-1:0] tlb_araddr,
 	output [DATA_LEN-1:0] tlb_rdata,
+	input         tlb_rvalid,
 	output        tlb_hit,  
 
 	input  [ADDR_LEN-1:0] tlb_awaddr,
@@ -25,6 +26,9 @@ module ysyx_23060236_tlb(
 	reg [GROUP_SIZE-1:0] tlb_valid[2**INDEX_LEN-1:0];
 	reg [0:0]            ex_index [2**INDEX_LEN-1:0];
 
+	reg [INDEX_LEN-1:0] read_index_reg;
+	reg [TAG_LEN-1:0]   read_tag_reg;
+
 	wire [INDEX_LEN-1:0] read_index;
 	wire [TAG_LEN-1:0]   read_tag;
 	wire [INDEX_LEN-1:0] write_index;
@@ -36,10 +40,19 @@ module ysyx_23060236_tlb(
 	assign read_index   = tlb_araddr[INDEX_LEN-1 : 0];
 	assign write_tag    = tlb_awaddr[ADDR_LEN-1 : INDEX_LEN];
 	assign write_index  = tlb_awaddr[INDEX_LEN-1 : 0];
-	assign tlb_hit0  = tlb_valid[read_index][0] & (tlb_tag[read_index][0] == read_tag);
-	assign tlb_hit1  = tlb_valid[read_index][1] & (tlb_tag[read_index][1] == read_tag);
+	assign tlb_hit0  = tlb_valid[read_index_reg][0] & 
+										 (tlb_tag[read_index_reg][0] == read_tag_reg);
+	assign tlb_hit1  = tlb_valid[read_index_reg][1] & 
+										 (tlb_tag[read_index_reg][1] == read_tag_reg);
 	assign tlb_hit   = tlb_hit0 | tlb_hit1;
-	assign tlb_rdata = tlb_hit0 ? tlb_data[read_index][0] : tlb_data[read_index][1];
+	assign tlb_rdata = tlb_hit0 ? tlb_data[read_index_reg][0] : tlb_data[read_index_reg][1];
+
+	always @(posedge clock) begin
+		if (tlb_rvalid) begin
+			read_tag_reg   <= read_tag;
+			read_index_reg <= read_index;
+		end
+	end
 
 	always @(posedge clock) begin
 		if (reset) begin
