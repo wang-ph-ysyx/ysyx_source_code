@@ -172,6 +172,14 @@ module ysyx_23060236(
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
+	wire [19:0] tlb_araddr;
+	wire [19:0] tlb_rdata;
+	wire        tlb_hit;
+	wire [19:0] tlb_awaddr;
+	wire [19:0] tlb_wdata;
+	wire        tlb_wvalid;
+	wire        tlb_flush;
+
 	wire        v_io_master_awready;
 	wire        v_io_master_awvalid;
 	wire [31:0] v_io_master_awaddr;
@@ -268,7 +276,13 @@ module ysyx_23060236(
     .io_master_rresp(io_master_rresp),
     .io_master_rdata(io_master_rdata),
     .io_master_rlast(io_master_rlast),
-    .io_master_rid(io_master_rid)
+    .io_master_rid(io_master_rid),
+		.tlb_araddr(tlb_araddr),
+		.tlb_rdata(tlb_rdata),
+		.tlb_hit(tlb_hit),
+		.tlb_awaddr(tlb_awaddr),
+		.tlb_wdata(tlb_wdata),
+		.tlb_wvalid(tlb_wvalid)
 	);
 
 	ysyx_23060236_xbar my_xbar(
@@ -375,6 +389,18 @@ module ysyx_23060236(
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
 		.btb_wdata(jump_addr)
+	);
+
+	ysyx_23060236_tlb my_tlb(
+		.clock(clock),
+		.reset(reset),
+		.tlb_araddr(tlb_araddr),
+		.tlb_rdata(tlb_rdata),
+		.tlb_hit(tlb_hit),
+		.tlb_awaddr(tlb_awaddr),
+		.tlb_wdata(tlb_wdata),
+		.tlb_wvalid(tlb_wvalid),
+		.tlb_flush(tlb_flush)
 	);
 
 	ysyx_23060236_ifu my_ifu(
@@ -540,7 +566,8 @@ module ysyx_23060236(
 		.jump_en(csr_jump_en),
 		.mmu_on(mmu_on),
 		.ppn(ppn),
-		.valid(exu_valid & exu_ready)
+		.valid(exu_valid & exu_ready),
+		.tlb_flush(tlb_flush)
 	);
 
 	assign io_slave_awready = 0;

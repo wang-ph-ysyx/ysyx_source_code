@@ -13,7 +13,9 @@ module ysyx_23060236_CSRFile (
 	output jump_en,
 	output mmu_on,
 	output [19:0] ppn,
-	input  valid
+	input  valid,
+
+	output tlb_flush
 );
 
 	reg [31:0] mepc    ;
@@ -83,5 +85,7 @@ module ysyx_23060236_CSRFile (
 
 	assign jump = {32{inst_ecall}} & mtvec | {32{inst_mret}} & mepc;
 	assign jump_en = inst_ecall | inst_mret;
+
+	assign tlb_flush = valid & enable & choose[CSR_SATP];
 
 endmodule

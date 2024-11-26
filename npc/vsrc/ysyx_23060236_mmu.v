@@ -73,7 +73,14 @@ module ysyx_23060236_mmu(
 	output [1:0]  v_io_master_rresp,
 	output [31:0] v_io_master_rdata,
 	output        v_io_master_rlast,
-	output [3:0]  v_io_master_rid
+	output [3:0]  v_io_master_rid,
+
+	output [19:0] tlb_araddr,
+	input  [19:0] tlb_rdata,
+	input         tlb_hit,
+	output [19:0] tlb_awaddr,
+	output [19:0] tlb_wdata,
+	output reg    tlb_wvalid
 );
 
 	localparam IDLE   = 3'd0;
@@ -86,9 +93,11 @@ module ysyx_23060236_mmu(
 	wire [9:0] vpn0;
 	wire [11:0] offset;
 
-	assign vpn1 = v_io_master_awvalid ? v_io_master_awaddr[31:22] : v_io_master_araddr[31:22];
+	assign vpn1 = reading ? v_io_master_araddr[31:22] : v_io_master_awaddr[31:22];
 	assign vpn0 = reading ? v_io_master_araddr[21:12] : v_io_master_awaddr[21:12];
 	assign offset = reading ? v_io_master_araddr[11:0] : v_io_master_awaddr[11:0];
+
+	assign tlb_araddr = {vpn1, vpn0};
 
 	reg  [2:0] state;
 	reg  [2:0] next_state;
@@ -96,6 +105,17 @@ module ysyx_23060236_mmu(
 
 	reg  arvalid;
 	reg  [31:0] address;
+
+	// tlb write
+	always @(posedge clock) begin
+		if (reset) tlb_wvalid <= 0;
+		else if ((state == STAGE2) & (io_master_rvalid & io_master_rready)) 
+			tlb_wvalid <= 1;
+		else tlb_wvalid <= 0;
+	end
+
+	assign tlb_awaddr = {vpn1, vpn0};
+	assign tlb_wdata  = io_master_rdata[29:10];
 
 	// state control signal register
 	always @(posedge clock) begin
@@ -110,7 +130,8 @@ module ysyx_23060236_mmu(
 
 	always @(*) begin
 		case(state)
-			IDLE:   next_state = (v_io_master_arvalid | v_io_master_awvalid) ? STAGE1 : IDLE;
+			IDLE:   next_state = mmu_on & (v_io_master_arvalid | v_io_master_awvalid) ? TLB : IDLE;
+			TLB:    next_state = tlb_hit ? SEND : STAGE1;
 			STAGE1: next_state = (io_master_rvalid & io_master_rready) ? STAGE2 : STAGE1;
 			STAGE2: next_state = (io_master_rvalid & io_master_rready) ? SEND : STAGE2;
 			SEND:   next_state = (io_master_rvalid & io_master_rready & io_master_rlast | 
@@ -125,14 +146,16 @@ module ysyx_23060236_mmu(
 	always @(posedge clock) begin
 		if (reset) arvalid <= 0;
 		else if (io_master_arvalid & io_master_arready) arvalid <= 0;
-		else if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid) | 
+		else if ((state == TLB) & ~tlb_hit | 
 						 (state == STAGE1) & io_master_rvalid & io_master_rready) arvalid <= 1;
 	end
 
 	// data register
 	always @(posedge clock) begin
-		if ((state == IDLE) & (v_io_master_arvalid | v_io_master_awvalid))
-			address <= {ppn, vpn1, 2'b0};
+		if (state == TLB) begin
+			if (tlb_hit) address <= {tlb_rdata, offset};
+			else address <= {ppn, vpn1, 2'b0};
+		end
 		else if ((state == STAGE1) & io_master_rvalid & io_master_rready)
 			address <= {io_master_rdata[29:10], vpn0, 2'b0};
 		else if ((state == STAGE2) & io_master_rvalid & io_master_rready)
