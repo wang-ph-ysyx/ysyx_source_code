@@ -76,10 +76,11 @@ module ysyx_23060236_mmu(
 	output [3:0]  v_io_master_rid
 );
 
-	localparam IDLE   = 2'd0;
-	localparam STAGE1 = 2'd1;
-	localparam STAGE2 = 2'd2;
-	localparam SEND   = 2'd3;
+	localparam IDLE   = 3'd0;
+	localparam TLB    = 3'd1
+	localparam STAGE1 = 3'd2;
+	localparam STAGE2 = 3'd3;
+	localparam SEND   = 3'd4;
 
 	wire [9:0] vpn1;
 	wire [9:0] vpn0;
@@ -89,8 +90,8 @@ module ysyx_23060236_mmu(
 	assign vpn0 = reading ? v_io_master_araddr[21:12] : v_io_master_awaddr[21:12];
 	assign offset = reading ? v_io_master_araddr[11:0] : v_io_master_awaddr[11:0];
 
-	reg  [1:0] state;
-	reg  [1:0] next_state;
+	reg  [2:0] state;
+	reg  [2:0] next_state;
 	reg  reading;
 
 	reg  arvalid;
