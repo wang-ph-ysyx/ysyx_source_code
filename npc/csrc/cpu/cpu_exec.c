@@ -37,7 +37,7 @@
 	extern "C" void add_##counter() { ++counter; }
 
 #define PRINT_COUNTER(counter) \
-	printf("counter: %ld\n", counter); \
+	printf("%s: %ld\n", #counter, counter); \
 
 TOP_NAME *top = NULL;
 VerilatedVcdC *tfp = NULL;
