@@ -77,7 +77,7 @@ module ysyx_23060236_mmu(
 );
 
 	localparam IDLE   = 3'd0;
-	localparam TLB    = 3'd1
+	localparam TLB    = 3'd1;
 	localparam STAGE1 = 3'd2;
 	localparam STAGE2 = 3'd3;
 	localparam SEND   = 3'd4;
