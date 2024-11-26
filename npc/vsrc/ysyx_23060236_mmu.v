@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_mmu(
 	input clock,
 	input reset,
@@ -195,5 +196,19 @@ module ysyx_23060236_mmu(
 	assign v_io_master_rdata   =   io_master_rdata;
 	assign v_io_master_rlast   =   io_master_rlast;
 	assign v_io_master_rid     =   io_master_rid;
+
+`ifndef SYN
+
+	import "DPI-C" function void add_hit_tlb();
+	import "DPI-C" function void add_miss_tlb();
+	
+	always @(posedge clock) begin
+		if (state == TLB) begin
+			if (tlb_hit) add_hit_tlb();
+			else add_miss_tlb();
+		end
+	end
+
+`endif
 
 endmodule

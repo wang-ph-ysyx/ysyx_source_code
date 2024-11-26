@@ -41,6 +41,8 @@ static long jump_wrong = 0;
 static long jump_wrong_cycle = 0;
 static long div_cycle = 0;
 static long mul_cycle = 0;
+static long hit_tlb = 0;
+static long miss_tlb = 0;
 static int lsu_awaddr = 0;
 static int inst_ebreak = 0;
 
@@ -84,6 +86,9 @@ void print_statistic() {
 	printf("\nmul/div performance:\n");
 	printf("div cycle: %ld\n", div_cycle);
 	printf("mul cycle: %ld\n", mul_cycle);
+	printf("\ntlb performance:\n");
+	printf("hit_tlb: %ld\nmiss_tlb: %ld\n", hit_tlb, miss_tlb);
+	printf("tlb hit rate: %f\n", (double)hit_tlb / (hit_tlb + miss_tlb));
 	printf("\n");
 }
 
@@ -104,6 +109,8 @@ extern "C" void add_jump_wrong() { ++jump_wrong; }
 extern "C" void add_jump_wrong_cycle() { ++jump_wrong_cycle; }
 extern "C" void add_mul_cycle() { ++mul_cycle; }
 extern "C" void add_div_cycle() { ++div_cycle; }
+extern "C" void add_hit_tlb() { ++hit_tlb; }
+extern "C" void add_miss_tlb() { ++miss_tlb; }
 extern "C" void record_lsu_awaddr(int awaddr) { lsu_awaddr = awaddr; }
 extern "C" void program_end() { inst_ebreak = 1; }
 
