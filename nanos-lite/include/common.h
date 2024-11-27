@@ -6,9 +6,9 @@
 #define HAS_VME
 #define MULTIPROGRAM
 
-#ifdef __PLATFORM_NEMU
+//#ifdef __PLATFORM_NEMU
 #define TIME_SHARING
-#endif
+//#endif
 
 #include <am.h>
 #include <klib.h>
