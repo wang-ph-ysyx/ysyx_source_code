@@ -37,7 +37,9 @@ module ysyx_23060236_exu(
 
 	input  exu_valid,
 	output exu_ready,
-	input  lsu_over
+	input  lsu_over,
+
+	input time_intr
 );
 
 	wire [31:0] jump_addr_tmp;
@@ -63,7 +65,9 @@ module ysyx_23060236_exu(
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
 	reg  exu_ready_reg;
+	wire handshake;
 
+	assign handshake = exu_valid & exu_ready & ~time_intr;
 	assign inst_muldiv = opcode_type[INST_ADD] & funct7_50[0];
 	assign inst_mul = inst_muldiv & ~funct3[2];
 	assign inst_div = inst_muldiv & funct3[2];
@@ -90,24 +94,29 @@ module ysyx_23060236_exu(
 	always @(posedge clock) begin
 		if (reset) exu_ready_reg <= 1;
 		else if (lsu_over) exu_ready_reg <= 1;
-		else if (exu_ready & exu_valid) exu_ready_reg <= 0;
+		else if (handshake) exu_ready_reg <= 0;
 	end
 
 	// data register
 	always @(posedge clock) begin
-		if (exu_valid & exu_ready) begin
+		if (handshake) begin
 			funct3_reg      <= funct3;
 			rd_next         <= rd;
 			reg_wen_next    <= reg_wen;
-			jump_addr       <= jump_addr_tmp;
-			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
 			pc_next         <= pc[31:0];
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 			inst_fencei_tmp <= inst_fencei;
 		end
 		else begin
-			jump_wrong_tmp  <= 0;
 			inst_fencei_tmp <= 0;
+		end
+
+		if (exu_valid & exu_ready) begin
+			jump_addr       <= jump_addr_tmp;
+			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
+		end
+		else begin
+			jump_wrong_tmp  <= 0;
 		end
 	end
 
@@ -228,7 +237,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_mul my_mul(
 		.clock(clock),
 		.reset(reset),
-		.mul_valid(exu_valid & exu_ready & inst_mul),
+		.mul_valid(handshake & inst_mul),
 		.mul_ready(mul_ready),
 		.mul_sign(mul_sign),
 		.mul1(src1),
@@ -241,7 +250,7 @@ module ysyx_23060236_exu(
 	ysyx_23060236_div my_div(
 		.clock(clock),
 		.reset(reset),
-		.div_valid(exu_valid & exu_ready & inst_div),
+		.div_valid(handshake & inst_div),
 		.div_ready(div_ready),
 		.div_sign(div_sign),
 		.div1(src1),
@@ -259,11 +268,11 @@ reg div_doing;
 reg mul_doing;
 always @(posedge clock) begin
 	if (reset) mul_doing <= 0;
-	else if (exu_valid & exu_ready & inst_mul & mul_ready) mul_doing <= 1;
+	else if (handshake & inst_mul & mul_ready) mul_doing <= 1;
 	else if (mul_outvalid) mul_doing <= 0;
 
 	if (reset) div_doing <= 0;
-	else if (exu_valid & exu_ready & inst_div & div_ready) div_doing <= 1;
+	else if (handshake & inst_div & div_ready) div_doing <= 1;
 	else if (div_outvalid) div_doing <= 0;
 
 	if (div_doing) add_div_cycle();
