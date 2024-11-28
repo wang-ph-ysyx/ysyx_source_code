@@ -33,14 +33,14 @@ module ysyx_23060236_btb(
 	wire [INDEX_LEN-1:0] read_index_exu;
 
 	assign read_tag     = btb_araddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
-	assign read_index   = btb_araddr[INDEX_LEN-1 : 0];
+	assign read_index   = btb_araddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
 	assign write_tag    = btb_awaddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
-	assign write_index  = btb_awaddr[INDEX_LEN-1 : 0];
+	assign write_index  = btb_awaddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
 	assign btb_hit      = btb_valid[read_index] & (btb_tag[read_index] == read_tag);
 	assign btb_rdata    = btb_hit ? btb_data[read_index] : (btb_araddr + 4);
 
 	assign read_tag_exu   = btb_araddr_exu[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
-	assign read_index_exu = btb_araddr_exu[INDEX_LEN-1 : 0];
+	assign read_index_exu = btb_araddr_exu[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
 	assign btb_hit_exu    = btb_valid[read_index_exu] & (btb_tag[read_index_exu] == read_tag_exu);
 	assign btb_rdata_exu  = btb_hit_exu ? btb_data[read_index_exu] : (btb_araddr_exu + 4);
 
