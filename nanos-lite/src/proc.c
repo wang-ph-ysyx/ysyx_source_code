@@ -58,7 +58,7 @@ Context* schedule(Context *prev) {
 		current = &pcb[fg_pcb];
 	}
 	else {
-		if (count == 10) {
+		if (count == 8) {
 			current = &pcb[0];
 			count = 0;
 		}
