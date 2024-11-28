@@ -31,7 +31,7 @@ module ysyx_23060236_clint(
 
 	always @(posedge clock) begin
 		if (reset) time_intr <= 0;
-		else if (mtime[20:0] == 21'h1fffff) time_intr <= 1'b1;
+		else if (mtime[21:0] == 22'h2fffff) time_intr <= 1'b1;
 		else if (handle_intr) time_intr <= 1'b0;
 	end
 
