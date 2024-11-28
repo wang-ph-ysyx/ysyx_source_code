@@ -1,3 +1,5 @@
+#define STACK_SWITCH
+
 #define concat_temp(x, y) x ## y
 #define concat(x, y) concat_temp(x, y)
 #define MAP(c, f) c(f)

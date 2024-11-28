@@ -15,6 +15,8 @@ module ysyx_23060236_CSRFile (
 	output [19:0] ppn,
 	input  valid,
 
+	output time_intr_on,
+	input  time_intr,
 	output tlb_flush
 );
 
@@ -47,6 +49,7 @@ module ysyx_23060236_CSRFile (
 
 	assign mmu_on = satp[31];
 	assign ppn = satp[19:0];
+	assign time_intr_on = mstatus[3];
 
 	always @(posedge clock) begin
 		if (reset) begin
@@ -54,7 +57,13 @@ module ysyx_23060236_CSRFile (
 			satp[31] <= 1'b0;
 		end
 		else if (valid) begin
-			if (enable) begin
+			if (time_intr & time_intr_on) begin
+				mepc       <= epc;
+				mcause     <= 7'h47;
+				mstatus[3] <= 1'b0;
+				mstatus[7] <= mstatus[3];
+			end
+			else if (enable) begin
 				if (choose[CSR_MEPC     ]) mepc     <= wdata;
 				if (choose[CSR_MCAUSE   ]) mcause   <= {wdata[31], wdata[5:0]};
 				if (choose[CSR_MSTATUS  ]) mstatus  <= wdata;
@@ -63,12 +72,14 @@ module ysyx_23060236_CSRFile (
 				if (choose[CSR_MSCRATCH ]) mscratch <= wdata;
 			end
 			else if (inst_ecall) begin
-				mepc    <= epc;
-				mcause  <= 7'd11;
-				mstatus <= {mstatus[31:8], mstatus[3], mstatus[6:4], 1'b0, mstatus[2:0]};
+				mepc       <= epc;
+				mcause     <= 7'd11;
+				mstatus[3] <= 1'b0;
+				mstatus[7] <= mstatus[3];
 			end
 			else if (inst_mret) begin
-				mstatus <= {mstatus[31:8], 1'b1, mstatus[6:4], mstatus[7], mstatus[2:0]};
+				mstatus[3] <= mstatus[7];
+				mstatus[7] <= 1'b1;
 			end
 		end
 	end
@@ -83,8 +94,8 @@ module ysyx_23060236_CSRFile (
                  choose[CSR_MARCHID  ] ? 32'h015fdf0c :
 								 32'b0;
 
-	assign jump = {32{inst_ecall}} & mtvec | {32{inst_mret}} & mepc;
-	assign jump_en = inst_ecall | inst_mret;
+	assign jump = inst_mret ? mepc : mtvec;
+	assign jump_en = inst_ecall | inst_mret | (time_intr & time_intr_on);
 
 	assign tlb_flush = valid & enable & choose[CSR_SATP];
 
