@@ -16,7 +16,7 @@ module ysyx_23060236_btb(
 	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 2;
-	localparam INDEX_LEN  = 1;
+	localparam INDEX_LEN  = 2;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 
 	reg [DATA_LEN-1:0] btb_data ;
