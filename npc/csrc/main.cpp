@@ -1,6 +1,6 @@
 #include "verilated.h"
 #include <nvboard.h>
-#include "verilated_vcd_c.h"
+#include "verilated_fst_c.h"
 #include <config.h>
 
 #if defined(__PLATFORM_ysyxsoc_)
@@ -10,7 +10,7 @@
 #endif
 
 extern TOP_NAME *top;
-extern VerilatedVcdC *tfp;
+extern VerilatedFstC *tfp;
 extern VerilatedContext *contextp;
 
 int start = 0;
@@ -26,10 +26,10 @@ int main(int argc, char **argv) {
 	contextp->commandArgs(argc, argv);
 	top = new TOP_NAME{contextp};
 #ifdef WAVE_TRACE
-	tfp = new VerilatedVcdC;
+	tfp = new VerilatedFstC;
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
-	tfp->open("wave.vcd");
+	tfp->open("wave.fst");
 #endif
 	nvboard_bind_all_pins(top);
 	nvboard_init();

@@ -5,7 +5,7 @@
 #include <memory.h>
 #include <config.h>
 #include <nvboard.h>
-#include "verilated_vcd_c.h"
+#include "verilated_fst_c.h"
 
 #if defined(__PLATFORM_ysyxsoc_)
 #include <VysyxSoCFull___024root.h>
@@ -40,7 +40,7 @@
 	printf("%s: %ld\n", #counter, counter); \
 
 TOP_NAME *top = NULL;
-VerilatedVcdC *tfp = NULL;
+VerilatedFstC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
 extern int wave_trace;
