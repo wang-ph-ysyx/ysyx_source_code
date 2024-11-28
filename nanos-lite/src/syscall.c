@@ -4,6 +4,11 @@
 #include <sys/time.h>
 #include <proc.h>
 
+#define CHANGE_PROC(a1, a2, a3) \
+	current->max_brk = 0; \
+	context_uload(current, a1, a2, a3); \
+	switch_boot_pcb(); yield();
+
 int fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
 size_t fs_write(int fd, const void *buf, size_t len);
@@ -33,9 +38,7 @@ void do_syscall(Context *c) {
 	//printf("cause: %d, args: %d %d %d\n", a[0], a[1], a[2], a[3]);
 
   switch (a[0]) {
-		case SYS_exit:  current->max_brk = 0; 
-									  context_uload(current, "/bin/nterm", (char **){NULL}, (char **){NULL});
-									  switch_boot_pcb(); yield(); break;
+		case SYS_exit:  CHANGE_PROC("/bin/nterm", (char **){NULL}, (char **){NULL}) break;
 		case SYS_yield: yield(); c->GPRx = 0; break;
 		case SYS_open:  c->GPRx = fs_open((char *)a[1], a[2], a[3]); break;
 		case SYS_read:  c->GPRx = fs_read(a[1], (char *)a[2], a[3]); break;
