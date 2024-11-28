@@ -16,7 +16,7 @@ module ysyx_23060236_btb(
 	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 2;
-	localparam INDEX_LEN  = 2;
+	localparam INDEX_LEN  = 0;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 
 	reg [DATA_LEN-1:0] btb_data ;
@@ -35,7 +35,7 @@ module ysyx_23060236_btb(
 	assign btb_rdata    = btb_hit ? btb_data : (btb_araddr + 4);
 
 	assign read_tag_exu  = btb_araddr_exu[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
-	assign btb_hit_exu   = btb_valid & (btb_tag == read_tag_exu);
+	assign btb_hit_exu   = 0;//btb_valid & (btb_tag == read_tag_exu);
 	assign btb_rdata_exu = btb_hit_exu ? btb_data : (btb_araddr_exu + 4);
 
 	always @(posedge clock) begin
