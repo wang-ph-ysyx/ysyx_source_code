@@ -15,6 +15,7 @@ module ysyx_23060236_CSRFile (
 	output [19:0] ppn,
 	input  valid,
 
+	output time_intr_on,
 	input  time_intr,
 	output tlb_flush
 );
@@ -48,6 +49,7 @@ module ysyx_23060236_CSRFile (
 
 	assign mmu_on = satp[31];
 	assign ppn = satp[19:0];
+	assign time_intr_on = mstatus[3];
 
 	always @(posedge clock) begin
 		if (reset) begin
@@ -55,7 +57,7 @@ module ysyx_23060236_CSRFile (
 			satp[31] <= 1'b0;
 		end
 		else if (valid) begin
-			if (time_intr & mstatus[3]) begin
+			if (time_intr & time_intr_on) begin
 				mepc       <= epc;
 				mcause     <= 7'h47;
 				mstatus[3] <= 1'b0;
@@ -93,7 +95,7 @@ module ysyx_23060236_CSRFile (
 								 32'b0;
 
 	assign jump = inst_mret ? mepc : mtvec;
-	assign jump_en = inst_ecall | inst_mret | (time_intr & mstatus[3]);
+	assign jump_en = inst_ecall | inst_mret | (time_intr & time_intr_on);
 
 	assign tlb_flush = valid & enable & choose[CSR_SATP];
 

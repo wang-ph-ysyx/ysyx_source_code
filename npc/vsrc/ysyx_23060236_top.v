@@ -182,6 +182,7 @@ module ysyx_23060236(
 	wire        tlb_flush;
 
 	wire        time_intr;
+	wire        time_intr_on;
 
 	wire        v_io_master_awready;
 	wire        v_io_master_awvalid;
@@ -369,7 +370,7 @@ module ysyx_23060236(
 		.rresp(clint_rresp),
 		.rvalid(clint_rvalid),
 		.rready(clint_rready),
-		.handle_intr(exu_valid & exu_ready),
+		.handle_intr(exu_valid & exu_ready & time_intr_on),
 		.time_intr(time_intr)
 	);
 
@@ -507,7 +508,7 @@ module ysyx_23060236(
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
 		.lsu_over(lsu_over),
-		.time_intr(time_intr)
+		.time_intr(time_intr & time_intr_on)
 	);
 
 	ysyx_23060236_lsu my_lsu(
@@ -546,7 +547,7 @@ module ysyx_23060236(
 		.exu_ready(exu_ready),
 		.wb_valid(wb_valid),
 		.lsu_over(lsu_over),
-		.time_intr(time_intr)
+		.time_intr(time_intr & time_intr_on)
 	);
 
 	ysyx_23060236_RegisterFile #(5, 32) my_reg(
@@ -577,6 +578,7 @@ module ysyx_23060236(
 		.ppn(ppn),
 		.valid(exu_valid & exu_ready),
 		.time_intr(time_intr),
+		.time_intr_on(time_intr_on),
 		.tlb_flush(tlb_flush)
 	);
 
