@@ -17,6 +17,7 @@ Context* __am_irq_handle(Context *c) {
     }
 
 		if (ev.event == EVENT_SYSCALL && c->GPR1 == -1) {ev.event = EVENT_YIELD;}
+		printf("mcause: %x\n", c->mcause);
 
     c = user_handler(ev, c);
     assert(c != NULL);
