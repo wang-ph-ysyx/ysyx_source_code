@@ -17,7 +17,7 @@ module ysyx_23060236_icache(
 	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 5;
-	localparam INDEX_LEN  = 3;
+	localparam INDEX_LEN  = 4;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 	localparam BLOCK_SIZE = 2**(OFFSET_LEN-2);
 
