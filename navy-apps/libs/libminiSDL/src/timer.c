@@ -13,9 +13,9 @@ typedef struct {
 	void *param;
 	int used;
 	uint32_t lasttime;
-} timer_t;
+} my_timer_t;
 
-timer_t timer_arr[TOTAL_TIMER];
+my_timer_t timer_arr[TOTAL_TIMER];
 
 SDL_TimerID SDL_AddTimer(uint32_t interval, SDL_NewTimerCallback callback, void *param) {
 	int i;
@@ -35,7 +35,7 @@ SDL_TimerID SDL_AddTimer(uint32_t interval, SDL_NewTimerCallback callback, void 
 
 int SDL_RemoveTimer(SDL_TimerID id) {
 	if (id == NULL) return 0;
-	timer_t *timer = (timer_t *)id;
+	my_timer_t *timer = (my_timer_t *)id;
 	timer->used = 0;
   return 0;
 }
