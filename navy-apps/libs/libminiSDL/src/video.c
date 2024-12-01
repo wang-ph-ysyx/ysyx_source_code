@@ -4,10 +4,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-void CallBackHelper(); //audio callback helper function
+void CallBackHelper();       //audio callback helper function
+void CallBackHelper_timer(); //timer callback helper function
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
 	CallBackHelper();
+	CallBackHelper_timer();
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 	int src_x = 0, src_y = 0, dst_x = 0, dst_y = 0, srcrect_h = src->h, srcrect_w = src->w;
@@ -30,6 +32,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 	CallBackHelper();
+	CallBackHelper_timer();
 	int x = 0, y = 0, w = dst->w, h = dst->h;
 	if (dstrect != NULL) { x = dstrect->x; y = dstrect->y; w = dstrect->w; h = dstrect->h; }
 	int surface_w = dst->w;
@@ -46,6 +49,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 	CallBackHelper();
+	CallBackHelper_timer();
 	NDL_OpenCanvas(&s->w, &s->h);
 	if (x == 0 && y == 0 && w == 0 && h == 0) {
 		w = s->w;
