@@ -20,7 +20,7 @@ void __am_disk_status(AM_DISK_STATUS_T *stat) {
 }
 
 void __am_disk_blkio(AM_DISK_BLKIO_T *io) {
-	outl(DISK_IO_BUF_ADDR,    io->buf);
+	outl(DISK_IO_BUF_ADDR,    (uint32_t)io->buf);
 	outl(DISK_IO_BLKNO_ADDR,  io->blkno);
 	outl(DISK_IO_BLKCNT_ADDR, io->blkcnt);
 	outl(DISK_IO_WRITE_ADDR,  io->write);
