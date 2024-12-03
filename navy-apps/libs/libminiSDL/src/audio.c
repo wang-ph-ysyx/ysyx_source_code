@@ -89,7 +89,7 @@ void CallBackHelper() {
 	called = 1;
 
 	static uint32_t start = 0;
-	uint32_t now = NDL_GetTicks();
+	uint32_t now = SDL_GetTicks();
 	if (now - start > time_interval && NDL_QueryAudio() > samples) {
 		start += time_interval;
 		uint8_t *stream = malloc(samples);

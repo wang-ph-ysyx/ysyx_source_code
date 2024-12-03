@@ -96,35 +96,6 @@ size_t sbctl_write(const void *buf, size_t offset, size_t len) {
 	return sizeof(int) * 3;
 }
 
-size_t disk_read(void *buf, size_t offset, size_t len) {
-	AM_DISK_CONFIG_T cfg = io_read(AM_DISK_CONFIG);
-	assert(cfg.present);
-	assert(offset + len <= cfg.blksz * cfg.blkcnt);
-
-	size_t start = offset / cfg.blksz * cfg.blksz;
-	size_t end = (offset + len + cfg.blksz - 1) / cfg.blksz * cfg.blksz; 
-	uint8_t _buf[end - start];
-
-	io_write(AM_DISK_BLKIO, false, _buf, start / cfg.blksz, (end - start) / cfg.blksz);
-	memcpy(buf, _buf + (offset - start), len);
-	return len;
-}
-
-size_t disk_write(const void *buf, size_t offset, size_t len) {
-	AM_DISK_CONFIG_T cfg = io_read(AM_DISK_CONFIG);
-	assert(cfg.present);
-	assert(offset + len <= cfg.blksz * cfg.blkcnt);
-
-	size_t start = offset / cfg.blksz * cfg.blksz;
-	size_t end = (offset + len + cfg.blksz - 1) / cfg.blksz * cfg.blksz; 
-	uint8_t _buf[end - start];
-
-	io_write(AM_DISK_BLKIO, false, _buf, start / cfg.blksz, (end - start) / cfg.blksz);
-	memcpy(_buf + (offset - start), buf, len);
-	io_write(AM_DISK_BLKIO, true,  _buf, start / cfg.blksz, (end - start) / cfg.blksz);
-	return len;
-}
-
 void init_device() {
   Log("Initializing devices...");
   ioe_init();

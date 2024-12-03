@@ -26,8 +26,6 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-size_t disk_read(void *buf, size_t offset, size_t len);
-size_t disk_write(const void *buf, size_t offset, size_t len);
 size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
 size_t dispinfo_read(void *buf, size_t offset, size_t len);
@@ -59,8 +57,8 @@ int fs_open(const char *pathname, int flags, int mode) {
 	for (int i = 0; i < sizeof(file_table) / sizeof(Finfo); ++i) {
 		if (strcmp(file_table[i].name, pathname) == 0) {
 			file_table[i].open_offset = 0;
-			if (file_table[i].read == NULL) file_table[i].read = disk_read;
-			if (file_table[i].write == NULL) file_table[i].write = disk_write;
+			if (file_table[i].read == NULL) file_table[i].read = ramdisk_read;
+			if (file_table[i].write == NULL) file_table[i].write = ramdisk_write;
 			return i;
 		}
 	}
