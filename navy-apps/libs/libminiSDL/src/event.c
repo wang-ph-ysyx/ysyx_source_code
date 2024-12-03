@@ -91,6 +91,8 @@ uint8_t* SDL_GetKeyState(int *numkeys) {
 }
 
 int poll_event(SDL_Event *event) {
+	CallBackHelper();
+	CallBackHelper_timer();
 	char buf[32];
 	if (NDL_PollEvent(buf, sizeof(buf)) == 0) return 0;
 	if (event == NULL) return 1;
