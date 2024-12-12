@@ -32,17 +32,13 @@ module ysyx_23060236_dcache(
 
 	wire [INDEX_LEN-1:0]  read_index;
 	wire [TAG_LEN-1:0]    read_tag;
-	wire [OFFSET_LEN-3:0] read_offset;
 	wire [INDEX_LEN-1:0]  write_index;
 	wire [TAG_LEN-1:0]    write_tag;
-	wire [OFFSET_LEN-3:0] write_offset;
 
 	assign read_tag     = dcache_araddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign read_index   = dcache_araddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
-	assign read_offset  = dcache_araddr[OFFSET_LEN-1 : 2];
 	assign write_tag    = dcache_awaddr[ADDR_LEN-1 : OFFSET_LEN+INDEX_LEN];
 	assign write_index  = dcache_awaddr[OFFSET_LEN+INDEX_LEN-1 : OFFSET_LEN];
-	assign write_offset = dcache_awaddr[OFFSET_LEN-1 : 2];
 	assign dcache_hit   = dcache_valid[read_index] & (dcache_tag[read_index] == read_tag);
 	assign dcache_rdata = dcache_data[read_index];
 
