@@ -149,7 +149,7 @@ void init_monitor(int argc, char *argv[]) {
 	IFDEF(CONFIG_FTRACE, init_ftrace(elf_file));
 
 	/* Initialeze the data trace function */
-	void data_trace_init();
+	void data_trace_init(char *);
 	IFDEF(CONFIG_DATA_MTRACE, data_trace_init(DCACHE_FILE));
 
 #ifndef CONFIG_ISA_loongarch32r
