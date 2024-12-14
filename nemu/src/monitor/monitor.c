@@ -16,7 +16,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
-#define DCACHE_FILE "~/cachesim/dcache.log"
+#define DCACHE_FILE "/home/ysyx/cachesim/dcache.log"
 
 void init_rand();
 void init_log(const char *log_file);
