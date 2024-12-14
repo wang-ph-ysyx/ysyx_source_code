@@ -31,8 +31,10 @@
 
 static FILE *fp = NULL;
 
+#include <errno.h>
 void data_trace_init(char *file_path) {
 	fp = fopen(file_path, "w");
+	printf("%d\n", errno);
 	assert(fp);
 }
 
