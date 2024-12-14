@@ -24,7 +24,7 @@
 #define CSR(i) *get_csr(i)
 
 word_t vaddr_read_wrap(vaddr_t addr, int len) {
-	printf("read addr: 0x%08x\n", addr);
+	printf("read  addr: 0x%08x\n", addr);
 	return vaddr_read(addr, len);
 }
 
