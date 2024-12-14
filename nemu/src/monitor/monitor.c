@@ -146,6 +146,10 @@ void init_monitor(int argc, char *argv[]) {
 	/* Initialize the ftrace function*/
 	IFDEF(CONFIG_FTRACE, init_ftrace(elf_file));
 
+	/* Initialeze the data trace function */
+	void data_trace_init();
+	IFDEF(CONFIG_DATA_MTRACE, data_trace_init("~/cachesim/dcache.log"));
+
 #ifndef CONFIG_ISA_loongarch32r
   IFDEF(CONFIG_ITRACE, init_disasm(
     MUXDEF(CONFIG_ISA_x86,     "i686",

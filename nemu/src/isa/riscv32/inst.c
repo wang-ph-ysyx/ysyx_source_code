@@ -29,13 +29,28 @@
 #define Mr vaddr_read_wrap
 #define Mw vaddr_write_wrap
 
+FILE *fp = NULL;
+
+void data_trace_init(char *file_path) {
+	fp = fopen(file_path, "w");
+	assert(fp);
+}
+
+void data_trace_free() {
+	fclose(fp);
+}
+
 word_t vaddr_read_wrap(vaddr_t addr, int len) {
-	printf("read  addr: 0x%08x\n", addr);
+	//printf("read  addr: 0x%08x\n", addr);
+	fwrite("r", 1, 1, fp);
+	fwrite(&addr, sizeof(addr), 1, fp);
 	return vaddr_read(addr, len);
 }
 
 void vaddr_write_wrap(vaddr_t addr, int len, word_t data) {
-	printf("write addr: 0x%08x\n", addr);
+	//printf("write addr: 0x%08x\n", addr);
+	fwrite("r", 1, 1, fp);
+	fwrite(&addr, sizeof(addr), 1, fp);
 	vaddr_write(addr, len, data);
 }
 #endif
