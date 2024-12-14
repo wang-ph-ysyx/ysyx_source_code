@@ -45,7 +45,7 @@ word_t vaddr_read_wrap(vaddr_t addr, int len) {
 
 void vaddr_write_wrap(vaddr_t addr, int len, word_t data) {
 	//printf("write addr: 0x%08x\n", addr);
-	fwrite("r", 1, 1, fp);
+	fwrite("w", 1, 1, fp);
 	fwrite(&addr, sizeof(addr), 1, fp);
 	vaddr_write(addr, len, data);
 }
