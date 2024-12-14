@@ -19,9 +19,15 @@
 #include <cpu/decode.h>
 
 #define R(i) gpr(i)
+#define CSR(i) *get_csr(i)
+
+#ifndef CONFIG_DATA_MTRACE
+#define Mr vaddr_read
+#define Mw vaddr_write
+
+#else
 #define Mr vaddr_read_wrap
 #define Mw vaddr_write_wrap
-#define CSR(i) *get_csr(i)
 
 word_t vaddr_read_wrap(vaddr_t addr, int len) {
 	printf("read  addr: 0x%08x\n", addr);
@@ -32,6 +38,7 @@ void vaddr_write_wrap(vaddr_t addr, int len, word_t data) {
 	printf("write addr: 0x%08x\n", addr);
 	vaddr_write(addr, len, data);
 }
+#endif
 
 static vaddr_t *get_csr(word_t imm) {
 	switch (imm & 0xfff){
