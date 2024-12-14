@@ -29,15 +29,11 @@
 #define Mr vaddr_read_wrap
 #define Mw vaddr_write_wrap
 
-FILE *fp = NULL;
+static FILE *fp = NULL;
 
 void data_trace_init(char *file_path) {
 	fp = fopen(file_path, "w");
 	assert(fp);
-}
-
-void data_trace_free() {
-	fclose(fp);
 }
 
 word_t vaddr_read_wrap(vaddr_t addr, int len) {
