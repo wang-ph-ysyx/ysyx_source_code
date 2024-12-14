@@ -16,6 +16,8 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
+#define DCACHE_FILE "~/cachesim/dcache.log"
+
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -148,7 +150,7 @@ void init_monitor(int argc, char *argv[]) {
 
 	/* Initialeze the data trace function */
 	void data_trace_init();
-	IFDEF(CONFIG_DATA_MTRACE, data_trace_init("~/cachesim/dcache.log"));
+	IFDEF(CONFIG_DATA_MTRACE, data_trace_init(DCACHE_FILE));
 
 #ifndef CONFIG_ISA_loongarch32r
   IFDEF(CONFIG_ITRACE, init_disasm(
