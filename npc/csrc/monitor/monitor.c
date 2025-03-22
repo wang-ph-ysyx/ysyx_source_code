@@ -6,7 +6,9 @@
 #include <config.h>
 #include <stdint.h>
 
+#ifdef DIFFTEST
 void init_difftest(char *ref_so_file, long immg_size, int port, mem_t *mem_arr, uint32_t total_mem);
+#endif
 
 static char *img_file = NULL;
 static char *diff_so_file = NULL;
@@ -63,5 +65,7 @@ void init_monitor(int argc, char **argv) {
 
 	img_size = load_img();
 
+#ifdef DIFFTEST
 	init_difftest(diff_so_file, img_size, 1234, mem_arr, total_mem);
+#endif
 }
