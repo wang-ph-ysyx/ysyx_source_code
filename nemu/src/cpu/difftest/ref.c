@@ -52,9 +52,9 @@ __EXPORT void difftest_raise_intr(word_t NO) {
   assert(0);
 }
 
-__EXPORT void difftest_init(int port) {
+__EXPORT void difftest_init(int port, mem_t *mem_arr, uint32_t total_mem) {
   void init_mem();
-  init_mem();
+	init_mem(mem_arr, total_mem);
   /* Perform ISA dependent initialization. */
   init_isa();
 }
