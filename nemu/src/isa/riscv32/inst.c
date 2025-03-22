@@ -149,6 +149,7 @@ static int decode_exec(Decode *s) {
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
+	printf("inst: %x\n", s->isa.inst.val);
 #ifdef CONFIG_ITRACE
 	void record_ringbuf(vaddr_t pc, vaddr_t snpc, uint32_t inst);
 	record_ringbuf(s->pc, s->snpc, s->isa.inst.val);
