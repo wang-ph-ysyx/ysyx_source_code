@@ -19,37 +19,9 @@
 #include <cpu/decode.h>
 
 #define R(i) gpr(i)
-#define CSR(i) *get_csr(i)
-
-#ifndef CONFIG_DATA_MTRACE
 #define Mr vaddr_read
 #define Mw vaddr_write
-
-#else
-#define Mr vaddr_read_wrap
-#define Mw vaddr_write_wrap
-
-static FILE *fp = NULL;
-
-void data_trace_init(char *file_path) {
-	fp = fopen(file_path, "w");
-	assert(fp);
-}
-
-word_t vaddr_read_wrap(vaddr_t addr, int len) {
-	//printf("read  addr: 0x%08x\n", addr);
-	fwrite("r", 1, 1, fp);
-	fwrite(&addr, sizeof(addr), 1, fp);
-	return vaddr_read(addr, len);
-}
-
-void vaddr_write_wrap(vaddr_t addr, int len, word_t data) {
-	//printf("write addr: 0x%08x\n", addr);
-	fwrite("w", 1, 1, fp);
-	fwrite(&addr, sizeof(addr), 1, fp);
-	vaddr_write(addr, len, data);
-}
-#endif
+#define CSR(i) *get_csr(i)
 
 static vaddr_t *get_csr(word_t imm) {
 	switch (imm & 0xfff){
