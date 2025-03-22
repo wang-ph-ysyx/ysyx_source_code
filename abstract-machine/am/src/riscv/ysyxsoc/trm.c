@@ -34,6 +34,7 @@ extern char end[];
 
 void _trm_init() {
 	//set uart divisor
+/*
 	uint8_t lcr = inb(SERIAL_PORT + 3);
 	outb(SERIAL_PORT + 3, 0x80 | lcr);
 	outb(SERIAL_PORT, 0x01);
@@ -48,7 +49,7 @@ void _trm_init() {
 		ysyx >>= 8;
 	}
 	printf("npc made by %s_%d\n", ysyx_s, ID);
-
+*/
 	int ret = main(mainargs);
 	halt(ret);
 }
