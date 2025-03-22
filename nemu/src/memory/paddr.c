@@ -80,6 +80,7 @@ void init_mem(mem_t *_mem_arr, uint32_t _total_mem) {
 	mem_arr = _mem_arr;
 	total_mem = _total_mem;
 	for (int i = 0; i < total_mem; ++i) {
+		printf("%p, %x\n", _mem_arr, _total_mem);
 		mem_arr[i].mem = malloc(mem_arr[i].size);
 		assert(mem_arr[i].mem);
 	}
