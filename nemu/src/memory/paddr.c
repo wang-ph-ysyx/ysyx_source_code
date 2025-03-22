@@ -82,6 +82,7 @@ void init_mem(mem_t *_mem_arr, uint32_t _total_mem) {
 	for (int i = 0; i < total_mem; ++i) {
 		mem_arr[i].mem = malloc(mem_arr[i].size);
 		assert(mem_arr[i].mem);
+		Log("%s memory area [" FMT_PADDR ", " FMT_PADDR "]", mem_arr[i].name, PMEM_LEFT, PMEM_RIGHT);
 	}
 }
 #elif defined(CONFIG_TARGET_NATIVE_ELF)

@@ -27,6 +27,7 @@ typedef struct {
 	paddr_t start;
 	uint8_t *mem;
 	uint32_t size;
+	char *name;
 } mem_t;
 extern mem_t *mem_arr;
 extern uint32_t total_mem;
