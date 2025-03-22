@@ -172,6 +172,18 @@ module ysyx_23060236(
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
+	wire [31:0] dcache_araddr;
+	wire [31:0] dcache_rdata;
+	wire        dcache_hit;
+	wire [31:0] dcache_awaddr;
+	wire [31:0] dcache_wdata;
+	wire        dcache_wvalid;
+	wire        dcache_dirty_data;
+	wire        dcache_wdt;
+	wire [25:0] dcache_reptag; //与dcache的tag一致
+	wire [31:0] dcache_repdata;
+	wire        dcache_flush;
+
 	wire [19:0] tlb_araddr;
 	wire [19:0] tlb_rdata;
 	wire        tlb_rvalid;
@@ -386,6 +398,22 @@ module ysyx_23060236(
 		.inst_fencei(inst_fencei)
 	);
 
+	ysyx_23060236_dcache my_dcache(
+		.clock(clock),
+		.reset(reset),
+		.dcache_araddr(dcache_araddr),
+		.dcache_rdata(dcache_rdata),
+		.dcache_hit(dcache_hit),
+		.dcache_awaddr(dcache_awaddr),
+		.dcache_wdata(dcache_wdata),
+		.dcache_wvalid(dcache_wvalid),
+		.dirty_data(dcache_dirty_data),
+		.dcache_wdt(dcache_wdt),
+		.dcache_reptag(dcache_reptag),
+		.dcache_repdata(dcache_repdata),
+		.flush(dcache_flush)
+	);
+
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
@@ -547,7 +575,18 @@ module ysyx_23060236(
 		.exu_ready(exu_ready),
 		.wb_valid(wb_valid),
 		.lsu_over(lsu_over),
-		.time_intr(time_intr & time_intr_on)
+		.time_intr(time_intr & time_intr_on),
+		.dcache_araddr(dcache_araddr),
+		.dcache_rdata(dcache_rdata),
+		.dcache_hit(dcache_hit),
+		.dcache_awaddr(dcache_awaddr),
+		.dcache_wdata(dcache_wdata),
+		.dcache_wvalid(dcache_wvalid),
+		.dirty_data(dcache_dirty_data),
+		.dcache_wdt(dcache_wdt),
+		.dcache_reptag(dcache_reptag),
+		.dcache_repdata(dcache_repdata),
+		.flush(dcache_flush)
 	);
 
 	ysyx_23060236_RegisterFile #(5, 32) my_reg(

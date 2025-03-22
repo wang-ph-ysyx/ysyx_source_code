@@ -156,6 +156,11 @@ config MTRACE
 	bool "Eable memory tracer"
 	default n
 
+config DATA_MTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+	bool "Eable data memory tracer"
+	default n
+
 config FTRACE
 	depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
 	bool "Enable function tracer"

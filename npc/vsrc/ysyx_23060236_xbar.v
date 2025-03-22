@@ -89,7 +89,7 @@ module ysyx_23060236_xbar(
 	wire soc_reading, clint_reading;
 
 	assign soc_reading = ~clint_reading;
-	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr < 32'h02010000);
+	assign clint_reading = (lsu_araddr[31:16] == 16'h0200);
 
 	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
 		.clock(clock),
