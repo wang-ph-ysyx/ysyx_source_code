@@ -31,7 +31,7 @@ typedef struct {
 	uint32_t start;
 	uint8_t *mem;
 	uint32_t size;
-	char *name;
+	const char *name;
 } mem_t;//与difftest一致
 extern mem_t mem_arr[TOTAL_MEM];
 extern uint32_t total_mem;
