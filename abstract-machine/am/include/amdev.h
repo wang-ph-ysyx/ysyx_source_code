@@ -31,11 +31,6 @@ AM_DEVREG(21, NET_CONFIG,   RD, bool present);
 AM_DEVREG(22, NET_STATUS,   RD, int rx_len, tx_len);
 AM_DEVREG(23, NET_TX,       WR, Area buf);
 AM_DEVREG(24, NET_RX,       WR, Area buf);
-AM_DEVREG(25, GPIO_CONFIG,  RD, bool present);
-AM_DEVREG(26, GPIO_SW,      RD, uint32_t data[2]);
-AM_DEVREG(27, GPIO_KEY,     RD, uint8_t  data);
-AM_DEVREG(28, GPIO_SEG,     WR, uint8_t  data[8]);
-AM_DEVREG(29, GPIO_LED,     WR, uint32_t data);
 
 // Input
 

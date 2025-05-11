@@ -7,15 +7,6 @@
 #define SERIAL    0xa00003f8
 #define RTC       0xa0000048
 
-mem_t mem_arr[TOTAL_MEM] = {
-	(mem_t){MEM_BASE, NULL, MEM_SIZE, "psram"},
-	(mem_t){MROM_BASE, NULL, MROM_SIZE, "mrom"},
-	(mem_t){SRAM_BASE, NULL, SRAM_SIZE, "sram"},
-	(mem_t){FLASH_BASE, NULL, FLASH_SIZE, "flash"},
-	(mem_t){SDRAM_BASE, NULL, SDRAM_SIZE, "sdram"},
-};
-uint32_t total_mem = TOTAL_MEM;
-
 static uint8_t memory[MEM_SIZE];
 static uint8_t flash[FLASH_SIZE];
 

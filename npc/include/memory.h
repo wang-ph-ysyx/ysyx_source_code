@@ -3,17 +3,12 @@
 
 #include <stdint.h>
 
-#define TOTAL_MEM   5
 #define MEM_BASE    0x80000000
 #define MEM_SIZE    0x08000000
 #define MROM_BASE   0x20000000
-#define MROM_SIZE   0x1000
 #define SRAM_BASE   0x0f000000
-#define SRAM_SIZE   0x2000
 #define FLASH_BASE  0x30000000
 #define FLASH_SIZE  0x10000000
-#define SDRAM_BASE  0xa0000000
-#define SDRAM_SIZE  0x02000000
 
 #ifdef __PLATFORM_ysyxsoc_
 #define UART_BASE   0x10000000
@@ -26,15 +21,6 @@
 #define CLINT_BASE  0xa00003f8
 #define CLINT_SIZE  0x00000001
 #endif
-
-typedef struct {
-	uint32_t start;
-	uint8_t *mem;
-	uint32_t size;
-	const char *name;
-} mem_t;//与difftest一致
-extern mem_t mem_arr[TOTAL_MEM];
-extern uint32_t total_mem;
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask);
 extern "C" int pmem_read(int raddr);

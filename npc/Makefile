@@ -92,10 +92,10 @@ clean:
 include ../Makefile
 
 count:
-	find . -name "*.[chv]" | xargs cat | wc -l
+	find ./csrc ./vsrc -name *.[chv] | xargs cat | wc -l
 
 countNoblank:
-	find . -name "*.[cvh]" | xargs grep -v '^$$' | wc -l
+	find ./csrc ./vsrc -name *.[cvh] | xargs grep -v '^$$' | wc -l
 
 perf:
 	make -C ../am-kernels/benchmarks/microbench ARCH=riscv32-ysyxsoc run mainargs=train

@@ -130,12 +130,11 @@ void cpu_exec(unsigned long n) {
 		one_cycle();
 #ifdef DIFFTEST
 		static int difftest = 0;
-		//bool in_uart = (lsu_awaddr >= UART_BASE) && (lsu_awaddr < UART_BASE + UART_SIZE);
-		//bool in_clint = (lsu_awaddr >= CLINT_BASE) && (lsu_awaddr < CLINT_BASE + CLINT_SIZE);
-		//if (in_uart || in_clint) difftest_skip_ref();
-		if (difftest) {
+		bool in_uart = (lsu_awaddr >= UART_BASE) && (lsu_awaddr < UART_BASE + UART_SIZE);
+		bool in_clint = (lsu_awaddr >= CLINT_BASE) && (lsu_awaddr < CLINT_BASE + CLINT_SIZE);
+		if (in_uart || in_clint) difftest_skip_ref();
+		if (difftest)
 			difftest_step();
-		}
 		difftest = signal(wb_valid);
 #endif
 		if (inst_ebreak || trigger_difftest) break;

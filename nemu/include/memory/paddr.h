@@ -23,14 +23,14 @@
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
 #ifdef CONFIG_TARGET_SHARE
-typedef struct {
-	paddr_t start;
-	uint8_t *mem;
-	uint32_t size;
-	const char *name;
-} mem_t;
-extern mem_t *mem_arr;
-extern uint32_t total_mem;
+#define MROM_BASE  0x20000000
+#define SRAM_BASE  0x0f000000
+#define FLASH_BASE 0x30000000
+#define SDRAM_BASE 0xa0000000
+#define MROM_SIZE  0x1000
+#define SRAM_SIZE  0x2000
+#define FLASH_SIZE 0x10000000
+#define SDRAM_SIZE 0x02000000
 #endif
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
@@ -40,12 +40,7 @@ paddr_t host_to_guest(uint8_t *haddr);
 
 #ifdef CONFIG_TARGET_SHARE
 static inline bool in_pmem(paddr_t addr) {
-	assert(mem_arr);
-	for (int i = 0; i < total_mem; ++i) {
-		if (addr - mem_arr[i].start < mem_arr[i].size)
-			return true;
-	}
-	return false;
+  return (addr - CONFIG_MBASE < CONFIG_MSIZE) | (addr - MROM_BASE < MROM_SIZE) | (addr - SRAM_BASE < SRAM_SIZE) | (addr - FLASH_BASE < FLASH_SIZE) | (addr - SDRAM_BASE < SDRAM_SIZE);
 }
 #elif defined(CONFIG_TARGET_NATIVE_ELF)
 static inline bool in_pmem(paddr_t addr) {

@@ -29,7 +29,6 @@ extern int trigger_difftest;
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, uint32_t *pc, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
-void (*ref_difftest_init)(int port, mem_t *mem_arr, uint32_t total_mem) = NULL;
 
 #ifdef DIFFTEST
 
@@ -39,7 +38,7 @@ void difftest_skip_ref() {
 	is_skip_ref = true;
 }
 
-void init_difftest(char *ref_so_file, long img_size, int port, mem_t *mem_arr, uint32_t total_mem) {
+void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
 
   void *handle;
@@ -55,10 +54,10 @@ void init_difftest(char *ref_so_file, long img_size, int port, mem_t *mem_arr, u
   ref_difftest_exec = (void (*)(uint64_t n))dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
-  ref_difftest_init = (void (*)(int, mem_t *, uint32_t))dlsym(handle, "difftest_init");
+  void (*ref_difftest_init)(int) = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
-  ref_difftest_init(port, mem_arr, total_mem);
+  ref_difftest_init(port);
 #if defined(__PLATFORM_npc_)
   ref_difftest_memcpy(MEM_BASE, guest2host(MEM_BASE), img_size, DIFFTEST_TO_REF);
 #elif defined(__PLATFORM_ysyxsoc_)

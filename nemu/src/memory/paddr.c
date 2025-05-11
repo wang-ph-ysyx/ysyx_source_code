@@ -18,34 +18,40 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-#if   defined(CONFIG_TARGET_SHARE)
-mem_t *mem_arr = NULL;
-uint32_t total_mem = 0;
-#elif defined(CONFIG_TARGET_NATIVE_ELF)
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
-#endif
 
 #ifdef CONFIG_TARGET_SHARE
+static uint8_t flash[FLASH_SIZE];
+static uint8_t mrom[MROM_SIZE];
+static uint8_t sram[SRAM_SIZE];
+static uint8_t sdram[SDRAM_SIZE];
+
 uint8_t* guest_to_host(paddr_t paddr) { 
-	assert(mem_arr);
-	for (int i = 0; i < total_mem; ++i) {
-		if (paddr >= mem_arr[i].start && paddr < mem_arr[i].start + mem_arr[i].size)
-			return mem_arr[i].mem + paddr - mem_arr[i].start;
-	}
-	assert(0);
+	if (paddr >= MROM_BASE && paddr < MROM_BASE + MROM_SIZE) 
+		return mrom + paddr - MROM_BASE;
+	if (paddr >= SRAM_BASE && paddr < SRAM_BASE + SRAM_SIZE)
+		return sram + paddr - SRAM_BASE;
+	if (paddr >= FLASH_BASE && paddr < FLASH_BASE + FLASH_SIZE)
+		return flash + paddr - FLASH_BASE;
+	if (paddr >= SDRAM_BASE && paddr < SDRAM_BASE + SDRAM_SIZE)
+		return sdram + paddr - SDRAM_BASE;
+	return pmem + paddr - CONFIG_MBASE; 
 }
 
 paddr_t host_to_guest(uint8_t *haddr) { 
-	assert(mem_arr);
-	for (int i = 0; i < total_mem; ++i) {
-		if (haddr >= mem_arr[i].mem && haddr < mem_arr[i].mem + mem_arr[i].size)
-			return haddr - mem_arr[i].mem + mem_arr[i].start;
-	}
-	assert(0);
+	if (haddr >= mrom && haddr < mrom + MROM_SIZE)
+		return haddr - mrom + MROM_BASE;
+	if (haddr >= sram && haddr < sram + SRAM_SIZE)
+		return haddr - sram + SRAM_BASE;
+	if (haddr >= flash && haddr < flash + FLASH_SIZE)
+		return haddr - flash + FLASH_BASE;
+	if (haddr >= sdram && haddr < sdram + SDRAM_SIZE)
+		return haddr - sdram + SDRAM_BASE;
+	return haddr - pmem + CONFIG_MBASE; 
 }
 #elif defined(CONFIG_TARGET_NATIVE_ELF)
 uint8_t* guest_to_host(paddr_t paddr) { 
@@ -74,19 +80,6 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
 }
 
-#ifdef CONFIG_TARGET_SHARE
-void init_mem(mem_t *_mem_arr, uint32_t _total_mem) {
-	assert(_mem_arr);
-	mem_arr = _mem_arr;
-	total_mem = _total_mem;
-	for (int i = 0; i < total_mem; ++i) {
-		mem_arr[i].mem = malloc(mem_arr[i].size);
-		assert(mem_arr[i].mem);
-		Log("%s memory area [" FMT_PADDR ", " FMT_PADDR ")", 
-				mem_arr[i].name, mem_arr[i].start, mem_arr[i].start + mem_arr[i].size);
-	}
-}
-#elif defined(CONFIG_TARGET_NATIVE_ELF)
 void init_mem() {
 #if   defined(CONFIG_PMEM_MALLOC)
   pmem = malloc(CONFIG_MSIZE);
@@ -95,7 +88,6 @@ void init_mem() {
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
-#endif
 
 word_t paddr_read(paddr_t addr, int len) {
 	IFDEF(CONFIG_MTRACE, mtrace_read(addr, len));

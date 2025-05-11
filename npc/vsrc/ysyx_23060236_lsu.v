@@ -41,7 +41,22 @@ module ysyx_23060236_lsu(
 	output lsu_over,
 	output wb_valid,
 
-	input time_intr
+	input  time_intr,
+
+	output [31:0] dcache_araddr,
+	input  [31:0] dcache_rdata,
+	input                 dcache_hit,  
+
+	output [31:0] dcache_awaddr,
+	output [31:0] dcache_wdata,
+	output        dcache_wvalid,
+	output        dirty_data,
+
+	input             dcache_wdt,
+	input  reg [25:0] dcache_reptag, //与dcache的tag位宽一致
+	input  reg [31:0] dcache_repdata,
+
+	output flush
 );
 
 	reg  [31:0] lsu_data_reg;
