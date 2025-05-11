@@ -1,6 +1,7 @@
 #include <proc.h>
 #include <elf.h>
-
+#include <memory.h>
+#include <sys/mman.h>
 #include <fs.h>
 
 #ifdef __LP64__
@@ -43,10 +44,30 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
 	for (int i = 0; i < ehdr.e_phnum; ++i) {
 		if (phdr[i].p_type == PT_LOAD) {
-			void *buf = (void *)phdr[i].p_vaddr;
+			void *va = (void *)phdr[i].p_vaddr;
+			void *va_start = (void *)ROUNDDOWN(va, PGSIZE);
+			void *va_file_end = va + phdr[i].p_filesz;
+			void *va_end = va + phdr[i].p_memsz;
 			fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
-			fs_read(fd, buf, phdr[i].p_filesz);
-			memset(buf + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);
+			void *pa = maped(&pcb->as, va_start);
+			if (pa == NULL) {
+				pa = new_page(1);
+				map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			}
+			fs_read(fd, pa + (va - va_start), PGSIZE - (va - va_start));
+			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
+				pa = new_page(1);
+				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+				fs_read(fd, pa, PGSIZE);
+			}
+			pa = maped(&pcb->as, va);
+			if (pa == NULL) {
+				pa = new_page(1);
+				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+			}
+			if (va_end >= va)
+				fs_read(fd, pa, va_end - va);
+			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
 		}
 	}
   return ehdr.e_entry;
@@ -58,3 +79,31 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+	protect(&pcb->as);
+	uintptr_t entry = loader(pcb, filename);
+	pcb->cp = ucontext(&pcb->as, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
+	void *va_end = pcb->as.area.end;
+	void *va = va_end - STACK_SIZE;
+	void *stack_start = new_page(8);
+	void *pa = stack_start;
+	for (; va < va_end; va += PGSIZE, pa += PGSIZE) {
+		map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+	}
+	char *stack = (char *)stack_start + STACK_SIZE;
+	char *strptr = stack;
+	int argc = 0;
+	for (; argv != NULL && argv[argc] != NULL; ++argc) {
+		stack -= strlen(argv[argc]) + 1;
+		strcpy(stack, argv[argc]);
+	}
+	stack -= (argc + 1) * 8;
+	for (int i = 0; i < argc; ++i) {
+		strptr -= strlen(argv[i]) + 1;
+		*((char **)stack + i) = strptr;
+	}
+	*((char **)stack + argc) = NULL;
+	stack -= sizeof(argc);
+	*(int *)stack = argc;
+	pcb->cp->GPRx = (uintptr_t)stack;
+}

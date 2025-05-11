@@ -1,21 +1,21 @@
-#include <Vtop___024root.h>
+#include <VysyxSoCFull___024root.h>
 #include <stdio.h>
-#include <Vtop.h>
+#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <stdint.h>
 
-extern Vtop* top;
+extern VysyxSoCFull* top;
 
 const char *regs[] = {
 	"$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
 	"s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
-	"a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", 
-	"s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
 void reg_display() {
-	printf("pc\t%#x\t%d\n", top->pc, top->pc);
-	for (int i = 0; i < 32; ++i) {
-		printf("%s\t%#x\t%d\n", regs[i], top->rootp->top__DOT__my_reg__DOT__rf[i], top->rootp->top__DOT__my_reg__DOT__rf[i]);
+	uint32_t pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_pc;
+	printf("pc\t%#x\t%d\n", pc, pc);
+	for (int i = 1; i < 16; ++i) {
+		uint32_t reg_val = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__my_reg__DOT__rf[i-1];
+		printf("%s\t%#x\t%d\n", regs[i], reg_val, reg_val);
 	}
 }

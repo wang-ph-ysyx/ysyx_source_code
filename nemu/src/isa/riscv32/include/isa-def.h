@@ -19,7 +19,8 @@
 #include <common.h>
 
 typedef struct {
-	word_t mstatus, mcause, mtvec;
+	word_t mscratch, mstatus, mcause, mtvec, satp;
+	word_t mvendorid, marchid;
 	vaddr_t mepc;
 } riscv_csr;
 
@@ -27,6 +28,7 @@ typedef struct {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;
 	riscv_csr csr;
+	bool INTR;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode
@@ -36,6 +38,6 @@ typedef struct {
   } inst;
 } MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
 
-#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+#define isa_mmu_check(vaddr, len, type) ((cpu.csr.satp >> 31) & MMU_TRANSLATE)
 
 #endif

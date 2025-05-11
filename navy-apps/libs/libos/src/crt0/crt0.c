@@ -5,8 +5,11 @@
 int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
 void call_main(uintptr_t *args) {
-  char *empty[] =  {NULL };
+	int argc = *(int *)args;
+	args = (uintptr_t *)((int *)args + 1);
+	char **argv = (char **)args;
+	char *empty[] = {NULL };
   environ = empty;
-  exit(main(0, empty, empty));
+  exit(main(argc, argv, empty));
   assert(0);
 }

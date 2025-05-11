@@ -7,9 +7,10 @@
 #include <memory.h>
 
 void reg_display();
-void cpu_exec(unsigned n);
+void cpu_exec(unsigned long n);
 
 int batch_mode = 0;
+int wave_trace = 0;
 
 void set_batch_mode() {
 	batch_mode = 1;
@@ -60,6 +61,14 @@ static int cmd_x(char *args) {
 	return 0;
 }
 
+static int cmd_wt(char *args) {
+	if (args == NULL) wave_trace = 1;
+	else if (*args == 'o') wave_trace = 1;
+	else if (*args == 'c') wave_trace = 0;
+	else printf("Usage: 'wt o' to open, 'wt c' to close\n");
+	return 0;
+}
+
 static char *rl_gets() {
 	static char *line_read = NULL;
 
@@ -88,6 +97,7 @@ static struct {
 	{ "si", "Execute the program for several steps", cmd_si },
 	{ "info", "Print the status of the program", cmd_info },
 	{ "x", "Scan the memory", cmd_x},
+	{ "wt", "wave trace", cmd_wt},
 };
 
 #define NR_CMD sizeof(cmd_table)/sizeof(cmd_table[0])

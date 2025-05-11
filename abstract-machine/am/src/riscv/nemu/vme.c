@@ -67,8 +67,34 @@ void __am_switch(Context *c) {
 }
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+	uintptr_t vpn1 = (uintptr_t)va >> 22;
+	uintptr_t vpn0 = ((uintptr_t)va >> 12) & ((1 << 10) - 1);
+	uint32_t *pte = (uint32_t *)(as->ptr + 4 * vpn1);
+	if ((*pte & 1) == 0) {
+		void *ptr1 = pgalloc_usr(PGSIZE);
+		*pte = (uint32_t)ptr1 >> 2 | 1;
+	}
+	void *ppn = (void *)((*pte >> 10) << 12);
+	uint32_t *pte_leaf = (uint32_t *)(ppn + 4 * vpn0);
+	*pte_leaf = (uint32_t)pa >> 2 | 1;
+}
+
+void *maped(AddrSpace *as, void *va) {
+	uintptr_t vpn1 = (uintptr_t)va >> 22;
+	uintptr_t vpn0 = ((uintptr_t)va >> 12) & ((1 << 10) - 1);
+	uint32_t *pte = (uint32_t *)(as->ptr + 4 * vpn1);
+	if ((*pte & 1) == 0) return NULL;
+	void *ppn = (void *)((*pte >> 10) << 12);
+	uint32_t *pte_leaf = (uint32_t *)(ppn + 4 * vpn0);
+	if ((*pte_leaf & 1) == 0) return NULL;
+	return (void *)((*pte_leaf >> 10) << 12);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
-  return NULL;
+	Context *cp = (Context *)(kstack.end - sizeof(Context));
+	cp->mepc = (uintptr_t)entry;
+	cp->pdir = as->ptr;
+	cp->mstatus = 1 << 3;
+	cp->np = 1;
+	return cp;
 }
