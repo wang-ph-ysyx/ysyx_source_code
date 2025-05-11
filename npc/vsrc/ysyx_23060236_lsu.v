@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_lsu(
 	input  clock,
 	input  reset,
@@ -24,28 +25,50 @@ module ysyx_23060236_lsu(
 	output        lsu_bready,
 
 	input  [31:0] exu_val,
-	input  [2:0]  funct3,
+	input  [31:0] muldiv_val,
 	input  [31:0] lsu_data,
 	input  lsu_ren,
 	input  lsu_wen,
 	input  jump_wrong,
+	input  [2:0]  funct3_reg,
 
 	output reg [31:0] wb_val,
 
+	input  inst_muldiv,
+	input  muldiv_outvalid,
 	input  exu_valid,
-	output exu_ready,
-	output wb_valid
+	input  exu_ready,
+	output lsu_over,
+	output wb_valid,
+
+	input  time_intr,
+
+	output [31:0] dcache_araddr,
+	input  [31:0] dcache_rdata,
+	input                 dcache_hit,  
+
+	output [31:0] dcache_awaddr,
+	output [31:0] dcache_wdata,
+	output        dcache_wvalid,
+	output        dirty_data,
+
+	input             dcache_wdt,
+	input  reg [25:0] dcache_reptag, //与dcache的tag位宽一致
+	input  reg [31:0] dcache_repdata,
+
+	output flush
 );
 
-	reg  [2:0]  funct3_reg;
 	reg  [31:0] lsu_data_reg;
 	wire [31:0] lsu_addr;
 	wire [3:0]  wmask;
-	wire lsu_over;
-	wire exu_ready_tmp;
+	wire handshake;
 
-	assign exu_ready = exu_ready_tmp & ~jump_wrong;
-	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
+	assign handshake = exu_valid & exu_ready & ~time_intr;
+	assign lsu_over = handshake & ~lsu_ren & ~lsu_wen & ~inst_muldiv | 
+										lsu_rvalid & lsu_rready |	
+										lsu_bvalid & lsu_bready | 
+										muldiv_outvalid;
 	assign lsu_addr = wb_val;
 	assign wmask = (funct3_reg[1:0] == 2'b00) ? 4'h1 : 
 								 (funct3_reg[1:0] == 2'b01) ? 4'h3 :
@@ -53,23 +76,17 @@ module ysyx_23060236_lsu(
 								 4'b0;
 
 	always @(posedge clock) begin
-		if (exu_valid & exu_ready) begin
+		if (handshake) begin
 			wb_val          <= exu_val;
-			funct3_reg      <= funct3;
 			lsu_data_reg    <= lsu_data;
 		end
 		else if (lsu_rvalid & lsu_rready) begin
 			wb_val <= lsu_val_tmp;
 		end
+		else if (muldiv_outvalid) begin
+			wb_val <= muldiv_val;
+		end
 	end
-
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready_tmp(
-		.clock(clock),
-		.reset(reset),
-		.din(exu_ready_tmp & ~(exu_ready & exu_valid) | lsu_over),
-		.dout(exu_ready_tmp),
-		.wen(1)
-	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
 		.clock(clock),
@@ -102,7 +119,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren & exu_valid & exu_ready),
+		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren & handshake),
 		.dout(lsu_arvalid),
 		.wen(1)
 	);
@@ -110,7 +127,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen & exu_valid & exu_ready),
+		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen & handshake),
 		.dout(lsu_awvalid),
 		.wen(1)
 	);
@@ -118,7 +135,7 @@ module ysyx_23060236_lsu(
 	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & exu_valid & exu_ready),
+		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & handshake),
 		.dout(lsu_wvalid),
 		.wen(1)
 	);

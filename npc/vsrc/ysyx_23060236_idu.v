@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_idu(
 	input  clock,
 	input  reset,
@@ -8,22 +9,22 @@ module ysyx_23060236_idu(
 	input  [31:0] src2,
 
 	input  [31:0] wb_val,
-	input  [3:0]  exu_rd,
+	input  [4:0]  exu_rd,
 	input  exu_reg_wen,
 	input  wb_valid,
 	input  jump_wrong,
 
-	output [3:0] rs1,
-	output [3:0] rs2,
+	output [4:0] rs1,
+	output [4:0] rs2,
 
 	output reg [31:0] pc_next,
 	output reg [9:0]  opcode_type,
 	output reg [2:0]  funct3,
-	output reg [3:0]  rd,
+	output reg [4:0]  rd,
 	output reg [31:0] src1_next,
 	output reg [31:0] src2_next,
 	output reg [31:0] imm,
-	output reg funct7_5,
+	output reg [1:0]  funct7_50,
 	output reg reg_wen,
 	output reg inst_fencei,
 	output reg inst_ecall,
@@ -76,7 +77,7 @@ module ysyx_23060236_idu(
 		if (idu_valid & idu_ready) begin
 			opcode_type <= opcode_type_tmp;
 			funct3      <= funct3_tmp;
-			funct7_5    <= funct7_tmp[5];
+			funct7_50   <= {funct7_tmp[5], funct7_tmp[0]};
 			rd          <= rd_tmp;
 			imm         <= imm_tmp;
 			reg_wen     <= reg_wen_tmp;
@@ -92,25 +93,25 @@ module ysyx_23060236_idu(
 	wire [9:0]  opcode_type_tmp;
 	wire [2:0]  funct3_tmp;
 	wire [6:0]  funct7_tmp;
-	wire [3:0]  rd_tmp;
+	wire [4:0]  rd_tmp;
 	wire [31:0] imm_tmp;
 	wire inst_fencei_tmp;
 	wire inst_ecall_tmp;
 	wire inst_mret_tmp;
 
 	wire [5:0] Type;
-	wire [4:0] opcode_5;
-	assign opcode_5       = in[6:2];
-	assign rs1            = in[18:15];
-	assign rs2            = in[23:20];
-	assign rd_tmp         = in[10:7];
+	wire [6:0] opcode;
+	assign opcode         = in[6:0];
+	assign rs1            = in[19:15];
+	assign rs2            = in[24:20];
+	assign rd_tmp         = in[11:7];
 	assign funct3_tmp     = in[14:12];
 	assign funct7_tmp     = in[31:25];
 	assign reg_wen_tmp    = Type[TYPE_I] & ~((funct3_tmp == 3'b0) & opcode_type_tmp[INST_CSR]) | Type[TYPE_U] | Type[TYPE_J] | Type[TYPE_R];
 
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
-	assign inst_fencei_tmp = (opcode_5 == 5'b00011);
+	assign inst_fencei_tmp = (opcode == 7'b0001111);
 
 	parameter TYPE_R = 0;
 	parameter TYPE_I = 1;
@@ -130,16 +131,16 @@ module ysyx_23060236_idu(
 	parameter INST_ADD   = 8;
 	parameter INST_CSR   = 9;
 
-	assign opcode_type_tmp[INST_LUI  ] = (opcode_5 == 5'b01101);
-	assign opcode_type_tmp[INST_AUIPC] = (opcode_5 == 5'b00101);
-	assign opcode_type_tmp[INST_JAL  ] = (opcode_5 == 5'b11011);
-	assign opcode_type_tmp[INST_JALR ] = (opcode_5 == 5'b11001);
-	assign opcode_type_tmp[INST_BEQ  ] = (opcode_5 == 5'b11000);
-	assign opcode_type_tmp[INST_LW   ] = (opcode_5 == 5'b00000);
-	assign opcode_type_tmp[INST_SW   ] = (opcode_5 == 5'b01000);
-	assign opcode_type_tmp[INST_ADDI ] = (opcode_5 == 5'b00100);
-	assign opcode_type_tmp[INST_ADD  ] = (opcode_5 == 5'b01100);
-	assign opcode_type_tmp[INST_CSR  ] = (opcode_5 == 5'b11100);
+	assign opcode_type_tmp[INST_LUI  ] = (opcode == 7'b0110111);
+	assign opcode_type_tmp[INST_AUIPC] = (opcode == 7'b0010111);
+	assign opcode_type_tmp[INST_JAL  ] = (opcode == 7'b1101111);
+	assign opcode_type_tmp[INST_JALR ] = (opcode == 7'b1100111);
+	assign opcode_type_tmp[INST_BEQ  ] = (opcode == 7'b1100011);
+	assign opcode_type_tmp[INST_LW   ] = (opcode == 7'b0000011);
+	assign opcode_type_tmp[INST_SW   ] = (opcode == 7'b0100011);
+	assign opcode_type_tmp[INST_ADDI ] = (opcode == 7'b0010011);
+	assign opcode_type_tmp[INST_ADD  ] = (opcode == 7'b0110011);
+	assign opcode_type_tmp[INST_CSR  ] = (opcode == 7'b1110011);
 
 	assign Type[TYPE_R] = opcode_type_tmp[INST_ADD];
 	assign Type[TYPE_I] = opcode_type_tmp[INST_JALR] | opcode_type_tmp[INST_LW] | opcode_type_tmp[INST_ADDI] | opcode_type_tmp[INST_CSR];
@@ -164,6 +165,7 @@ module ysyx_23060236_idu(
 												 1'b0;
 
 
+`ifndef SYN
 	import "DPI-C" function void add_raw_conflict();
 	import "DPI-C" function void add_raw_conflict_cycle();
 
@@ -175,5 +177,5 @@ module ysyx_23060236_idu(
 		if (raw_conflict) add_raw_conflict_cycle();
 		if (~raw_conflict_state & raw_conflict) add_raw_conflict();
 	end
-
+`endif
 endmodule

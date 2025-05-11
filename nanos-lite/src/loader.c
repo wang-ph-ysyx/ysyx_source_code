@@ -97,6 +97,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 		stack -= strlen(argv[argc]) + 1;
 		strcpy(stack, argv[argc]);
 	}
+	stack = (char *)((uintptr_t)stack & ~0x3);
 	stack -= (argc + 1) * 8;
 	for (int i = 0; i < argc; ++i) {
 		strptr -= strlen(argv[i]) + 1;

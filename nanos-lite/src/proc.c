@@ -6,6 +6,8 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 
+int fg_pcb = 1;
+
 void context_uload(PCB *_pcb, const char *filename, char *const argv[], char *const envp[]);
 void naive_uload(PCB *pcb, const char *filename);
 
@@ -27,9 +29,18 @@ void context_kload(PCB *_pcb, void (*entry)(void *), void *arg) {
 }
 
 void init_proc() {
-	context_kload(&pcb[0], hello_fun, (void *)1L);
-	char *argv[] = {"/bin/nslider", NULL}, *envp[] = {NULL};
-	context_uload(&pcb[1], "/bin/nslider", argv, envp);
+	char *argv0[] = {"/bin/hello", NULL}, *envp0[] = {NULL};
+	context_uload(&pcb[0], "/bin/hello", argv0, envp0);
+
+	char *argv1[] = {"/bin/nslider", NULL}, *envp1[] = {NULL};
+	context_uload(&pcb[1], "/bin/nslider", argv1, envp1);
+
+	char *argv2[] = {"/bin/pal", "--skip", NULL}, *envp2[] = {NULL};
+	context_uload(&pcb[2], "/bin/pal", argv2, envp2);
+
+	char *argv3[] = {"/bin/bird", NULL}, *envp3[] = {NULL};
+	context_uload(&pcb[3], "/bin/bird", argv3, envp3);
+
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -41,14 +52,18 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 	current->cp = prev;
-	static int cnt = 0;
-	if (current == &pcb[1]) {
-		if (cnt == 100) {
-			current = &pcb[0];
-			cnt = 0;
-		}
-		++cnt;
+
+	static int count = 0;
+	if (current != &pcb[fg_pcb]) {
+		current = &pcb[fg_pcb];
 	}
-	else current = &pcb[1];
+	else {
+		if (count == 20) {
+			current = &pcb[0];
+			count = 0;
+		}
+		++count;
+	}
+
   return current->cp;
 }

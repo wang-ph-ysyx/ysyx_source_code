@@ -1,16 +1,15 @@
 #include <am.h>
+#include <npc.h>
 
-#define RTC_ADDR 0xa0000048
-
-static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }
+static uint64_t start_us = 0;
 
 void __am_timer_init() {
+	start_us = (((uint64_t)inl(RTC_ADDR + 4)) << 32) + (uint64_t)inl(RTC_ADDR);
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uptime->us = (((uint64_t)inl(RTC_ADDR + 4)) << 32) + (uint64_t)inl(RTC_ADDR);
-	//让uptime返回的时间乘上仿真速率以接近真实时间
-	uptime->us = uptime->us * 30 / 265;
+	uptime->us -= start_us;
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
