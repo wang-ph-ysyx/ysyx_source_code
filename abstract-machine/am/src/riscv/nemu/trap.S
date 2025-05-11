@@ -1,5 +1,3 @@
-#define STACK_SWITCH
-
 #define concat_temp(x, y) x ## y
 #define concat(x, y) concat_temp(x, y)
 #define MAP(c, f) c(f)
@@ -33,24 +31,15 @@ f(30) f(31)
 #define PUSH(n) STORE concat(x, n), (n * XLEN)(sp);
 #define POP(n)  LOAD  concat(x, n), (n * XLEN)(sp);
 
-#define CONTEXT_SIZE  ((NR_REGS + 3 + 1 + 1) * XLEN)
+#define CONTEXT_SIZE  ((NR_REGS + 3 + 1) * XLEN)
 #define OFFSET_SP     ( 2 * XLEN)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
-#define OFFSET_NP     ((NR_REGS + 3) * XLEN)
-
-
-#ifdef STACK_SWITCH
 
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-	csrrw sp, mscratch, sp
-	bnez sp, save_context
-	csrrw sp, mscratch, sp
-
-save_context:
   addi sp, sp, -CONTEXT_SIZE
 
   MAP(REGS, PUSH)
@@ -62,17 +51,6 @@ save_context:
   STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
-
-	csrr a0, mscratch
-	snez a1, a0
-	STORE a1, OFFSET_NP(sp)
-	bnez a0, save_sp
-	mv a0, sp
-	addi a0, a0, CONTEXT_SIZE
-
-save_sp:
-	STORE a0, OFFSET_SP(sp)
-	csrw mscratch, x0
 
   # set mstatus.MPRV to pass difftest
   li a0, (1 << 17)
@@ -88,46 +66,7 @@ save_sp:
   csrw mstatus, t1
   csrw mepc, t2
 
-	LOAD t0, OFFSET_NP(sp)
-	beqz t0, restore_sp
-	addi t1, sp, CONTEXT_SIZE
-	csrw mscratch, t1
-
-restore_sp:
-  MAP(REGS, POP)
-
-  LOAD sp, OFFSET_SP(sp)
-  mret
-
-#else
-
-.align 3
-.globl __am_asm_trap
-__am_asm_trap:
-  addi sp, sp, -CONTEXT_SIZE
-
-  MAP(REGS, PUSH)
-
-  csrr t0, mcause
-  csrr t1, mstatus
-  csrr t2, mepc
-
-  STORE t0, OFFSET_CAUSE(sp)
-  STORE t1, OFFSET_STATUS(sp)
-  STORE t2, OFFSET_EPC(sp)
-
-  mv a0, sp
-  jal __am_irq_handle
-	mv sp, a0
-
-  LOAD t1, OFFSET_STATUS(sp)
-  LOAD t2, OFFSET_EPC(sp)
-  csrw mstatus, t1
-  csrw mepc, t2
-
   MAP(REGS, POP)
 
   addi sp, sp, CONTEXT_SIZE
   mret
-
-#endif

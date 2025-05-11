@@ -3,8 +3,6 @@
 #include <sdl-timer.h>
 #include <stdio.h>
 
-void CallBackHelper(); //audio callback helper function
-
 SDL_TimerID SDL_AddTimer(uint32_t interval, SDL_NewTimerCallback callback, void *param) {
   return NULL;
 }
@@ -14,7 +12,6 @@ int SDL_RemoveTimer(SDL_TimerID id) {
 }
 
 uint32_t SDL_GetTicks() {
-	CallBackHelper();
   return NDL_GetTicks();
 }
 

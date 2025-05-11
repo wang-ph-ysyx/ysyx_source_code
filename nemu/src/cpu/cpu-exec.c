@@ -32,7 +32,6 @@ static bool g_print_step = false;
 
 void device_update();
 void difftest_wp();
-void icache_trace(uint32_t pc);
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -41,7 +40,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-	IFDEF(CONFIG_CTRACE, icache_trace(_this->pc));
 	IFDEF(CONFIG_WATCHPOINT, difftest_wp());
 }
 
@@ -84,10 +82,6 @@ static void execute(uint64_t n) {
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
-		word_t intr = isa_query_intr();
-		if (intr != INTR_EMPTY) {
-			cpu.pc = isa_raise_intr(intr, cpu.pc);
-		}
   }
 }
 

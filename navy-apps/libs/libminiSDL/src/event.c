@@ -5,8 +5,6 @@
 #define keyname(k) #k,
 #define keysnap(k) [SDLK_##k] = 0,
 
-void CallBackHelper(); //audio callback helper function
-
 static uint8_t keysnap[] = {
 	[SDLK_NONE] = 0,
 	_KEYS(keysnap)
@@ -22,7 +20,6 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *event) {
-	CallBackHelper();
 	char buf[32];
 	if (NDL_PollEvent(buf, sizeof(buf)) == 0) return 0; 
 	if (event == NULL) return 1;
@@ -42,7 +39,6 @@ int SDL_PollEvent(SDL_Event *event) {
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-	CallBackHelper();
 	char buf[32];
 	while (NDL_PollEvent(buf, sizeof(buf)) == 0); 
 	if (event == NULL) return 1;
