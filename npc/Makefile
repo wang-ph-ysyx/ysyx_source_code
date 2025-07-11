@@ -111,9 +111,11 @@ check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
 
 verilog:
-	@cat ./vsrc/*.v > $(ONE_VSRC)
+	@cat ./vinclude/ysyx_23060236_defines.v > $(ONE_VSRC)
+	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
+	@cat ./vsrc/*.v | grep -v "include " >> $(ONE_VSRC)
 
 sim-iverilog: verilog
 	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
-	@iverilog $(ONE_VSRC) -o $(IBIN) -s $(TOPNAME)
+	@iverilog $(ONE_VSRC) -o $(IBIN) -s $(TOPNAME) -g2012
 	@vvp $(IBIN)
