@@ -215,7 +215,6 @@ always @(posedge clock) begin
 	else if (io_master_arvalid & io_master_arready)
 		io_master_rvalid <= 1;
 
-	if (reset) 
 // io_master_rdata
 `ifndef __ICARUS__
 	if (io_master_arvalid & io_master_arready)
