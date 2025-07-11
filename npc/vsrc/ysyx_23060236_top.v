@@ -4,6 +4,10 @@ module ysyx_23060236(
 	input  reset,
 	input  io_interrupt,
 
+`ifdef __ICARUS__
+	output reg sim_end,
+`endif
+
 	input         io_master_awready,
 	output        io_master_awvalid,
 	output [31:0] io_master_awaddr,
@@ -71,6 +75,7 @@ module ysyx_23060236(
 	output [31:0] io_slave_rdata,
 	output        io_slave_rlast,
 	output [3:0]  io_slave_rid     
+
 );
 
 	wire [31:0] pc;
@@ -437,6 +442,7 @@ module ysyx_23060236(
 	assign io_slave_rid     = 0;
 
 `ifndef SYN
+`ifndef __ICARUS__
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -464,6 +470,18 @@ import "DPI-C" function void program_end();
 		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
 		else if ((prog_end == 2) & wb_valid) program_end();
 	end
+`else
+	reg [2:0] prog_end; //1:id, 2:ex, 3:wb
+	always @(posedge clock) begin
+		if (reset) begin
+			prog_end <= 0;
+			sim_end <= 0;
+		end
+		else if ((inst == 32'h00100073) & (idu_valid & idu_ready)) prog_end <= 1;
+		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
+		else if ((prog_end == 2) & wb_valid) sim_end <= 1;
+	end
+`endif
 `endif
 
 endmodule

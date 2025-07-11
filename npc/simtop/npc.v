@@ -1,9 +1,66 @@
+`ifndef __ICARUS__
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
 	  input int waddr, input int wdata, input byte wmask);
+`endif
+
+`ifdef __ICARUS__
+`timescale 1ns / 1ps
+module iverilog_sim;
+
+reg clock;
+reg reset;
+wire sim_end;
+
+initial begin
+	clock = 0;
+	forever #5 clock = ~clock;
+end
+
+initial begin
+	reset = 1;
+	#20;
+	reset = 0;
+	wait(sim_end == 1);
+	$display("Simulation ended at time %0t ns", $time);
+	$finish;
+end
+
+npc my_npc(
+	.clock(clock),
+	.reset(reset),
+	.sim_end(sim_end),
+  .externalPins_gpio_out(),	
+  .externalPins_gpio_in(),	
+  .externalPins_gpio_seg_0(),	
+  .externalPins_gpio_seg_1(),	
+  .externalPins_gpio_seg_2(),	
+  .externalPins_gpio_seg_3(),	
+  .externalPins_gpio_seg_4(),	
+  .externalPins_gpio_seg_5(),	
+  .externalPins_gpio_seg_6(),	
+  .externalPins_gpio_seg_7(),	
+  .externalPins_ps2_clk(),	
+  .externalPins_ps2_data(),	
+  .externalPins_vga_r(),	
+  .externalPins_vga_g(),	
+  .externalPins_vga_b(),	
+  .externalPins_vga_hsync(),	
+  .externalPins_vga_vsync(),	
+  .externalPins_vga_valid(),	
+  .externalPins_uart_rx(),	
+  .externalPins_uart_t()
+);
+
+endmodule
+`endif
+
 module npc(
 	input  clock,
 	input  reset,
+`ifdef __ICARUS__
+	output sim_end,
+`endif
 
   output [15:0] externalPins_gpio_out,	
   input  [15:0] externalPins_gpio_in,	
@@ -141,16 +198,27 @@ always @(posedge clock) begin
 		io_master_rvalid <= 1;
 
 // io_master_rdata
+`ifndef __ICARUS__
 	if (io_master_arvalid & io_master_arready)
 		io_master_rdata <= pmem_read(io_master_araddr);
 	else if (io_master_rvalid & io_master_rready & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
+`else
+	if (io_master_arvalid & io_master_arready)
+		$readmemh(`MEM_FILE, io_master_rdata, io_master_araddr);
+	else if (io_master_rvalid & io_master_rready & (read_len != 0))
+		$readmemh(`MEM_FILE, io_master_rdata, read_addr);
+
+`endif
 end
 
   ysyx_23060236 cpu (	
     .clock             (clock),
     .reset             (reset),
     .io_interrupt      (1'h0),
+`ifdef __ICARUS__
+		.sim_end(sim_end),
+`endif
     .io_master_awready (io_master_awready),
     .io_master_awvalid (io_master_awvalid),
     .io_master_awid    (io_master_awid),

@@ -17,7 +17,8 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
 										--timescale "1ns/1ns" --no-timing --trace
 
-BUILD_DIR = ./build
+WORK_DIR = $(abspath .)
+BUILD_DIR = $(WORK_DIR)/build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -117,5 +118,5 @@ verilog:
 
 sim-iverilog: verilog
 	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
-	@iverilog $(ONE_VSRC) -o $(IBIN) -s $(TOPNAME) -g2012
+	@iverilog $(ONE_VSRC) ./simtop/npc.v -o $(IBIN) -s $(TOPNAME) -g2012 -DMEM_FILE=$(BUILD_DIR)/memory.hex
 	@vvp $(IBIN)
