@@ -1,5 +1,5 @@
 `include "ysyx_23060236_defines.v"
-module ysyx_23060236_RegisterFile #(ADDR_WIDTH = 4, DATA_WIDTH = 32) (
+module ysyx_23060236_RegisterFile(
   input clock,
   input [DATA_WIDTH-1:0] wdata,
   input [ADDR_WIDTH-1:0] waddr,
@@ -10,6 +10,8 @@ module ysyx_23060236_RegisterFile #(ADDR_WIDTH = 4, DATA_WIDTH = 32) (
   input wen,
 	input valid
 );
+	parameter ADDR_WIDTH = 4;
+	parameter DATA_WIDTH = 32;
 
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:1];
 
