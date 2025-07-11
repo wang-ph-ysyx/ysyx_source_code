@@ -119,4 +119,4 @@ verilog:
 sim-iverilog: verilog
 	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
 	@iverilog -g2012 $(ONE_VSRC) ./simtop/npc.v -o $(IBIN) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\"
-	@vvp -n $(IBIN) #-fst
+	@vvp -n $(IBIN) -fst

@@ -164,7 +164,7 @@ always @(posedge clock) begin
 `else
 	if (io_master_wvalid & io_master_wready) begin
 		if (write_addr == 32'ha00003f8) begin
-			$write("%c", io_master_wdata);
+			$write("%c", io_master_wdata[7:0]);
 			$fflush();
 		end
 		else begin
