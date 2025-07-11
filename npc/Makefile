@@ -1,3 +1,5 @@
+STUID = ysyx_23060236
+
 PLATFORM = npc
 ISA = riscv32e
 ifeq ($(PLATFORM),ysyxsoc)
@@ -19,9 +21,11 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
+ONE_VSRC = $(BUILD_DIR)/$(STUID).v
+IBIN = $(BUILD_DIR)/iverilog_sim
 
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH += $(abspath ./vsrc)
+VER_INC_PATH += $(abspath ./vinclude)
 ifeq ($(PLATFORM),ysyxsoc)
 VER_INC_PATH += $(abspath ./vinclude/ysyxsoc)
 VER_INC_PATH += $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
@@ -107,4 +111,9 @@ check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
 
 verilog:
-	@cat ./vsrc/*.v > $(BUILD_DIR)/ysyx_23060236.v
+	@cat ./vsrc/*.v > $(ONE_VSRC)
+
+sim-iverilog: verilog
+	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
+	@iverilog $(ONE_VSRC) -o $(IBIN) -s $(TOPNAME)
+	@vvp $(IBIN)
