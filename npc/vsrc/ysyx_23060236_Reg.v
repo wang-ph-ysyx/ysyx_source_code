@@ -1,4 +1,3 @@
-`include "ysyx_23060236_defines.v"
 module ysyx_23060236_Reg #(WIDTH = 1, RESET_VAL = 0) (
   input clock,
   input reset,

@@ -1,4 +1,3 @@
-`include "ysyx_23060236_defines.v"
 module ysyx_23060236_clint(
 	input  clock,
 	input  reset,
@@ -10,10 +9,7 @@ module ysyx_23060236_clint(
 	output [31:0] rdata,
 	output [1:0]  rresp,
 	output rvalid,
-	input  rready,
-
-	input  handle_intr,
-	output reg time_intr
+	input  rready
 );
 
 	wire [63:0] mtime;
@@ -27,12 +23,6 @@ module ysyx_23060236_clint(
 
 	always @(posedge clock) begin
 		if (arvalid & arready) high_data <= araddr[2];
-	end
-
-	always @(posedge clock) begin
-		if (reset) time_intr <= 0;
-		else if (mtime[20:0] == 21'h1fffff) time_intr <= 1'b1;
-		else if (handle_intr) time_intr <= 1'b0;
 	end
 
 	ysyx_23060236_Reg #(1, 1) reg_idle(

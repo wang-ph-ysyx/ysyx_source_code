@@ -1,4 +1,3 @@
-`include "ysyx_23060236_defines.v"
 module ysyx_23060236(
 	input  clock,
 	input  reset,
@@ -78,25 +77,23 @@ module ysyx_23060236(
 	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [31:0] exu_pc;
+	wire [24:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
 	wire exu_valid;
 	wire exu_ready;
-	wire lsu_over;
 	wire wb_valid;
 	wire jump_wrong;
 
 	wire [31:0] inst;
 	wire [9:0]  opcode_type;
-	wire [4:0]  rs1;
-	wire [4:0]  rs2;
-	wire [4:0]  idu_rd;
-	wire [4:0]  exu_rd;
+	wire [3:0]  rs1;
+	wire [3:0]  rs2;
+	wire [3:0]  idu_rd;
+	wire [3:0]  exu_rd;
 	wire [2:0]  funct3;
-	wire [2:0]  funct3_reg;
-	wire [1:0]  funct7_50;
+	wire        funct7_5;
 	wire [31:0] imm;
 	wire [31:0] src1;
 	wire [31:0] src2;
@@ -109,9 +106,6 @@ module ysyx_23060236(
 	wire inst_ecall;
 	wire inst_mret;
 	wire inst_fencei;
-	wire inst_muldiv;
-	wire [31:0] muldiv_val;
-	wire muldiv_outvalid;
 	wire btb_wvalid;
 
 	wire [31:0] csr_jump;
@@ -122,9 +116,6 @@ module ysyx_23060236(
 	wire [31:0] exu_val;
 	wire lsu_wen;
 	wire lsu_ren;
-
-	wire mmu_on;
-	wire [19:0] ppn;
 
 	wire        ifu_arvalid;
 	wire [31:0] ifu_araddr;
@@ -165,142 +156,12 @@ module ysyx_23060236(
 	wire        clint_rvalid;
 	wire        clint_rready;
 
-	wire [31:0] icache_araddr;
+	wire [24:0] icache_araddr; //与icache地址位宽一致
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire [31:0] icache_awaddr;
+	wire [24:0] icache_awaddr; //与icache地址位宽一致
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
-
-	wire [31:0] dcache_araddr;
-	wire [31:0] dcache_rdata;
-	wire        dcache_hit;
-	wire [31:0] dcache_awaddr;
-	wire [31:0] dcache_wdata;
-	wire        dcache_wvalid;
-	wire        dcache_dirty_data;
-	wire        dcache_wdt;
-	wire [25:0] dcache_reptag; //与dcache的tag一致
-	wire [31:0] dcache_repdata;
-	wire        dcache_flush;
-
-	wire [19:0] tlb_araddr;
-	wire [19:0] tlb_rdata;
-	wire        tlb_rvalid;
-	wire        tlb_hit;
-	wire [19:0] tlb_awaddr;
-	wire [19:0] tlb_wdata;
-	wire        tlb_wvalid;
-	wire        tlb_flush;
-
-	wire        time_intr;
-	wire        time_intr_on;
-
-	wire        v_io_master_awready;
-	wire        v_io_master_awvalid;
-	wire [31:0] v_io_master_awaddr;
-	wire [3:0]  v_io_master_awid;
-	wire [7:0]  v_io_master_awlen;
-	wire [2:0]  v_io_master_awsize;
-	wire [1:0]  v_io_master_awburst;
-
-	wire        v_io_master_wready;
-	wire        v_io_master_wvalid;
-	wire [31:0] v_io_master_wdata;
-	wire [3:0]  v_io_master_wstrb;
-	wire        v_io_master_wlast;
-
-	wire        v_io_master_bready;
-	wire        v_io_master_bvalid;
-	wire [1:0]  v_io_master_bresp;
-	wire [3:0]  v_io_master_bid;
-
-	wire        v_io_master_arready;
-	wire        v_io_master_arvalid;
-	wire [31:0] v_io_master_araddr;
-	wire [3:0]  v_io_master_arid;
-	wire [7:0]  v_io_master_arlen;
-	wire [2:0]  v_io_master_arsize;
-	wire [1:0]  v_io_master_arburst;
-
-	wire        v_io_master_rready;
-	wire        v_io_master_rvalid;
-	wire [1:0]  v_io_master_rresp;
-	wire [31:0] v_io_master_rdata;
-	wire        v_io_master_rlast;
-	wire [3:0]  v_io_master_rid;
-
-	ysyx_23060236_mmu my_mmu(
-		.clock(clock),
-		.reset(reset),
-		.mmu_on(mmu_on),
-		.ppn(ppn),
-		.v_io_master_awready(v_io_master_awready),
-    .v_io_master_awvalid(v_io_master_awvalid),
-    .v_io_master_awaddr(v_io_master_awaddr),
-    .v_io_master_awid(v_io_master_awid),
-    .v_io_master_awlen(v_io_master_awlen),
-    .v_io_master_awsize(v_io_master_awsize),
-    .v_io_master_awburst(v_io_master_awburst),
-    .v_io_master_wready(v_io_master_wready),
-    .v_io_master_wvalid(v_io_master_wvalid),
-    .v_io_master_wdata(v_io_master_wdata),
-    .v_io_master_wstrb(v_io_master_wstrb),
-    .v_io_master_wlast(v_io_master_wlast),
-    .v_io_master_bready(v_io_master_bready),
-    .v_io_master_bvalid(v_io_master_bvalid),
-    .v_io_master_bresp(v_io_master_bresp),
-    .v_io_master_bid(v_io_master_bid),
-    .v_io_master_arready(v_io_master_arready),
-    .v_io_master_arvalid(v_io_master_arvalid),
-    .v_io_master_araddr(v_io_master_araddr),
-    .v_io_master_arid(v_io_master_arid),
-    .v_io_master_arlen(v_io_master_arlen),
-    .v_io_master_arsize(v_io_master_arsize),
-    .v_io_master_arburst(v_io_master_arburst),
-    .v_io_master_rready(v_io_master_rready),
-    .v_io_master_rvalid(v_io_master_rvalid),
-    .v_io_master_rresp(v_io_master_rresp),
-    .v_io_master_rdata(v_io_master_rdata),
-    .v_io_master_rlast(v_io_master_rlast),
-    .v_io_master_rid(v_io_master_rid),
-		.io_master_awready(io_master_awready),
-    .io_master_awvalid(io_master_awvalid),
-    .io_master_awaddr(io_master_awaddr),
-    .io_master_awid(io_master_awid),
-    .io_master_awlen(io_master_awlen),
-    .io_master_awsize(io_master_awsize),
-    .io_master_awburst(io_master_awburst),
-    .io_master_wready(io_master_wready),
-    .io_master_wvalid(io_master_wvalid),
-    .io_master_wdata(io_master_wdata),
-    .io_master_wstrb(io_master_wstrb),
-    .io_master_wlast(io_master_wlast),
-    .io_master_bready(io_master_bready),
-    .io_master_bvalid(io_master_bvalid),
-    .io_master_bresp(io_master_bresp),
-    .io_master_bid(io_master_bid),
-    .io_master_arready(io_master_arready),
-    .io_master_arvalid(io_master_arvalid),
-    .io_master_araddr(io_master_araddr),
-    .io_master_arid(io_master_arid),
-    .io_master_arlen(io_master_arlen),
-    .io_master_arsize(io_master_arsize),
-    .io_master_arburst(io_master_arburst),
-    .io_master_rready(io_master_rready),
-    .io_master_rvalid(io_master_rvalid),
-    .io_master_rresp(io_master_rresp),
-    .io_master_rdata(io_master_rdata),
-    .io_master_rlast(io_master_rlast),
-    .io_master_rid(io_master_rid),
-		.tlb_araddr(tlb_araddr),
-		.tlb_rdata(tlb_rdata),
-		.tlb_rvalid(tlb_rvalid),
-		.tlb_hit(tlb_hit),
-		.tlb_awaddr(tlb_awaddr),
-		.tlb_wdata(tlb_wdata),
-		.tlb_wvalid(tlb_wvalid)
-	);
 
 	ysyx_23060236_xbar my_xbar(
 		.clock(clock),
@@ -334,35 +195,35 @@ module ysyx_23060236(
 		.lsu_bready(lsu_bready),
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
-		.v_io_master_awready(v_io_master_awready),
-    .v_io_master_awvalid(v_io_master_awvalid),
-    .v_io_master_awaddr(v_io_master_awaddr),
-    .v_io_master_awid(v_io_master_awid),
-    .v_io_master_awlen(v_io_master_awlen),
-    .v_io_master_awsize(v_io_master_awsize),
-    .v_io_master_awburst(v_io_master_awburst),
-    .v_io_master_wready(v_io_master_wready),
-    .v_io_master_wvalid(v_io_master_wvalid),
-    .v_io_master_wdata(v_io_master_wdata),
-    .v_io_master_wstrb(v_io_master_wstrb),
-    .v_io_master_wlast(v_io_master_wlast),
-    .v_io_master_bready(v_io_master_bready),
-    .v_io_master_bvalid(v_io_master_bvalid),
-    .v_io_master_bresp(v_io_master_bresp),
-    .v_io_master_bid(v_io_master_bid),
-    .v_io_master_arready(v_io_master_arready),
-    .v_io_master_arvalid(v_io_master_arvalid),
-    .v_io_master_araddr(v_io_master_araddr),
-    .v_io_master_arid(v_io_master_arid),
-    .v_io_master_arlen(v_io_master_arlen),
-    .v_io_master_arsize(v_io_master_arsize),
-    .v_io_master_arburst(v_io_master_arburst),
-    .v_io_master_rready(v_io_master_rready),
-    .v_io_master_rvalid(v_io_master_rvalid),
-    .v_io_master_rresp(v_io_master_rresp),
-    .v_io_master_rdata(v_io_master_rdata),
-    .v_io_master_rlast(v_io_master_rlast),
-    .v_io_master_rid(v_io_master_rid),
+		.io_master_awready(io_master_awready),
+    .io_master_awvalid(io_master_awvalid),
+    .io_master_awaddr(io_master_awaddr),
+    .io_master_awid(io_master_awid),
+    .io_master_awlen(io_master_awlen),
+    .io_master_awsize(io_master_awsize),
+    .io_master_awburst(io_master_awburst),
+    .io_master_wready(io_master_wready),
+    .io_master_wvalid(io_master_wvalid),
+    .io_master_wdata(io_master_wdata),
+    .io_master_wstrb(io_master_wstrb),
+    .io_master_wlast(io_master_wlast),
+    .io_master_bready(io_master_bready),
+    .io_master_bvalid(io_master_bvalid),
+    .io_master_bresp(io_master_bresp),
+    .io_master_bid(io_master_bid),
+    .io_master_arready(io_master_arready),
+    .io_master_arvalid(io_master_arvalid),
+    .io_master_araddr(io_master_araddr),
+    .io_master_arid(io_master_arid),
+    .io_master_arlen(io_master_arlen),
+    .io_master_arsize(io_master_arsize),
+    .io_master_arburst(io_master_arburst),
+    .io_master_rready(io_master_rready),
+    .io_master_rvalid(io_master_rvalid),
+    .io_master_rresp(io_master_rresp),
+    .io_master_rdata(io_master_rdata),
+    .io_master_rlast(io_master_rlast),
+    .io_master_rid(io_master_rid),
 		.clint_araddr(clint_araddr),
 		.clint_arvalid(clint_arvalid),
 		.clint_arready(clint_arready),
@@ -381,9 +242,7 @@ module ysyx_23060236(
 		.rdata(clint_rdata),
 		.rresp(clint_rresp),
 		.rvalid(clint_rvalid),
-		.rready(clint_rready),
-		.handle_intr(exu_valid & exu_ready & time_intr_on),
-		.time_intr(time_intr)
+		.rready(clint_rready)
 	);
 
 	ysyx_23060236_icache my_icache(
@@ -398,22 +257,6 @@ module ysyx_23060236(
 		.inst_fencei(inst_fencei)
 	);
 
-	ysyx_23060236_dcache my_dcache(
-		.clock(clock),
-		.reset(reset),
-		.dcache_araddr(dcache_araddr),
-		.dcache_rdata(dcache_rdata),
-		.dcache_hit(dcache_hit),
-		.dcache_awaddr(dcache_awaddr),
-		.dcache_wdata(dcache_wdata),
-		.dcache_wvalid(dcache_wvalid),
-		.dirty_data(dcache_dirty_data),
-		.dcache_wdt(dcache_wdt),
-		.dcache_reptag(dcache_reptag),
-		.dcache_repdata(dcache_repdata),
-		.flush(dcache_flush)
-	);
-
 	ysyx_23060236_btb my_btb(
 		.clock(clock),
 		.reset(reset),
@@ -424,19 +267,6 @@ module ysyx_23060236(
 		.btb_wvalid(btb_wvalid),
 		.btb_awaddr(exu_pc),
 		.btb_wdata(jump_addr)
-	);
-
-	ysyx_23060236_tlb my_tlb(
-		.clock(clock),
-		.reset(reset),
-		.tlb_araddr(tlb_araddr),
-		.tlb_rdata(tlb_rdata),
-		.tlb_rvalid(tlb_rvalid),
-		.tlb_hit(tlb_hit),
-		.tlb_awaddr(tlb_awaddr),
-		.tlb_wdata(tlb_wdata),
-		.tlb_wvalid(tlb_wvalid),
-		.tlb_flush(tlb_flush)
 	);
 
 	ysyx_23060236_ifu my_ifu(
@@ -486,7 +316,7 @@ module ysyx_23060236(
 		.pc_next(idu_pc),
 		.opcode_type(opcode_type),
 		.funct3(funct3),
-		.funct7_50(funct7_50),
+		.funct7_5(funct7_5),
 		.rd(idu_rd),
 		.src1_next(idu_src1),
 		.src2_next(idu_src2),
@@ -503,14 +333,13 @@ module ysyx_23060236(
 
 	ysyx_23060236_exu my_exu(
 		.clock(clock),
-		.reset(reset),
 		.opcode_type(opcode_type),
 		.rd(idu_rd),
 		.src1(idu_src1),
 		.src2(idu_src2),
 		.imm(imm),
 		.funct3(funct3),
-		.funct7_50(funct7_50),
+		.funct7_5(funct7_5),
 		.pc(idu_pc),
 		.dnpc(exu_dnpc),
 		.reg_wen(idu_reg_wen),
@@ -518,7 +347,6 @@ module ysyx_23060236(
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
 		.inst_fencei(inst_fencei),
-		.funct3_reg(funct3_reg),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
 		.reg_wen_next(exu_reg_wen),
@@ -530,13 +358,8 @@ module ysyx_23060236(
 		.lsu_wen(lsu_wen),
 		.csr_wdata(csr_wdata),
 		.csr_enable(csr_enable),
-		.inst_muldiv(inst_muldiv),
-		.muldiv_outvalid(muldiv_outvalid),
-		.muldiv_val(muldiv_val),
 		.exu_valid(exu_valid),
-		.exu_ready(exu_ready),
-		.lsu_over(lsu_over),
-		.time_intr(time_intr & time_intr_on)
+		.exu_ready(exu_ready)
 	);
 
 	ysyx_23060236_lsu my_lsu(
@@ -562,34 +385,18 @@ module ysyx_23060236(
 		.lsu_arsize(lsu_arsize),
 		.lsu_awsize(lsu_awsize),
 		.exu_val(exu_val),
-		.muldiv_val(muldiv_val),
+		.funct3(funct3),
 		.lsu_data(idu_src2),
 		.lsu_ren(lsu_ren),
 		.lsu_wen(lsu_wen),
 		.jump_wrong(jump_wrong),
 		.wb_val(wb_val),
-		.funct3_reg(funct3_reg),
-		.inst_muldiv(inst_muldiv),
-		.muldiv_outvalid(muldiv_outvalid),
 		.exu_valid(exu_valid),
 		.exu_ready(exu_ready),
-		.wb_valid(wb_valid),
-		.lsu_over(lsu_over),
-		.time_intr(time_intr & time_intr_on),
-		.dcache_araddr(dcache_araddr),
-		.dcache_rdata(dcache_rdata),
-		.dcache_hit(dcache_hit),
-		.dcache_awaddr(dcache_awaddr),
-		.dcache_wdata(dcache_wdata),
-		.dcache_wvalid(dcache_wvalid),
-		.dirty_data(dcache_dirty_data),
-		.dcache_wdt(dcache_wdt),
-		.dcache_reptag(dcache_reptag),
-		.dcache_repdata(dcache_repdata),
-		.flush(dcache_flush)
+		.wb_valid(wb_valid)
 	);
 
-	ysyx_23060236_RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
 		.wdata(wb_val),
 		.waddr(exu_rd),
@@ -613,12 +420,7 @@ module ysyx_23060236(
 		.epc(idu_pc),
 		.jump(csr_jump),
 		.jump_en(csr_jump_en),
-		.mmu_on(mmu_on),
-		.ppn(ppn),
-		.valid(exu_valid & exu_ready),
-		.time_intr(time_intr),
-		.time_intr_on(time_intr_on),
-		.tlb_flush(tlb_flush)
+		.valid(exu_valid & exu_ready)
 	);
 
 	assign io_slave_awready = 0;
@@ -633,7 +435,7 @@ module ysyx_23060236(
 	assign io_slave_rlast   = 0;
 	assign io_slave_rid     = 0;
 
-`ifndef SYN
+
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -661,6 +463,5 @@ import "DPI-C" function void program_end();
 		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
 		else if ((prog_end == 2) & wb_valid) program_end();
 	end
-`endif
 
 endmodule

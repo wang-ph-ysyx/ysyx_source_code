@@ -1,20 +1,14 @@
+#include <VysyxSoCFull.h>
 #include "verilated.h"
 #include <nvboard.h>
-#include "verilated_fst_c.h"
+#include "verilated_vcd_c.h"
 #include <config.h>
 
-#if defined(__PLATFORM_ysyxsoc_)
-#include <VysyxSoCFull.h>
-#elif defined(__PLATFORM_npc_)
-#include <Vnpc.h>
-#endif
-
-extern TOP_NAME *top;
-extern VerilatedFstC *tfp;
+extern VysyxSoCFull *top;
+extern VerilatedVcdC *tfp;
 extern VerilatedContext *contextp;
 
-int start = 0;
-void nvboard_bind_all_pins(TOP_NAME* top);
+void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 void init_monitor(int argc, char **argv);
 void sdb_mainloop();
@@ -24,12 +18,12 @@ int main(int argc, char **argv) {
 	Verilated::commandArgs(argc, argv);
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
-	top = new TOP_NAME{contextp};
+	top = new VysyxSoCFull{contextp};
 #ifdef WAVE_TRACE
-	tfp = new VerilatedFstC;
+	tfp = new VerilatedVcdC;
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
-	tfp->open("wave.fst");
+	tfp->open("wave.vcd");
 #endif
 	nvboard_bind_all_pins(top);
 	nvboard_init();
@@ -38,13 +32,9 @@ int main(int argc, char **argv) {
 
 	init_monitor(argc, argv);
 
-	start = 1;
-
 	sdb_mainloop();
 
 	delete top;
 	delete contextp;
-	tfp->close();
-
 	return 0;
 }

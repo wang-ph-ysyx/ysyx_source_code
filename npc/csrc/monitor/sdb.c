@@ -137,7 +137,7 @@ void sdb_mainloop() {
 
 		char *args = cmd + strlen(cmd) + 1;
 		if (args >= str_end) {
-			args = NULL;
+			args == NULL;
 		}
 
 		int i;

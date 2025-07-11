@@ -1,9 +1,3 @@
-`include "ysyx_23060236_defines.v"
-`ifndef SYN
-`include "ysyx_23060236_defines_platform.v"
-`else
-`define ENTRY_ADDR 32'h30000000
-`endif
 module ysyx_23060236_ifu(
 	input  clock,
 	input  reset,
@@ -19,10 +13,10 @@ module ysyx_23060236_ifu(
 	input         ifu_rvalid,
 	output        ifu_rready,
 
-	output [31:0] icache_araddr,
+	output [24:0] icache_araddr, //与icache地址位宽一致
 	input  [31:0] icache_rdata,
 	input         icache_hit,
-	output reg [31:0] icache_awaddr,
+	output reg [24:0] icache_awaddr, //与icache地址位宽一致
 	output reg [31:0] icache_wdata,
 	output            icache_wvalid,
 
@@ -43,24 +37,30 @@ module ysyx_23060236_ifu(
 	wire ifu_valid;
 	wire ifu_ready;
 	wire ifu_over;
+	wire pc_in_sdram;
+	wire npc_in_sdram;
 	wire [31:0] inst_tmp;
-	wire [31:0] icache_awaddr_tmp; 
+	wire [24:0] icache_awaddr_tmp; //与icache地址位宽一致
 	reg last;
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
 
-	assign icache_araddr = pc[31:0];
-	assign ifu_araddr    = {pc[31:5], 5'b0}; //与icache的块大小一致
-	assign ifu_arburst   = 2'b01;
-	assign ifu_arlen     = 4'b0111; //与icache的块大小一致
+	assign ifu_rready    = 1;
+	assign pc_in_sdram   = (pc >= 32'ha0000000) & (pc < 32'ha2000000);
+	assign npc_in_sdram  = (pc_tmp >= 32'ha0000000) & (pc_tmp < 32'ha2000000);
+	assign icache_araddr = pc[24:0];
+	assign ifu_araddr    = ~pc_in_sdram ? pc : {pc[31:5], 5'b0}; //与icache的块大小一致
+	assign ifu_arburst   = ~pc_in_sdram ? 2'b0 : 2'b01;
+	assign ifu_arlen     = ~pc_in_sdram ? 4'b0 : 4'b0111; //与icache的块大小一致
 	//与icache的块大小一致
-	assign inst_tmp = (ifu_rvalid & ifu_rready & (pc[4:2] == icache_awaddr[4:2])) ? ifu_rdata : 
+	assign inst_tmp = (ifu_rvalid & ifu_rready & ((pc[4:2] == icache_awaddr[4:2]) | ~pc_in_sdram)) ? ifu_rdata : 
 		                (icache_rvalid & icache_hit & ifu_ready) ? icache_rdata : 
 										inst;
-	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last);
+	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last | ifu_rvalid & ifu_rready & ~pc_in_sdram);
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
-	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? ifu_araddr : 
+	//与icache的块大小一致
+	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[24:5], 5'b0} : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
@@ -77,7 +77,7 @@ module ysyx_23060236_ifu(
 		end
 	end
 
-	ysyx_23060236_Reg #(32, `ENTRY_ADDR) pc_adder(
+	ysyx_23060236_Reg #(32, 32'h30000000) pc_adder(
 		.clock(clock),
 		.reset(reset),
 		.din(pc_tmp),
@@ -85,10 +85,10 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-	ysyx_23060236_Reg #(1, 1) reg_icache_rvalid(
+	ysyx_23060236_Reg #(1, 0) reg_icache_rvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_over | icache_rvalid & ~ifu_ready),
+		.din(ifu_over & npc_in_sdram | icache_rvalid & ~ifu_ready),
 		.dout(icache_rvalid),
 		.wen(1)
 	);
@@ -96,7 +96,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rvalid & ifu_rready),
+		.din(~icache_wvalid & ifu_rvalid & ifu_rready & pc_in_sdram),
 		.dout(icache_wvalid),
 		.wen(1)
 	);
@@ -105,18 +105,10 @@ module ysyx_23060236_ifu(
 		icache_awaddr <= icache_awaddr_tmp;
 	end
 
-	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
+	ysyx_23060236_Reg #(1, 1) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | icache_wvalid),
-		.dout(ifu_rready),
-		.wen(1)
-	);
-
-	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
-		.clock(clock),
-		.reset(reset),
-		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
+		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & (icache_rvalid & ~icache_hit & ifu_ready | ifu_valid & ~npc_in_sdram)),
 		.dout(ifu_arvalid),
 		.wen(1)
 	);
@@ -145,7 +137,6 @@ module ysyx_23060236_ifu(
 		.wen(1)
 	);
 
-`ifndef SYN
 import "DPI-C" function void add_ifu_readingcycle();
 import "DPI-C" function void add_miss_icache();
 import "DPI-C" function void add_hit_icache();
@@ -180,6 +171,5 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end
-`endif
 
 endmodule

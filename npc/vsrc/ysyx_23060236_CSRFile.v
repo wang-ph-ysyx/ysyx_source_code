@@ -1,4 +1,3 @@
-`include "ysyx_23060236_defines.v"
 module ysyx_23060236_CSRFile (
 	input  clock,
 	input  reset,
@@ -10,24 +9,16 @@ module ysyx_23060236_CSRFile (
 	input  inst_mret,
 	input  [31:0] epc,
 	output [31:0] jump,
-	output jump_en,
-	output mmu_on,
-	output [19:0] ppn,
-	input  valid,
-
-	output time_intr_on,
-	input  time_intr,
-	output tlb_flush
+	output        jump_en,
+	input  valid
 );
 
-	reg [31:0] mepc    ;
-	reg [6:0]  mcause  ;
-	reg [31:0] mstatus ;
-	reg [31:0] mtvec   ;
-	reg [31:0] satp    ;
-	reg [31:0] mscratch;
+	reg [31:0] mepc   ;
+	reg [6:0]  mcause ;
+	reg [31:0] mstatus;
+	reg [31:0] mtvec  ;
 
-	wire [7:0] choose;
+	wire [5:0] choose;
 
 	localparam CSR_MEPC      = 0;
 	localparam CSR_MCAUSE    = 1;
@@ -35,8 +26,6 @@ module ysyx_23060236_CSRFile (
 	localparam CSR_MTVEC     = 3;
 	localparam CSR_MVENDORID = 4;
 	localparam CSR_MARCHID   = 5;
-	localparam CSR_SATP      = 6;
-	localparam CSR_MSCRATCH  = 7;
 
 	assign choose[CSR_MEPC     ] = (imm == 12'h341);
 	assign choose[CSR_MCAUSE   ] = (imm == 12'h342);
@@ -44,59 +33,34 @@ module ysyx_23060236_CSRFile (
 	assign choose[CSR_MTVEC    ] = (imm == 12'h305);
 	assign choose[CSR_MVENDORID] = (imm == 12'hf11);
 	assign choose[CSR_MARCHID  ] = (imm == 12'hf12);
-	assign choose[CSR_SATP     ] = (imm == 12'h180);
-	assign choose[CSR_MSCRATCH ] = (imm == 12'h340);
-
-	assign mmu_on = satp[31];
-	assign ppn = satp[19:0];
-	assign time_intr_on = mstatus[3];
 
 	always @(posedge clock) begin
 		if (reset) begin
-			mstatus  <= 32'h1800;
-			satp[31] <= 1'b0;
+			mstatus <= 32'h1800;
 		end
 		else if (valid) begin
-			if (time_intr & time_intr_on) begin
-				mepc       <= epc;
-				mcause     <= 7'h47;
-				mstatus[3] <= 1'b0;
-				mstatus[7] <= mstatus[3];
-			end
-			else if (enable) begin
-				if (choose[CSR_MEPC     ]) mepc     <= wdata;
-				if (choose[CSR_MCAUSE   ]) mcause   <= {wdata[31], wdata[5:0]};
-				if (choose[CSR_MSTATUS  ]) mstatus  <= wdata;
-				if (choose[CSR_MTVEC    ]) mtvec    <= wdata;
-				if (choose[CSR_SATP     ]) satp     <= wdata;
-				if (choose[CSR_MSCRATCH ]) mscratch <= wdata;
+			if (enable) begin
+				if (choose[CSR_MEPC     ]) mepc    <= wdata;
+				if (choose[CSR_MCAUSE   ]) mcause  <= {wdata[31], wdata[5:0]};
+				if (choose[CSR_MSTATUS  ]) mstatus <= wdata;
+				if (choose[CSR_MTVEC    ]) mtvec   <= wdata;
 			end
 			else if (inst_ecall) begin
-				mepc       <= epc;
-				mcause     <= 7'd11;
-				mstatus[3] <= 1'b0;
-				mstatus[7] <= mstatus[3];
-			end
-			else if (inst_mret) begin
-				mstatus[3] <= mstatus[7];
-				mstatus[7] <= 1'b1;
+				mepc   <= epc;
+				mcause <= 7'd11;
 			end
 		end
 	end
 
-	assign rdata = choose[CSR_MEPC     ] ? mepc     :
-                 choose[CSR_MSTATUS  ] ? mstatus  :
-                 choose[CSR_MTVEC    ] ? mtvec    :
-								 choose[CSR_SATP     ] ? satp     :
-								 choose[CSR_MSCRATCH ] ? mscratch :
+	assign rdata = choose[CSR_MEPC     ] ? mepc    :
                  choose[CSR_MCAUSE   ] ? {mcause[6], 25'b0, mcause[5:0]} :
+                 choose[CSR_MSTATUS  ] ? mstatus :
+                 choose[CSR_MTVEC    ] ? mtvec   :
                  choose[CSR_MVENDORID] ? 32'h79737978 :
                  choose[CSR_MARCHID  ] ? 32'h015fdf0c :
 								 32'b0;
 
-	assign jump = inst_mret ? mepc : mtvec;
-	assign jump_en = inst_ecall | inst_mret | (time_intr & time_intr_on);
-
-	assign tlb_flush = valid & enable & choose[CSR_SATP];
+	assign jump = {32{inst_ecall}} & mtvec | {32{inst_mret}} & mepc;
+	assign jump_en = inst_ecall | inst_mret;
 
 endmodule

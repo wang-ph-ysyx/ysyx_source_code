@@ -1,4 +1,3 @@
-`include "ysyx_23060236_defines.v"
 module ysyx_23060236_icache(
 	input         clock,
 	input         reset,
@@ -14,10 +13,11 @@ module ysyx_23060236_icache(
 	input         inst_fencei
 );
 
-	localparam ADDR_LEN   = 32;
+	//此处ADDR_LEN减7与sdram地址范围相匹配
+	localparam ADDR_LEN   = 32 - 7;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 5;
-	localparam INDEX_LEN  = 4;
+	localparam INDEX_LEN  = 1;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 	localparam BLOCK_SIZE = 2**(OFFSET_LEN-2);
 

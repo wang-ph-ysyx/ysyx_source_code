@@ -10,7 +10,7 @@ void __am_timer_init() {
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uint64_t total_cycle = (((uint64_t)inl(RTC_ADDR + 4)) << 32) + (uint64_t)inl(RTC_ADDR);
 	//让uptime返回的时间（周期数）除以时钟速率以接近真实时间
-	uptime->us = total_cycle / 773;
+	uptime->us = total_cycle / 817;
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
