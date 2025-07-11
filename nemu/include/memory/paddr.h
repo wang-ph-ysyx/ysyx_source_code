@@ -21,6 +21,8 @@
 #define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
+
+#ifdef CONFIG_TARGET_SHARE
 #define MROM_BASE  0x20000000
 #define SRAM_BASE  0x0f000000
 #define FLASH_BASE 0x30000000
@@ -29,19 +31,20 @@
 #define SRAM_SIZE  0x2000
 #define FLASH_SIZE 0x10000000
 #define SDRAM_SIZE 0x02000000
+#endif
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);
 /* convert the host virtual address in NEMU to guest physical address in the guest program */
 paddr_t host_to_guest(uint8_t *haddr);
 
-#if defined(CONFIG_TARGET_NATIVE_ELF)
+#ifdef CONFIG_TARGET_SHARE
+static inline bool in_pmem(paddr_t addr) {
+  return (addr - MROM_BASE < MROM_SIZE) | (addr - SRAM_BASE < SRAM_SIZE) | (addr - FLASH_BASE < FLASH_SIZE) | (addr - SDRAM_BASE < SDRAM_SIZE);
+}
+#elif defined(CONFIG_TARGET_NATIVE_ELF)
 static inline bool in_pmem(paddr_t addr) {
   return (addr - CONFIG_MBASE < CONFIG_MSIZE);
-}
-#elif defined(CONFIG_TARGET_SHARE)
-static inline bool in_pmem(paddr_t addr) {
-  return (addr - CONFIG_MBASE < CONFIG_MSIZE) | (addr - MROM_BASE < MROM_SIZE) | (addr - SRAM_BASE < SRAM_SIZE) | (addr - FLASH_BASE < FLASH_SIZE) | (addr - SDRAM_BASE < SDRAM_SIZE);
 }
 #endif
 

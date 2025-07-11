@@ -1,5 +1,13 @@
+PLATFORM = npc
+ISA = riscv32e
+ifeq ($(PLATFORM),ysyxsoc)
 TOPNAME = ysyxSoCFull
-NXDC_FILES = constr/top.nxdc
+NXDC_FILES = constr/ysyxsoc.nxdc
+else ifeq ($(PLATFORM),npc)
+TOPNAME = npc
+NXDC_FILES = constr/npc.nxdc
+endif
+
 INC_PATH ?= 
 
 VERILATOR = verilator
@@ -11,10 +19,20 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
-CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH = $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
 
-default: $(BIN)
+CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
+VER_INC_PATH += $(abspath ./vsrc)
+ifeq ($(PLATFORM),ysyxsoc)
+VER_INC_PATH += $(abspath ./vinclude/ysyxsoc)
+VER_INC_PATH += $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
+else ifeq ($(PLATFORM),npc)
+VER_INC_PATH += $(abspath ./vinclude/npc)
+endif
+
+default:
+	rm -f $(BIN)
+	rm -f $(SRC_AUTO_BIND)
+	make $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -23,27 +41,32 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
-VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
+ifeq ($(PLATFORM),ysyxsoc)
+VSRCS += $(shell find $(abspath ../ysyxSoC/perip) -name "*.v")
+VSRCS += $(abspath ../ysyxSoC/build/ysyxSoCFull.v)
+else ifeq ($(PLATFORM),npc)
+VSRCS += $(abspath ./simtop/npc.v)
+endif
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 CXX_INCFLAGS = $(addprefix -I, $(CXX_INC_PATH))
 VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
-CXXFLAGS += $(CXX_INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += $(CXX_INCFLAGS) \
+						-DTOP_NAME=\"V$(TOPNAME)\"\
+						-D__PLATFORM_$(PLATFORM)_ \
+						-D__ISA_$(ISA)_
 VERILATOR_CFLAGS += $(VER_INCFLAGS)
 DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
 ifneq ($(IMG),)
-  NPC_FLAGS += -g $(IMG)
+override ARGS += -g $(IMG)
 endif
 ifneq ($(DIFF_SO),)
-  NPC_FLAGS += -d $(DIFF_SO)
+override ARGS += -d $(DIFF_SO)
 endif
-# 批处理
-NPC_FLAGS += -b
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rm -rf $(OBJ_DIR)
@@ -54,8 +77,11 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 
 all: default
 
-sim: $(BIN)
-	@$(BIN) $(NPC_FLAGS)
+sim: 
+	rm -f $(BIN)
+	rm -f $(SRC_AUTO_BIND)
+	make $(BIN)
+	$(BIN) $(ARGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 .PHONY: clean all default sim
@@ -79,3 +105,6 @@ CHECKFLAGS = --lint-only -Wall
 
 check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
+
+verilog:
+	@cat ./vsrc/*.v > $(BUILD_DIR)/ysyx_23060236.v

@@ -25,7 +25,11 @@ static long load_img() {
 	long size = ftell(fp);
 
 	fseek(fp, 0, SEEK_SET);
+#if defined(__PLATFORM_ysyxsoc_)
 	int ret = fread(guest2host_flash(0), size, 1, fp);
+#elif defined(__PLATFORM_npc_)
+	int ret = fread(guest2host(MEM_BASE), size, 1, fp);
+#endif
 	assert(ret == 1);
 
 	fclose(fp);

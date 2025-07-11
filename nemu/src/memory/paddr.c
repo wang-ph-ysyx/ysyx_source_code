@@ -24,6 +24,7 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+#ifdef CONFIG_TARGET_SHARE
 static uint8_t flash[FLASH_SIZE];
 static uint8_t mrom[MROM_SIZE];
 static uint8_t sram[SRAM_SIZE];
@@ -52,6 +53,15 @@ paddr_t host_to_guest(uint8_t *haddr) {
 		return haddr - sdram + SDRAM_BASE;
 	return haddr - pmem + CONFIG_MBASE; 
 }
+#elif defined(CONFIG_TARGET_NATIVE_ELF)
+uint8_t* guest_to_host(paddr_t paddr) { 
+	return pmem + paddr - CONFIG_MBASE; 
+}
+
+paddr_t host_to_guest(uint8_t *haddr) { 
+	return haddr - pmem + CONFIG_MBASE; 
+}
+#endif
 
 void mtrace_write(paddr_t addr, int len, word_t data);
 void mtrace_read(paddr_t addr, int len);

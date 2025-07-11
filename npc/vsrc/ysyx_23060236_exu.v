@@ -1,3 +1,4 @@
+`include "ysyx_23060236_defines.v"
 module ysyx_23060236_exu(
 	input  clock,
 
@@ -17,7 +18,7 @@ module ysyx_23060236_exu(
 	input  inst_fencei,
 
 	output reg [3:0]  rd_next,
-	output reg [24:0] pc_next, //与btb地址位宽一致
+	output reg [24:0] pc_next, // 与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
 	output jump_wrong,
@@ -56,7 +57,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
-			pc_next         <= pc[24:0]; //与btb地址位宽一致
+			pc_next         <= pc[24:0]; // 与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 			inst_fencei_tmp <= inst_fencei;
 		end
