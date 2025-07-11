@@ -21,6 +21,8 @@ initial begin
 	reset = 1;
 	#20;
 	reset = 0;
+	$dumpfile("iverilog_wave.fst");
+	$dumpvars(0, iverilog_tb);
 	$display("Start simulation");
 	wait(sim_end == 1);
 	$display("Simulation ended at time %0t ns", $time);
@@ -120,8 +122,12 @@ wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
 `ifdef __ICARUS__
-reg  [7:0] memory [2**27-1];
-initial $readmemh(`MEM_FILE, memory);
+parameter MEM_SIZE = 2**20;
+reg  [7:0] memory [MEM_SIZE-1];
+integer i;
+initial begin
+	$readmemh(`MEM_FILE, memory);
+end
 `endif
 
 // write
