@@ -83,7 +83,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(pc_tmp),
 		.dout(pc),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_icache_rvalid(
@@ -91,7 +91,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_over | icache_rvalid & ~ifu_ready),
 		.dout(icache_rvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
@@ -99,7 +99,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_rvalid & ifu_rready),
 		.dout(icache_wvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin
@@ -111,7 +111,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_rready & ~ifu_rvalid | icache_wvalid),
 		.dout(ifu_rready),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
@@ -119,7 +119,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
 		.dout(ifu_arvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin
@@ -135,7 +135,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_over & ~jump_wrong & ~jump_wrong_state | idu_valid & ~idu_ready & ~jump_wrong),
 		.dout(idu_valid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_jump_wrong_state(
@@ -143,7 +143,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(jump_wrong_state & ~ifu_over | ~jump_wrong_state & jump_wrong & ~ifu_over & ~idu_valid),
 		.dout(jump_wrong_state),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 `ifndef __ICARUS__

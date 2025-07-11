@@ -6,7 +6,7 @@ import "DPI-C" function void pmem_write(
 
 `ifdef __ICARUS__
 `timescale 1ns / 1ps
-module iverilog_sim;
+module iverilog_tb;
 
 reg clock;
 reg reset;
@@ -21,6 +21,7 @@ initial begin
 	reset = 1;
 	#20;
 	reset = 0;
+	$display("Start simulation");
 	wait(sim_end == 1);
 	$display("Simulation ended at time %0t ns", $time);
 	$finish;
@@ -49,7 +50,7 @@ npc my_npc(
   .externalPins_vga_vsync(),	
   .externalPins_vga_valid(),	
   .externalPins_uart_rx(),	
-  .externalPins_uart_t()
+  .externalPins_uart_tx()
 );
 
 endmodule
@@ -118,6 +119,10 @@ reg  [31:0] io_master_rdata;
 wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
+`ifdef __ICARUS__
+reg  [7:0] memory [2**27-1];
+initial $readmemh(`MEM_FILE, memory);
+`endif
 
 // write
 reg  [31:0] write_addr;
@@ -146,9 +151,22 @@ always @(posedge clock) begin
 		io_master_wready <= 1;
 
 // pmem_write & write_wstrb
+`ifndef __ICARUS__
 	if (io_master_wvalid & io_master_wready) begin
 		pmem_write(write_addr, io_master_wdata, {4'b0, io_master_wstrb});
 	end
+`else
+	if (io_master_wvalid & io_master_wready) begin
+		if (write_addr == 32'ha00003f8)
+			$write("%c", io_master_wdata);
+		else begin
+			if (io_master_wstrb[0]) memory[write_addr[26:0]  ] <= io_master_wdata[7 :0 ];
+			if (io_master_wstrb[1]) memory[write_addr[26:0]+1] <= io_master_wdata[15:8 ];
+			if (io_master_wstrb[2]) memory[write_addr[26:0]+2] <= io_master_wdata[23:16];
+			if (io_master_wstrb[3]) memory[write_addr[26:0]+3] <= io_master_wdata[31:24];
+		end
+	end
+`endif
 
 // io_master_bvalid
 	if (reset) io_master_bvalid <= 0;
@@ -197,6 +215,7 @@ always @(posedge clock) begin
 	else if (io_master_arvalid & io_master_arready)
 		io_master_rvalid <= 1;
 
+	if (reset) 
 // io_master_rdata
 `ifndef __ICARUS__
 	if (io_master_arvalid & io_master_arready)
@@ -204,11 +223,18 @@ always @(posedge clock) begin
 	else if (io_master_rvalid & io_master_rready & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
 `else
-	if (io_master_arvalid & io_master_arready)
-		$readmemh(`MEM_FILE, io_master_rdata, io_master_araddr);
-	else if (io_master_rvalid & io_master_rready & (read_len != 0))
-		$readmemh(`MEM_FILE, io_master_rdata, read_addr);
-
+	if (io_master_arvalid & io_master_arready) begin
+		io_master_rdata[7 :0 ] <= memory[io_master_araddr[26:0]  ];
+		io_master_rdata[15:8 ] <= memory[io_master_araddr[26:0]+1];
+		io_master_rdata[23:16] <= memory[io_master_araddr[26:0]+2];
+		io_master_rdata[31:24] <= memory[io_master_araddr[26:0]+3];
+	end
+	else if (io_master_rvalid & io_master_rready & (read_len != 0)) begin
+		io_master_rdata[7 :0 ] <= memory[read_addr[26:0]  ];
+		io_master_rdata[15:8 ] <= memory[read_addr[26:0]+1];
+		io_master_rdata[23:16] <= memory[read_addr[26:0]+2];
+		io_master_rdata[31:24] <= memory[read_addr[26:0]+3];
+	end
 `endif
 end
 

@@ -70,7 +70,7 @@ module ysyx_23060236_idu(
 		.reset(reset),
 		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong),
 		.dout(exu_valid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin

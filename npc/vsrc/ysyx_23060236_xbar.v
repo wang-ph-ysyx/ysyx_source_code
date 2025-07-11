@@ -96,7 +96,7 @@ module ysyx_23060236_xbar(
 		.reset(reset),
 		.din(~ifu_reading & ~lsu_arvalid & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready & ifu_rlast)),
 		.dout(ifu_reading),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) state_lsu_reading(
@@ -104,7 +104,7 @@ module ysyx_23060236_xbar(
 		.reset(reset),
 		.din(~lsu_reading & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),
 		.dout(lsu_reading),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	assign ifu_arready       = ifu_reading & io_master_arready;
