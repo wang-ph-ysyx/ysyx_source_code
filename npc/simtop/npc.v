@@ -163,8 +163,10 @@ always @(posedge clock) begin
 	end
 `else
 	if (io_master_wvalid & io_master_wready) begin
-		if (write_addr == 32'ha00003f8)
+		if (write_addr == 32'ha00003f8) begin
 			$write("%c", io_master_wdata);
+			$fflush();
+		end
 		else begin
 			if (io_master_wstrb[0]) memory[write_addr[26:0]  ] <= io_master_wdata[7 :0 ];
 			if (io_master_wstrb[1]) memory[write_addr[26:0]+1] <= io_master_wdata[15:8 ];
