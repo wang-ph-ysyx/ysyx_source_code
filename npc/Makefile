@@ -24,6 +24,7 @@ IMG ?=
 BIN = $(BUILD_DIR)/$(TOPNAME)
 ONE_VSRC = $(BUILD_DIR)/$(STUID).v
 IBIN = $(BUILD_DIR)/iverilog_sim
+IBIN_NETLIST = $(BUILD_DIR)/iverilog_sim_netlist
 
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
 VER_INC_PATH += $(abspath ./vinclude)
@@ -114,9 +115,15 @@ check:
 verilog:
 	@cat ./vinclude/ysyx_23060236_defines.v > $(ONE_VSRC)
 	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
-	@cat ./vsrc/*.v | grep -v "include " >> $(ONE_VSRC)
+	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC)
 
 sim-iverilog: verilog
 	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
 	@iverilog -g2012 $(ONE_VSRC) ./simtop/npc.v -o $(IBIN) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\"
 	@vvp -n $(IBIN) -fst
+
+sim-iverilog-netlist:
+	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
+	@iverilog -g2012 $(CELLS) $(NETLIST) ./simtop/npc.v -o $(IBIN_NETLIST) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\" -DNETLIST
+	@vvp -n $(IBIN_NETLIST) -fst
+

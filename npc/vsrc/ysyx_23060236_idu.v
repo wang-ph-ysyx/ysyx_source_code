@@ -74,7 +74,10 @@ module ysyx_23060236_idu(
 	);
 
 	always @(posedge clock) begin
-		if (idu_valid & idu_ready) begin
+		if (reset) begin
+			inst_fencei <= 1'b0;
+		end
+		else if (idu_valid & idu_ready) begin
 			opcode_type <= opcode_type_tmp;
 			funct3      <= funct3_tmp;
 			funct7_5    <= funct7_tmp[5];

@@ -11,8 +11,10 @@ module iverilog_tb;
 
 reg clock;
 reg reset;
+`ifndef NETLIST
 wire sim_end;
 wire [31:0] return_value;
+`endif
 
 initial begin
 	clock = 0;
@@ -28,6 +30,7 @@ initial begin
 	$dumpvars(0, iverilog_tb);
 `endif
 	$display("Start simulation");
+`ifndef NETLIST
 	wait(sim_end == 1);
 	$display("Simulation ended at time %0t ns", $time);
 	if (return_value == 0) begin
@@ -38,13 +41,16 @@ initial begin
 		$display("HIT BAD TRAP");
 		$fatal;
 	end
+`endif
 end
 
 npc my_npc(
 	.clock(clock),
 	.reset(reset),
+`ifndef NETLIST
 	.return_value(return_value),
 	.sim_end(sim_end),
+`endif
   .externalPins_gpio_out(),	
   .externalPins_gpio_in(),	
   .externalPins_gpio_seg_0(),	
@@ -74,8 +80,10 @@ module npc(
 	input  clock,
 	input  reset,
 `ifdef __ICARUS__
+`ifndef NETLIST
 	output sim_end,
 	output [31:0] return_value,
+`endif
 `endif
 
   output [15:0] externalPins_gpio_out,	
@@ -135,8 +143,8 @@ wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
 `ifdef __ICARUS__
-parameter MEM_SIZE = 2**20;
-reg  [7:0] memory [MEM_SIZE-1];
+parameter MEM_SIZE = 2**27;
+reg  [7:0] memory [MEM_SIZE];
 integer i;
 initial begin
 	$readmemh(`MEM_FILE, memory);
@@ -263,8 +271,10 @@ end
     .reset             (reset),
     .io_interrupt      (1'h0),
 `ifdef __ICARUS__
+`ifndef NETLIST
 		.sim_end(sim_end),
 		.return_value(return_value),
+`endif
 `endif
     .io_master_awready (io_master_awready),
     .io_master_awvalid (io_master_awvalid),
