@@ -69,7 +69,7 @@ module ysyx_23060236_lsu(
 		.reset(reset),
 		.din(exu_ready_tmp & ~(exu_ready & exu_valid) | lsu_over),
 		.dout(exu_ready_tmp),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
@@ -77,7 +77,7 @@ module ysyx_23060236_lsu(
 		.reset(reset),
 		.din(lsu_over),
 		.dout(wb_valid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	wire [31:0] lsu_val_tmp;
@@ -105,7 +105,7 @@ module ysyx_23060236_lsu(
 		.reset(reset),
 		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren & exu_valid & exu_ready),
 		.dout(lsu_arvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
@@ -113,7 +113,7 @@ module ysyx_23060236_lsu(
 		.reset(reset),
 		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen & exu_valid & exu_ready),
 		.dout(lsu_awvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
@@ -121,7 +121,7 @@ module ysyx_23060236_lsu(
 		.reset(reset),
 		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & exu_valid & exu_ready),
 		.dout(lsu_wvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 endmodule

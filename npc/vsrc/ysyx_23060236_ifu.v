@@ -19,10 +19,10 @@ module ysyx_23060236_ifu(
 	input         ifu_rvalid,
 	output        ifu_rready,
 
-	output [31:0] icache_araddr,
+	output [24:0] icache_araddr, //与icache地址位宽一致
 	input  [31:0] icache_rdata,
 	input         icache_hit,
-	output reg [31:0] icache_awaddr,
+	output reg [24:0] icache_awaddr, //与icache地址位宽一致
 	output reg [31:0] icache_wdata,
 	output            icache_wvalid,
 
@@ -44,12 +44,12 @@ module ysyx_23060236_ifu(
 	wire ifu_ready;
 	wire ifu_over;
 	wire [31:0] inst_tmp;
-	wire [31:0] icache_awaddr_tmp; 
+	wire [24:0] icache_awaddr_tmp; //与icache地址位宽一致
 	reg last;
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
 
-	assign icache_araddr = pc[31:0];
+	assign icache_araddr = pc[24:0];
 	assign ifu_araddr    = {pc[31:5], 5'b0}; //与icache的块大小一致
 	assign ifu_arburst   = 2'b01;
 	assign ifu_arlen     = 4'b0111; //与icache的块大小一致
@@ -61,7 +61,7 @@ module ysyx_23060236_ifu(
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
 	//与icache的块大小一致
-	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:5], 5'b0} : 
+	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[24:5], 5'b0} : 
 														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
 														 icache_awaddr;
 	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
@@ -83,7 +83,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(pc_tmp),
 		.dout(pc),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 1) reg_icache_rvalid(
@@ -91,7 +91,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_over | icache_rvalid & ~ifu_ready),
 		.dout(icache_rvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
@@ -99,7 +99,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_rvalid & ifu_rready),
 		.dout(icache_wvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin
@@ -111,7 +111,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_rready & ~ifu_rvalid | icache_wvalid),
 		.dout(ifu_rready),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
@@ -119,7 +119,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
 		.dout(ifu_arvalid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin
@@ -135,7 +135,7 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(ifu_over & ~jump_wrong & ~jump_wrong_state | idu_valid & ~idu_ready & ~jump_wrong),
 		.dout(idu_valid),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(1, 0) reg_jump_wrong_state(
@@ -143,9 +143,10 @@ module ysyx_23060236_ifu(
 		.reset(reset),
 		.din(jump_wrong_state & ~ifu_over | ~jump_wrong_state & jump_wrong & ~ifu_over & ~idu_valid),
 		.dout(jump_wrong_state),
-		.wen(1)
+		.wen(1'b1)
 	);
 
+`ifndef __ICARUS__
 `ifndef SYN
 import "DPI-C" function void add_ifu_readingcycle();
 import "DPI-C" function void add_miss_icache();
@@ -181,6 +182,7 @@ import "DPI-C" function void add_ifu_getinst();
 
 		if (ifu_rvalid & ifu_rready | icache_rvalid & ifu_ready & icache_hit) add_ifu_getinst();
 	end
+`endif
 `endif
 
 endmodule

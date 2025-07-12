@@ -4,6 +4,11 @@ module ysyx_23060236(
 	input  reset,
 	input  io_interrupt,
 
+`ifdef __ICARUS__
+	output reg sim_end,
+	output [31:0] return_value,
+`endif
+
 	input         io_master_awready,
 	output        io_master_awvalid,
 	output [31:0] io_master_awaddr,
@@ -71,6 +76,7 @@ module ysyx_23060236(
 	output [31:0] io_slave_rdata,
 	output        io_slave_rlast,
 	output [3:0]  io_slave_rid     
+
 );
 
 	wire [31:0] pc;
@@ -78,7 +84,7 @@ module ysyx_23060236(
 	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [31:0] exu_pc;
+	wire [24:0] exu_pc; //与icache地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
@@ -89,10 +95,10 @@ module ysyx_23060236(
 
 	wire [31:0] inst;
 	wire [9:0]  opcode_type;
-	wire [4:0]  rs1;
-	wire [4:0]  rs2;
-	wire [4:0]  idu_rd;
-	wire [4:0]  exu_rd;
+	wire [3:0]  rs1;
+	wire [3:0]  rs2;
+	wire [3:0]  idu_rd;
+	wire [3:0]  exu_rd;
 	wire [2:0]  funct3;
 	wire        funct7_5;
 	wire [31:0] imm;
@@ -157,10 +163,10 @@ module ysyx_23060236(
 	wire        clint_rvalid;
 	wire        clint_rready;
 
-	wire [31:0] icache_araddr;
+	wire [24:0] icache_araddr; //与icache地址位宽一致
 	wire [31:0] icache_rdata;
 	wire        icache_hit;
-	wire [31:0] icache_awaddr;
+	wire [24:0] icache_awaddr; //与icache地址位宽一致
 	wire [31:0] icache_wdata;
 	wire        icache_wvalid;
 
@@ -397,8 +403,11 @@ module ysyx_23060236(
 		.wb_valid(wb_valid)
 	);
 
-	ysyx_23060236_RegisterFile #(5, 32) my_reg(
+	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
+`ifdef __ICARUS__
+		.return_value(return_value),
+`endif
 		.wdata(wb_val),
 		.waddr(exu_rd),
 		.rdata1(src1),
@@ -437,6 +446,7 @@ module ysyx_23060236(
 	assign io_slave_rid     = 0;
 
 `ifndef SYN
+`ifndef __ICARUS__
 import "DPI-C" function void add_total_inst();
 import "DPI-C" function void add_total_cycle();
 import "DPI-C" function void add_lsu_getdata();
@@ -464,6 +474,18 @@ import "DPI-C" function void program_end();
 		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
 		else if ((prog_end == 2) & wb_valid) program_end();
 	end
+`else
+	reg [2:0] prog_end; //1:id, 2:ex, 3:wb
+	always @(posedge clock) begin
+		if (reset) begin
+			prog_end <= 0;
+			sim_end <= 0;
+		end
+		else if ((inst == 32'h00100073) & (idu_valid & idu_ready)) prog_end <= 1;
+		else if ((prog_end == 1) & (exu_valid & exu_ready)) prog_end <= 2;
+		else if ((prog_end == 2) & wb_valid) sim_end <= 1;
+	end
+`endif
 `endif
 
 endmodule

@@ -31,7 +31,7 @@ module ysyx_23060236_clint(
 		.reset(reset),
 		.din(idle & ~arvalid | ~idle & rready),
 		.dout(idle),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 	ysyx_23060236_Reg #(64, 0) reg_mtime(
@@ -39,7 +39,7 @@ module ysyx_23060236_clint(
 		.reset(reset),
 		.din(mtime + 1),
 		.dout(mtime),
-		.wen(1)
+		.wen(1'b1)
 	);
 
 endmodule

@@ -1,9 +1,90 @@
+//`define WAVE_TRACE
+`ifndef __ICARUS__
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
 	  input int waddr, input int wdata, input byte wmask);
+`endif
+
+`ifdef __ICARUS__
+`timescale 1ns / 1ps
+module iverilog_tb;
+
+reg clock;
+reg reset;
+`ifndef NETLIST
+wire sim_end;
+wire [31:0] return_value;
+`endif
+
+initial begin
+	clock = 0;
+	forever #5 clock = ~clock;
+end
+
+initial begin
+	reset = 1;
+	#20;
+	reset = 0;
+`ifdef WAVE_TRACE
+	$dumpfile("iverilog_wave.fst");
+	$dumpvars(0, iverilog_tb);
+`endif
+	$display("Start simulation");
+`ifndef NETLIST
+	wait(sim_end == 1);
+	$display("Simulation ended at time %0t ns", $time);
+	if (return_value == 0) begin
+		$display("HIT GOOD TRAP");
+		$finish;
+	end
+	else begin
+		$display("HIT BAD TRAP");
+		$fatal;
+	end
+`endif
+end
+
+npc my_npc(
+	.clock(clock),
+	.reset(reset),
+`ifndef NETLIST
+	.return_value(return_value),
+	.sim_end(sim_end),
+`endif
+  .externalPins_gpio_out(),	
+  .externalPins_gpio_in(),	
+  .externalPins_gpio_seg_0(),	
+  .externalPins_gpio_seg_1(),	
+  .externalPins_gpio_seg_2(),	
+  .externalPins_gpio_seg_3(),	
+  .externalPins_gpio_seg_4(),	
+  .externalPins_gpio_seg_5(),	
+  .externalPins_gpio_seg_6(),	
+  .externalPins_gpio_seg_7(),	
+  .externalPins_ps2_clk(),	
+  .externalPins_ps2_data(),	
+  .externalPins_vga_r(),	
+  .externalPins_vga_g(),	
+  .externalPins_vga_b(),	
+  .externalPins_vga_hsync(),	
+  .externalPins_vga_vsync(),	
+  .externalPins_vga_valid(),	
+  .externalPins_uart_rx(),	
+  .externalPins_uart_tx()
+);
+
+endmodule
+`endif
+
 module npc(
 	input  clock,
 	input  reset,
+`ifdef __ICARUS__
+`ifndef NETLIST
+	output sim_end,
+	output [31:0] return_value,
+`endif
+`endif
 
   output [15:0] externalPins_gpio_out,	
   input  [15:0] externalPins_gpio_in,	
@@ -61,6 +142,14 @@ reg  [31:0] io_master_rdata;
 wire        io_master_rlast;
 wire [3:0]  io_master_rid;
 
+`ifdef __ICARUS__
+parameter MEM_SIZE = 2**27;
+reg  [7:0] memory [MEM_SIZE];
+integer i;
+initial begin
+	$readmemh(`MEM_FILE, memory);
+end
+`endif
 
 // write
 reg  [31:0] write_addr;
@@ -89,9 +178,24 @@ always @(posedge clock) begin
 		io_master_wready <= 1;
 
 // pmem_write & write_wstrb
+`ifndef __ICARUS__
 	if (io_master_wvalid & io_master_wready) begin
 		pmem_write(write_addr, io_master_wdata, {4'b0, io_master_wstrb});
 	end
+`else
+	if (io_master_wvalid & io_master_wready) begin
+		if (write_addr == 32'ha00003f8) begin
+			$write("%c", io_master_wdata[7:0]);
+			$fflush();
+		end
+		else begin
+			if (io_master_wstrb[0]) memory[{write_addr[26:2],2'b0}  ] <= io_master_wdata[7 :0 ];
+			if (io_master_wstrb[1]) memory[{write_addr[26:2],2'b0}+1] <= io_master_wdata[15:8 ];
+			if (io_master_wstrb[2]) memory[{write_addr[26:2],2'b0}+2] <= io_master_wdata[23:16];
+			if (io_master_wstrb[3]) memory[{write_addr[26:2],2'b0}+3] <= io_master_wdata[31:24];
+		end
+	end
+`endif
 
 // io_master_bvalid
 	if (reset) io_master_bvalid <= 0;
@@ -141,16 +245,37 @@ always @(posedge clock) begin
 		io_master_rvalid <= 1;
 
 // io_master_rdata
+`ifndef __ICARUS__
 	if (io_master_arvalid & io_master_arready)
 		io_master_rdata <= pmem_read(io_master_araddr);
 	else if (io_master_rvalid & io_master_rready & (read_len != 0))
 		io_master_rdata <= pmem_read(read_addr);
+`else
+	if (io_master_arvalid & io_master_arready) begin
+		io_master_rdata[7 :0 ] <= memory[{io_master_araddr[26:2],2'b0}  ];
+		io_master_rdata[15:8 ] <= memory[{io_master_araddr[26:2],2'b0}+1];
+		io_master_rdata[23:16] <= memory[{io_master_araddr[26:2],2'b0}+2];
+		io_master_rdata[31:24] <= memory[{io_master_araddr[26:2],2'b0}+3];
+	end
+	else if (io_master_rvalid & io_master_rready & (read_len != 0)) begin
+		io_master_rdata[7 :0 ] <= memory[{read_addr[26:2],2'b0}  ];
+		io_master_rdata[15:8 ] <= memory[{read_addr[26:2],2'b0}+1];
+		io_master_rdata[23:16] <= memory[{read_addr[26:2],2'b0}+2];
+		io_master_rdata[31:24] <= memory[{read_addr[26:2],2'b0}+3];
+	end
+`endif
 end
 
   ysyx_23060236 cpu (	
     .clock             (clock),
     .reset             (reset),
     .io_interrupt      (1'h0),
+`ifdef __ICARUS__
+`ifndef NETLIST
+		.sim_end(sim_end),
+		.return_value(return_value),
+`endif
+`endif
     .io_master_awready (io_master_awready),
     .io_master_awvalid (io_master_awvalid),
     .io_master_awid    (io_master_awid),

@@ -1,3 +1,5 @@
+STUID = ysyx_23060236
+
 PLATFORM = npc
 ISA = riscv32e
 ifeq ($(PLATFORM),ysyxsoc)
@@ -15,13 +17,17 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
 										--timescale "1ns/1ns" --no-timing --trace
 
-BUILD_DIR = ./build
+WORK_DIR = $(abspath .)
+BUILD_DIR = $(WORK_DIR)/build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
+ONE_VSRC = $(BUILD_DIR)/$(STUID).v
+IBIN = $(BUILD_DIR)/iverilog_sim
+IBIN_NETLIST = $(BUILD_DIR)/iverilog_sim_netlist
 
 CXX_INC_PATH = $(abspath ./include) $(INC_PATH)
-VER_INC_PATH += $(abspath ./vsrc)
+VER_INC_PATH += $(abspath ./vinclude)
 ifeq ($(PLATFORM),ysyxsoc)
 VER_INC_PATH += $(abspath ./vinclude/ysyxsoc)
 VER_INC_PATH += $(abspath ../ysyxSoC/perip/uart16550/rtl) $(abspath ../ysyxSoC/perip/spi/rtl)
@@ -105,3 +111,19 @@ CHECKFLAGS = --lint-only -Wall
 
 check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
+
+verilog:
+	@cat ./vinclude/ysyx_23060236_defines.v > $(ONE_VSRC)
+	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
+	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC)
+
+sim-iverilog: verilog
+	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
+	@iverilog -g2012 $(ONE_VSRC) ./simtop/npc.v -o $(IBIN) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\"
+	@vvp -n $(IBIN) -fst
+
+sim-iverilog-netlist:
+	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
+	@iverilog -g2012 $(CELLS) $(NETLIST) ./simtop/npc.v -o $(IBIN_NETLIST) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\" -DNETLIST
+	@vvp -n $(IBIN_NETLIST) -fst
+
