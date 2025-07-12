@@ -1,4 +1,4 @@
-From 1402d99db56939af1ccb00b13c33e672bac98506 Mon Sep 17 00:00:00 2001
+From ea886a396e5e3d3923d61119a4b73f3e84e90593 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E7=8E=8B=E5=AD=90=E5=8D=BF?= <wang_ph@sjtu.edu.cn>
 Date: Sat, 12 Jul 2025 18:47:07 +0800
 Subject: [PATCH] =?UTF-8?q?=E5=AE=8C=E6=88=90rtthread=E7=9B=B8=E5=85=B3?=
@@ -8,18 +8,18 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- bsp/abstract-machine/Makefile             |  5 +++-
+ bsp/abstract-machine/Makefile             |  3 +++
  bsp/abstract-machine/integrate-am-apps.py |  6 ++---
  bsp/abstract-machine/src/context.c        | 31 ++++++++++++++++++++---
  bsp/abstract-machine/src/libc.c           | 21 ++++++++++++---
  bsp/abstract-machine/src/uart.c           |  3 ++-
- 5 files changed, 53 insertions(+), 13 deletions(-)
+ 5 files changed, 52 insertions(+), 12 deletions(-)
 
 diff --git a/bsp/abstract-machine/Makefile b/bsp/abstract-machine/Makefile
-index cdd1f6723..489434eb1 100644
+index 8d70f310b..c775bb1da 100644
 --- a/bsp/abstract-machine/Makefile
 +++ b/bsp/abstract-machine/Makefile
-@@ -7,11 +7,14 @@ NAME = rtthread
+@@ -8,11 +8,14 @@ NAME = rtthread
  SRCS = $(shell find src -name "*.c")
  CFLAGS += -DHAVE_CCONFIG_H -D__RTTHREAD__
  CFLAGS += -Wno-nonnull-compare
@@ -27,23 +27,15 @@ index cdd1f6723..489434eb1 100644
  LDFLAGS += -T extra.ld
 +endif
  -include $(FILE_MK)
- -include am-apps.mk
+ -include $(AM_APPS_MK)
  include $(AM_HOME)/Makefile
  
 +
  $(RTCONFIG_H):
  	touch $@
  	scons --useconfig=.config
-@@ -30,6 +33,6 @@ menuconfig:
- 	$(MAKE) init
- 
- update:
--	python integrate-am-apps.py ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
-+	python3 integrate-am-apps.py ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
- 
- .PHONY: init menuconfig
 diff --git a/bsp/abstract-machine/integrate-am-apps.py b/bsp/abstract-machine/integrate-am-apps.py
-index b3f50a4af..eb394d3da 100644
+index 8968df387..ef5e4361b 100644
 --- a/bsp/abstract-machine/integrate-am-apps.py
 +++ b/bsp/abstract-machine/integrate-am-apps.py
 @@ -7,11 +7,11 @@ from pathlib import Path
