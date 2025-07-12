@@ -1,3 +1,4 @@
+//`define WAVE_TRACE
 `ifndef __ICARUS__
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
@@ -22,8 +23,10 @@ initial begin
 	reset = 1;
 	#20;
 	reset = 0;
+`ifdef WAVE_TRACE
 	$dumpfile("iverilog_wave.fst");
 	$dumpvars(0, iverilog_tb);
+`endif
 	$display("Start simulation");
 	wait(sim_end == 1);
 	$display("Simulation ended at time %0t ns", $time);
@@ -178,10 +181,10 @@ always @(posedge clock) begin
 			$fflush();
 		end
 		else begin
-			if (io_master_wstrb[0]) memory[write_addr[26:0]  ] <= io_master_wdata[7 :0 ];
-			if (io_master_wstrb[1]) memory[write_addr[26:0]+1] <= io_master_wdata[15:8 ];
-			if (io_master_wstrb[2]) memory[write_addr[26:0]+2] <= io_master_wdata[23:16];
-			if (io_master_wstrb[3]) memory[write_addr[26:0]+3] <= io_master_wdata[31:24];
+			if (io_master_wstrb[0]) memory[{write_addr[26:2],2'b0}  ] <= io_master_wdata[7 :0 ];
+			if (io_master_wstrb[1]) memory[{write_addr[26:2],2'b0}+1] <= io_master_wdata[15:8 ];
+			if (io_master_wstrb[2]) memory[{write_addr[26:2],2'b0}+2] <= io_master_wdata[23:16];
+			if (io_master_wstrb[3]) memory[{write_addr[26:2],2'b0}+3] <= io_master_wdata[31:24];
 		end
 	end
 `endif
@@ -241,16 +244,16 @@ always @(posedge clock) begin
 		io_master_rdata <= pmem_read(read_addr);
 `else
 	if (io_master_arvalid & io_master_arready) begin
-		io_master_rdata[7 :0 ] <= memory[io_master_araddr[26:0]  ];
-		io_master_rdata[15:8 ] <= memory[io_master_araddr[26:0]+1];
-		io_master_rdata[23:16] <= memory[io_master_araddr[26:0]+2];
-		io_master_rdata[31:24] <= memory[io_master_araddr[26:0]+3];
+		io_master_rdata[7 :0 ] <= memory[{io_master_araddr[26:2],2'b0}  ];
+		io_master_rdata[15:8 ] <= memory[{io_master_araddr[26:2],2'b0}+1];
+		io_master_rdata[23:16] <= memory[{io_master_araddr[26:2],2'b0}+2];
+		io_master_rdata[31:24] <= memory[{io_master_araddr[26:2],2'b0}+3];
 	end
 	else if (io_master_rvalid & io_master_rready & (read_len != 0)) begin
-		io_master_rdata[7 :0 ] <= memory[read_addr[26:0]  ];
-		io_master_rdata[15:8 ] <= memory[read_addr[26:0]+1];
-		io_master_rdata[23:16] <= memory[read_addr[26:0]+2];
-		io_master_rdata[31:24] <= memory[read_addr[26:0]+3];
+		io_master_rdata[7 :0 ] <= memory[{read_addr[26:2],2'b0}  ];
+		io_master_rdata[15:8 ] <= memory[{read_addr[26:2],2'b0}+1];
+		io_master_rdata[23:16] <= memory[{read_addr[26:2],2'b0}+2];
+		io_master_rdata[31:24] <= memory[{read_addr[26:2],2'b0}+3];
 	end
 `endif
 end
