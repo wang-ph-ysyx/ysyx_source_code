@@ -11,6 +11,7 @@ module iverilog_tb;
 reg clock;
 reg reset;
 wire sim_end;
+wire [31:0] return_value;
 
 initial begin
 	clock = 0;
@@ -26,12 +27,20 @@ initial begin
 	$display("Start simulation");
 	wait(sim_end == 1);
 	$display("Simulation ended at time %0t ns", $time);
-	$finish;
+	if (return_value == 0) begin
+		$display("HIT GOOD TRAP");
+		$finish;
+	end
+	else begin
+		$display("HIT BAD TRAP");
+		$fatal;
+	end
 end
 
 npc my_npc(
 	.clock(clock),
 	.reset(reset),
+	.return_value(return_value),
 	.sim_end(sim_end),
   .externalPins_gpio_out(),	
   .externalPins_gpio_in(),	
@@ -63,6 +72,7 @@ module npc(
 	input  reset,
 `ifdef __ICARUS__
 	output sim_end,
+	output [31:0] return_value,
 `endif
 
   output [15:0] externalPins_gpio_out,	
@@ -251,6 +261,7 @@ end
     .io_interrupt      (1'h0),
 `ifdef __ICARUS__
 		.sim_end(sim_end),
+		.return_value(return_value),
 `endif
     .io_master_awready (io_master_awready),
     .io_master_awvalid (io_master_awvalid),

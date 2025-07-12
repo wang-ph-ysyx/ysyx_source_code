@@ -6,6 +6,7 @@ module ysyx_23060236(
 
 `ifdef __ICARUS__
 	output reg sim_end,
+	output [31:0] return_value,
 `endif
 
 	input         io_master_awready,
@@ -404,6 +405,9 @@ module ysyx_23060236(
 
 	ysyx_23060236_RegisterFile #(4, 32) my_reg(
 		.clock(clock),
+`ifdef __ICARUS__
+		.return_value(return_value),
+`endif
 		.wdata(wb_val),
 		.waddr(exu_rd),
 		.rdata1(src1),

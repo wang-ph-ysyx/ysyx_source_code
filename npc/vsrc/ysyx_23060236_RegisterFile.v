@@ -1,6 +1,9 @@
 `include "ysyx_23060236_defines.v"
 module ysyx_23060236_RegisterFile(
   input clock,
+`ifdef __ICARUS__
+	output [DATA_WIDTH-1:0] return_value,
+`endif
   input [DATA_WIDTH-1:0] wdata,
   input [ADDR_WIDTH-1:0] waddr,
 	output [DATA_WIDTH-1:0] rdata1,
@@ -23,5 +26,8 @@ module ysyx_23060236_RegisterFile(
 
 	assign rdata1 = (raddr1 == 0) ? 0 : rf[raddr1];
 	assign rdata2 = (raddr2 == 0) ? 0 : rf[raddr2];
+`ifdef __ICARUS__
+	assign return_value = rf[10];
+`endif
 
 endmodule
