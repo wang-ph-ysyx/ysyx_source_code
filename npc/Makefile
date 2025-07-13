@@ -23,6 +23,7 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
 BIN = $(BUILD_DIR)/$(TOPNAME)
 ONE_VSRC = $(BUILD_DIR)/$(STUID).v
+ONE_VSRC_SIM = $(BUILD_DIR)/$(STUID)_sim.v
 IBIN = $(BUILD_DIR)/iverilog_sim
 IBIN_NETLIST = $(BUILD_DIR)/iverilog_sim_netlist
 
@@ -107,19 +108,23 @@ perf:
 	make -C ../am-kernels/benchmarks/microbench ARCH=riscv32e-ysyxsoc run mainargs=train
 
 CHECK_VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CHECKFLAGS = --lint-only -Wall
+CHECKFLAGS = --lint-only -Wall $(VER_INCFLAGS)
 
 check:
 	$(VERILATOR) $(CHECKFLAGS) $(CHECK_VSRCS)
 
 verilog:
-	@cat ./vinclude/ysyx_23060236_defines.v > $(ONE_VSRC)
+	@echo "\`define SYN"  > $(ONE_VSRC)
 	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
 	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC)
 
-sim-iverilog: verilog
+verilog_sim:
+	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v > $(ONE_VSRC_SIM)
+	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC_SIM)
+
+sim-iverilog: verilog_sim
 	@python3 ./utils/bin_to_hex.py $(IMG) $(BUILD_DIR)/memory.hex
-	@iverilog -g2012 $(ONE_VSRC) ./simtop/npc.v -o $(IBIN) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\"
+	@iverilog -g2012 $(ONE_VSRC_SIM) ./simtop/npc.v -o $(IBIN) -s iverilog_tb -DMEM_FILE=\"$(BUILD_DIR)/memory.hex\"
 	@vvp -n $(IBIN) -fst
 
 sim-iverilog-netlist:

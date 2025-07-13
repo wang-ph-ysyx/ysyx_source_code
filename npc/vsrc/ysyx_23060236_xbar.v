@@ -91,7 +91,7 @@ module ysyx_23060236_xbar(
 	assign soc_reading = ~clint_reading;
 	assign clint_reading = (lsu_araddr >= 32'h02000000) & (lsu_araddr < 32'h02010000);
 
-	ysyx_23060236_Reg #(1, 0) state_ifu_reading(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) state_ifu_reading(
 		.clock(clock),
 		.reset(reset),
 		.din(~ifu_reading & ~lsu_arvalid & ~lsu_reading & ifu_arvalid | ifu_reading & ~(ifu_rvalid & ifu_rready & ifu_rlast)),
@@ -99,7 +99,7 @@ module ysyx_23060236_xbar(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) state_lsu_reading(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) state_lsu_reading(
 		.clock(clock),
 		.reset(reset),
 		.din(~lsu_reading & ~ifu_reading & lsu_arvalid | lsu_reading & ~(lsu_rvalid & lsu_rready)),

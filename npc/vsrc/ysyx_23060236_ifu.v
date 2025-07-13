@@ -78,7 +78,7 @@ module ysyx_23060236_ifu(
 		end
 	end
 
-	ysyx_23060236_Reg #(32, `ENTRY_ADDR) pc_adder(
+	ysyx_23060236_Reg #(.WIDTH(32), .RESET_VAL(`ENTRY_ADDR)) pc_adder(
 		.clock(clock),
 		.reset(reset),
 		.din(pc_tmp),
@@ -86,7 +86,7 @@ module ysyx_23060236_ifu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 1) reg_icache_rvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(1)) reg_icache_rvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_over | icache_rvalid & ~ifu_ready),
@@ -94,7 +94,7 @@ module ysyx_23060236_ifu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_icache_wvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_rvalid & ifu_rready),
@@ -106,7 +106,7 @@ module ysyx_23060236_ifu(
 		icache_awaddr <= icache_awaddr_tmp;
 	end
 
-	ysyx_23060236_Reg #(1, 1) reg_ifu_rready(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(1)) reg_ifu_rready(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_rready & ~ifu_rvalid | icache_wvalid),
@@ -114,7 +114,7 @@ module ysyx_23060236_ifu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_ifu_arvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
@@ -130,7 +130,7 @@ module ysyx_23060236_ifu(
 		inst <= inst_tmp;
 	end
 
-	ysyx_23060236_Reg #(1, 0) reg_idu_valid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_idu_valid(
 		.clock(clock),
 		.reset(reset),
 		.din(ifu_over & ~jump_wrong & ~jump_wrong_state | idu_valid & ~idu_ready & ~jump_wrong),
@@ -138,7 +138,7 @@ module ysyx_23060236_ifu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_jump_wrong_state(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_jump_wrong_state(
 		.clock(clock),
 		.reset(reset),
 		.din(jump_wrong_state & ~ifu_over | ~jump_wrong_state & jump_wrong & ~ifu_over & ~idu_valid),

@@ -64,7 +64,7 @@ module ysyx_23060236_lsu(
 		end
 	end
 
-	ysyx_23060236_Reg #(1, 1) reg_exu_ready_tmp(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(1)) reg_exu_ready_tmp(
 		.clock(clock),
 		.reset(reset),
 		.din(exu_ready_tmp & ~(exu_ready & exu_valid) | lsu_over),
@@ -72,7 +72,7 @@ module ysyx_23060236_lsu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_wb_valid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_wb_valid(
 		.clock(clock),
 		.reset(reset),
 		.din(lsu_over),
@@ -100,7 +100,7 @@ module ysyx_23060236_lsu(
                        (funct3_reg == 3'b101) ? lsu_val_shift & 32'hffff :                                      //lhu
 											 32'b0;
 
-	ysyx_23060236_Reg #(1, 0) reg_lsu_arvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_lsu_arvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(lsu_arvalid & ~lsu_arready | ~lsu_arvalid & lsu_ren & exu_valid & exu_ready),
@@ -108,7 +108,7 @@ module ysyx_23060236_lsu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_lsu_awvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_lsu_awvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(lsu_awvalid & ~lsu_awready | ~lsu_awvalid & lsu_wen & exu_valid & exu_ready),
@@ -116,7 +116,7 @@ module ysyx_23060236_lsu(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_lsu_wvalid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_lsu_wvalid(
 		.clock(clock),
 		.reset(reset),
 		.din(lsu_wvalid & ~lsu_wready | ~lsu_wvalid & lsu_wen & exu_valid & exu_ready),

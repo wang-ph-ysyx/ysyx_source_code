@@ -65,7 +65,7 @@ module ysyx_23060236_idu(
 		(rs1_idu_conflict | rs2_idu_conflict)
 	);
 
-	ysyx_23060236_Reg #(1, 0) reg_exu_valid(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_exu_valid(
 		.clock(clock),
 		.reset(reset),
 		.din((exu_valid & ~exu_ready | idu_valid & idu_ready) & ~jump_wrong),

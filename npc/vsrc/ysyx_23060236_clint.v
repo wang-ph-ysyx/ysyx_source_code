@@ -26,7 +26,7 @@ module ysyx_23060236_clint(
 		if (arvalid & arready) high_data <= araddr[2];
 	end
 
-	ysyx_23060236_Reg #(1, 1) reg_idle(
+	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(1)) reg_idle(
 		.clock(clock),
 		.reset(reset),
 		.din(idle & ~arvalid | ~idle & rready),
@@ -34,7 +34,7 @@ module ysyx_23060236_clint(
 		.wen(1'b1)
 	);
 
-	ysyx_23060236_Reg #(64, 0) reg_mtime(
+	ysyx_23060236_Reg #(.WIDTH(64), .RESET_VAL(0)) reg_mtime(
 		.clock(clock),
 		.reset(reset),
 		.din(mtime + 1),
