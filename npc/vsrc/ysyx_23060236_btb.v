@@ -1,16 +1,16 @@
 `include "ysyx_23060236_defines.v"
 module ysyx_23060236_btb(
-	input clock,
-	input reset,
+	clock,
+	reset,
 
-	input  [DATA_LEN-1:0] btb_araddr,
-	output [DATA_LEN-1:0] btb_rdata,
-	input  [DATA_LEN-1:0] btb_araddr_exu,
-	output [DATA_LEN-1:0] btb_rdata_exu,
+	btb_araddr,
+	btb_rdata,
+	btb_araddr_exu,
+	btb_rdata_exu,
 
-	input  btb_wvalid,
-	input  [ADDR_LEN-1:0] btb_awaddr,
-	input  [DATA_LEN-1:0] btb_wdata
+	btb_wvalid,
+	btb_awaddr,
+	btb_wdata
 );
 
 	localparam ADDR_LEN   = 32 - 7;
@@ -18,6 +18,18 @@ module ysyx_23060236_btb(
 	localparam OFFSET_LEN = 2;
 	localparam INDEX_LEN  = 0;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
+
+	input clock;
+	input reset;
+
+	input  [DATA_LEN-1:0] btb_araddr;
+	output [DATA_LEN-1:0] btb_rdata;
+	input  [DATA_LEN-1:0] btb_araddr_exu;
+	output [DATA_LEN-1:0] btb_rdata_exu;
+
+	input  btb_wvalid;
+	input  [ADDR_LEN-1:0] btb_awaddr;
+	input  [DATA_LEN-1:0] btb_wdata;
 
 	reg [DATA_LEN-1:0] btb_data ;
 	reg [TAG_LEN-1:0]  btb_tag  ;

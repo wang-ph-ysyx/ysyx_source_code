@@ -37,8 +37,6 @@ VER_INC_PATH += $(abspath ./vinclude/npc)
 endif
 
 default:
-	rm -f $(BIN)
-	rm -f $(SRC_AUTO_BIND)
 	make $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -85,8 +83,6 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 all: default
 
 sim: 
-	rm -f $(BIN)
-	rm -f $(SRC_AUTO_BIND)
 	make $(BIN)
 	$(BIN) $(ARGS)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!

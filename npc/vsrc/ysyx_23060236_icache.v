@@ -1,17 +1,17 @@
 `include "ysyx_23060236_defines.v"
 module ysyx_23060236_icache(
-	input         clock,
-	input         reset,
+	clock,
+	reset,
 
-	input  [ADDR_LEN-1:0] icache_araddr,
-	output [DATA_LEN-1:0] icache_rdata,
-	output        icache_hit,  
+	icache_araddr,
+	icache_rdata,
+	icache_hit,  
 
-	input  [ADDR_LEN-1:0] icache_awaddr,
-	input  [DATA_LEN-1:0] icache_wdata,
-	input         icache_wvalid,
+	icache_awaddr,
+	icache_wdata,
+	icache_wvalid,
 
-	input         inst_fencei
+	inst_fencei
 );
 
 	// 此处ADDR_LEN减7与sdram地址范围相匹配
@@ -21,6 +21,19 @@ module ysyx_23060236_icache(
 	localparam INDEX_LEN  = 1;
 	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
 	localparam BLOCK_SIZE = 2**(OFFSET_LEN-2);
+
+	input         clock;
+	input         reset;
+
+	input  [ADDR_LEN-1:0] icache_araddr;
+	output [DATA_LEN-1:0] icache_rdata;
+	output        icache_hit;  
+
+	input  [ADDR_LEN-1:0] icache_awaddr;
+	input  [DATA_LEN-1:0] icache_wdata;
+	input         icache_wvalid;
+
+	input         inst_fencei;
 
 	reg [DATA_LEN-1:0]     icache_data [2**INDEX_LEN-1:0][BLOCK_SIZE-1:0];
 	reg [TAG_LEN-1:0]      icache_tag  [2**INDEX_LEN-1:0];

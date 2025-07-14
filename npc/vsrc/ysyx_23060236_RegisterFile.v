@@ -1,20 +1,33 @@
 `include "ysyx_23060236_defines.v"
 module ysyx_23060236_RegisterFile(
-  input clock,
+   clock,
 `ifdef __ICARUS__
-	output [DATA_WIDTH-1:0] return_value,
+	 return_value,
 `endif
-  input [DATA_WIDTH-1:0] wdata,
-  input [ADDR_WIDTH-1:0] waddr,
-	output [DATA_WIDTH-1:0] rdata1,
-	input [ADDR_WIDTH-1:0] raddr1,
-	output [DATA_WIDTH-1:0] rdata2,
-	input [ADDR_WIDTH-1:0] raddr2,
-  input wen,
-	input valid
+   wdata,
+   waddr,
+	 rdata1,
+	 raddr1,
+	 rdata2,
+	 raddr2,
+   wen,
+	 valid
 );
 	parameter ADDR_WIDTH = 4;
 	parameter DATA_WIDTH = 32;
+
+  input clock;
+`ifdef __ICARUS__
+	output [DATA_WIDTH-1:0] return_value;
+`endif
+  input [DATA_WIDTH-1:0] wdata;
+  input [ADDR_WIDTH-1:0] waddr;
+	output [DATA_WIDTH-1:0] rdata1;
+	input [ADDR_WIDTH-1:0] raddr1;
+	output [DATA_WIDTH-1:0] rdata2;
+	input [ADDR_WIDTH-1:0] raddr2;
+  input wen;
+	input valid;
 
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:1];
 
