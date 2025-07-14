@@ -34,6 +34,17 @@ module ysyx_23060236_exu(
 	input  exu_ready
 );
 
+	parameter INST_LUI   = 0;
+	parameter INST_AUIPC = 1;
+	parameter INST_JAL   = 2;
+	parameter INST_JALR  = 3;
+	parameter INST_BEQ   = 4;
+	parameter INST_LW    = 5;
+	parameter INST_SW    = 6;
+	parameter INST_ADDI  = 7;
+	parameter INST_ADD   = 8;
+	parameter INST_CSR   = 9;
+
 	wire [31:0] jump_addr_tmp;
 	wire [31:0] alu_val;
 	wire [31:0] snpc;
@@ -42,6 +53,28 @@ module ysyx_23060236_exu(
 	reg  need_btb;
 	reg  jump_wrong_tmp;
 	reg  inst_fencei_tmp;
+
+	wire [31:0] compare;
+	wire overflow;
+	wire less;
+	wire unequal;
+	wire uless;
+
+	wire [31:0] op_compare;
+	wire [31:0] op_sum;
+	wire [31:0] exu_jump;
+	wire op_overflow;
+	wire op_less;
+	wire op_uless;
+
+	wire [31:0] loperand;
+	wire [31:0] roperand;
+	wire [3:0]  operator;
+	wire [3:0]  operator1;
+	wire [3:0]  operator2;
+	wire [3:0]  operator3;
+	wire [62:0] val_sra;
+	wire jump_cond;
 
 	assign btb_wvalid = jump_wrong & need_btb;
 	assign snpc = pc + 4;
@@ -74,39 +107,6 @@ module ysyx_23060236_exu(
 	assign val = jal_enable ? snpc :
 							 csr_enable ? csr_val :
 							 alu_val;
-
-	parameter INST_LUI   = 0;
-	parameter INST_AUIPC = 1;
-	parameter INST_JAL   = 2;
-	parameter INST_JALR  = 3;
-	parameter INST_BEQ   = 4;
-	parameter INST_LW    = 5;
-	parameter INST_SW    = 6;
-	parameter INST_ADDI  = 7;
-	parameter INST_ADD   = 8;
-	parameter INST_CSR   = 9;
-
-	wire [31:0] compare;
-	wire overflow;
-	wire less;
-	wire unequal;
-	wire uless;
-
-	wire [31:0] op_compare;
-	wire [31:0] op_sum;
-	wire [31:0] exu_jump;
-	wire op_overflow;
-	wire op_less;
-	wire op_uless;
-
-	wire [31:0] loperand;
-	wire [31:0] roperand;
-	wire [3:0]  operator;
-	wire [3:0]  operator1;
-	wire [3:0]  operator2;
-	wire [3:0]  operator3;
-	wire [62:0] val_sra;
-	wire jump_cond;
 
 	//exu_val
 	assign loperand = (opcode_type[INST_AUIPC] | opcode_type[INST_JAL] | opcode_type[INST_BEQ]) ? pc : //auipc/jal/beq

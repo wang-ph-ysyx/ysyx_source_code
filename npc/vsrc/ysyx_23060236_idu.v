@@ -36,6 +36,24 @@ module ysyx_23060236_idu(
 	input  exu_ready
 );
 
+	parameter TYPE_R = 0;
+	parameter TYPE_I = 1;
+	parameter TYPE_S = 2;
+	parameter TYPE_B = 3;
+	parameter TYPE_U = 4;
+	parameter TYPE_J = 5; 
+
+	parameter INST_LUI   = 0;
+	parameter INST_AUIPC = 1;
+	parameter INST_JAL   = 2;
+	parameter INST_JALR  = 3;
+	parameter INST_BEQ   = 4;
+	parameter INST_LW    = 5;
+	parameter INST_SW    = 6;
+	parameter INST_ADDI  = 7;
+	parameter INST_ADD   = 8;
+	parameter INST_CSR   = 9;
+
 	wire [31:0] src1_tmp;
 	wire [31:0] src2_tmp;
 	wire reg_wen_tmp;
@@ -48,6 +66,17 @@ module ysyx_23060236_idu(
 	wire rs2_idu_conflict;
 	wire exu_rdnzero;
 	wire idu_rdnzero;
+
+	wire [9:0]  opcode_type_tmp;
+	wire [2:0]  funct3_tmp;
+	wire [6:0]  funct7_tmp;
+	wire [3:0]  rd_tmp;
+	wire [31:0] imm_tmp;
+	wire inst_fencei_tmp;
+	wire inst_ecall_tmp;
+	wire inst_mret_tmp;
+	wire [5:0] Type;
+	wire [4:0] opcode_5;
 
 	assign exu_rdnzero = (exu_rd != 0);
 	assign idu_rdnzero = (rd     != 0);
@@ -93,17 +122,6 @@ module ysyx_23060236_idu(
 		end
 	end
 
-	wire [9:0]  opcode_type_tmp;
-	wire [2:0]  funct3_tmp;
-	wire [6:0]  funct7_tmp;
-	wire [3:0]  rd_tmp;
-	wire [31:0] imm_tmp;
-	wire inst_fencei_tmp;
-	wire inst_ecall_tmp;
-	wire inst_mret_tmp;
-
-	wire [5:0] Type;
-	wire [4:0] opcode_5;
 	assign opcode_5       = in[6:2];
 	assign rs1            = in[18:15];
 	assign rs2            = in[23:20];
@@ -115,24 +133,6 @@ module ysyx_23060236_idu(
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
 	assign inst_fencei_tmp = (opcode_5 == 5'b00011);
-
-	parameter TYPE_R = 0;
-	parameter TYPE_I = 1;
-	parameter TYPE_S = 2;
-	parameter TYPE_B = 3;
-	parameter TYPE_U = 4;
-	parameter TYPE_J = 5; 
-
-	parameter INST_LUI   = 0;
-	parameter INST_AUIPC = 1;
-	parameter INST_JAL   = 2;
-	parameter INST_JALR  = 3;
-	parameter INST_BEQ   = 4;
-	parameter INST_LW    = 5;
-	parameter INST_SW    = 6;
-	parameter INST_ADDI  = 7;
-	parameter INST_ADD   = 8;
-	parameter INST_CSR   = 9;
 
 	assign opcode_type_tmp[INST_LUI  ] = (opcode_5 == 5'b01101);
 	assign opcode_type_tmp[INST_AUIPC] = (opcode_5 == 5'b00101);

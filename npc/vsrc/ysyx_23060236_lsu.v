@@ -45,6 +45,9 @@ module ysyx_23060236_lsu(
 	wire lsu_over;
 	wire exu_ready_tmp;
 
+	wire [31:0] lsu_val_tmp;
+	wire [31:0] lsu_val_shift;
+
 	assign exu_ready = exu_ready_tmp & ~jump_wrong;
 	assign lsu_over = exu_valid & exu_ready & ~lsu_ren & ~lsu_wen | lsu_rvalid & lsu_rready | lsu_bvalid & lsu_bready;
 	assign lsu_addr = wb_val;
@@ -79,9 +82,6 @@ module ysyx_23060236_lsu(
 		.dout(wb_valid),
 		.wen(1'b1)
 	);
-
-	wire [31:0] lsu_val_tmp;
-	wire [31:0] lsu_val_shift;
 
 	assign lsu_arsize = {1'b0, funct3_reg[1:0]};
 	assign lsu_awsize = {1'b0, funct3_reg[1:0]};
