@@ -1,0 +1,29 @@
+From 728e78edd7e1655ed88ab911e059842bdd43f429 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E7=8E=8B=E5=AD=90=E5=8D=BF?= <wang_ph@sjtu.edu.cn>
+Date: Tue, 15 Jul 2025 10:42:36 +0800
+Subject: [PATCH 2/2] =?UTF-8?q?=E4=BF=AE=E6=94=B9=E4=B8=B2=E5=8F=A3?=
+ =?UTF-8?q?=E4=BB=A5=E9=80=82=E5=BA=94=E5=A4=9A=E5=B9=B3=E5=8F=B0?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ bsp/abstract-machine/src/uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bsp/abstract-machine/src/uart.c b/bsp/abstract-machine/src/uart.c
+index 310e56cd1..f0eab9f71 100644
+--- a/bsp/abstract-machine/src/uart.c
++++ b/bsp/abstract-machine/src/uart.c
+@@ -39,7 +39,7 @@ static int _uart_putc(struct rt_serial_device *serial, char c) {
+ 
+ static int _uart_getc(struct rt_serial_device *serial) {
+   static const char *p = "help\ndate\nversion\nfree\nps\npwd\nls\nmemtrace\nmemcheck\nutest_list\n";
+-  return (*p != '\0' ? *(p ++) : -1/*io_read(AM_UART_RX).data*/);
++  return (*p != '\0' ? *(p ++) : (io_read(AM_UART_CONFIG).present ? io_read(AM_UART_RX).data : -1));
+ }
+ 
+ const struct rt_uart_ops _uart_ops = {
+-- 
+2.34.1
+
