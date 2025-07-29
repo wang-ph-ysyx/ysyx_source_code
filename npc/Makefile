@@ -111,11 +111,11 @@ check:
 
 verilog:
 	@echo "\`define SYN"  > $(ONE_VSRC)
-	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
+	@cat ./vinclude/ysyxsoc/ysyx_23060236_defines_platform.v >> $(ONE_VSRC)
 	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC)
 
 verilog_sim:
-	@cat ./vinclude/npc/ysyx_23060236_defines_platform.v > $(ONE_VSRC_SIM)
+	@cat ./vinclude/ysyxsoc/ysyx_23060236_defines_platform.v > $(ONE_VSRC_SIM)
 	@cat ./vsrc/*.v | grep -v "include " | grep -v "define" >> $(ONE_VSRC_SIM)
 
 sim-iverilog: verilog_sim
