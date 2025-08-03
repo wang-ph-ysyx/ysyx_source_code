@@ -1,7 +1,7 @@
 From 4c0e4e420e0e8599e030eff3e2eb2776c9bd3504 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E7=8E=8B=E5=AD=90=E5=8D=BF?= <wang_ph@sjtu.edu.cn>
 Date: Thu, 17 Jul 2025 11:40:40 +0800
-Subject: [PATCH 3/3] =?UTF-8?q?=E8=AE=A9rtthread=E8=BF=90=E8=A1=8C?=
+Subject: [PATCH 3/4] =?UTF-8?q?=E8=AE=A9rtthread=E8=BF=90=E8=A1=8C?=
  =?UTF-8?q?=E5=AE=8C=E5=86=85=E7=BD=AE=E5=91=BD=E4=BB=A4=E5=90=8E=E7=BB=93?=
  =?UTF-8?q?=E6=9D=9F?=
 MIME-Version: 1.0
