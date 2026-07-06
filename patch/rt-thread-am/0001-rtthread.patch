@@ -1,8 +1,8 @@
 From 9e72b6422b0f4f1385a74959b958a0a6e3570ed9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E7=8E=8B=E5=AD=90=E5=8D=BF?= <wang_ph@sjtu.edu.cn>
 Date: Mon, 6 Jul 2026 22:44:19 +0800
-Subject: [PATCH] =?UTF-8?q?=E5=AE=8C=E6=88=90rtthread=E7=9B=B8=E5=85=B3?=
- =?UTF-8?q?=E5=86=85=E5=AE=B9?=
+Subject: [PATCH 1/2] =?UTF-8?q?=E5=AE=8C=E6=88=90rtthread=E7=9B=B8?=
+ =?UTF-8?q?=E5=85=B3=E5=86=85=E5=AE=B9?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
