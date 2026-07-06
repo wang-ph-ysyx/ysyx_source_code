@@ -132,7 +132,7 @@ module ysyx_23060236_idu(
 
 	assign inst_ecall_tmp  = (in == 32'h00000073);
 	assign inst_mret_tmp   = (in == 32'h30200073);
-	assign inst_fencei_tmp = (opcode_5 == 5'b00011);
+	assign inst_fencei_tmp = (opcode_5 == 5'b00011) & (funct3_tmp == 3'b001);
 
 	assign opcode_type_tmp[INST_LUI  ] = (opcode_5 == 5'b01101);
 	assign opcode_type_tmp[INST_AUIPC] = (opcode_5 == 5'b00101);

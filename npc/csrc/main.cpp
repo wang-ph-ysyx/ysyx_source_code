@@ -12,6 +12,7 @@
 extern TOP_NAME *top;
 extern VerilatedVcdC *tfp;
 extern VerilatedContext *contextp;
+extern int return_value;
 
 int start = 0;
 void nvboard_bind_all_pins(TOP_NAME* top);
@@ -44,5 +45,5 @@ int main(int argc, char **argv) {
 
 	delete top;
 	delete contextp;
-	return 0;
+	return return_value;
 }
