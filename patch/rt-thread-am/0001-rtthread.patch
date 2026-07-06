@@ -1,8 +1,8 @@
-From ea886a396e5e3d3923d61119a4b73f3e84e90593 Mon Sep 17 00:00:00 2001
+From 9e72b6422b0f4f1385a74959b958a0a6e3570ed9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E7=8E=8B=E5=AD=90=E5=8D=BF?= <wang_ph@sjtu.edu.cn>
-Date: Sat, 12 Jul 2025 18:47:07 +0800
-Subject: [PATCH 1/5] =?UTF-8?q?=E5=AE=8C=E6=88=90rtthread=E7=9B=B8?=
- =?UTF-8?q?=E5=85=B3=E5=86=85=E5=AE=B9?=
+Date: Mon, 6 Jul 2026 22:44:19 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=AE=8C=E6=88=90rtthread=E7=9B=B8=E5=85=B3?=
+ =?UTF-8?q?=E5=86=85=E5=AE=B9?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -11,9 +11,8 @@ Content-Transfer-Encoding: 8bit
  bsp/abstract-machine/Makefile             |  3 +++
  bsp/abstract-machine/integrate-am-apps.py |  6 ++---
  bsp/abstract-machine/src/context.c        | 31 ++++++++++++++++++++---
- bsp/abstract-machine/src/libc.c           | 21 ++++++++++++---
  bsp/abstract-machine/src/uart.c           |  3 ++-
- 5 files changed, 52 insertions(+), 12 deletions(-)
+ 4 files changed, 35 insertions(+), 8 deletions(-)
 
 diff --git a/bsp/abstract-machine/Makefile b/bsp/abstract-machine/Makefile
 index 8d70f310b..c775bb1da 100644
@@ -111,49 +110,6 @@ index ee38829ae..79b9fe40e 100644
 +	packed_args[1] = parameter;
 +	packed_args[2] = texit;
 +	return (rt_uint8_t *)cp;
- }
-diff --git a/bsp/abstract-machine/src/libc.c b/bsp/abstract-machine/src/libc.c
-index 696a72da7..7310ae8a4 100644
---- a/bsp/abstract-machine/src/libc.c
-+++ b/bsp/abstract-machine/src/libc.c
-@@ -2,11 +2,22 @@
- #include <rtthread.h>
- 
- char *strchr(const char *s, int c) {
--  assert(0);
-+	int i = 0;
-+  for ( ; s[i] != '\0'; ++i) {
-+		if ((int)s[i] == c) return (char *)s + i;
-+	}
-+	if (c == (int)'\0') return (char *)s + i;
-+	return NULL;
- }
- 
- char *strrchr(const char *s, int c) {
--  assert(0);
-+	char *res = NULL;
-+	int i = 0;
-+  for ( ; s[i] != '\0'; ++i) {
-+		if ((int)s[i] == c) res = (char *)s + i;
-+	}
-+	if (c == (int)'\0') return (char *)s + i;
-+	return res;
- }
- 
- char *strstr(const char *haystack, const char *needle) {
-@@ -14,9 +25,11 @@ char *strstr(const char *haystack, const char *needle) {
- }
- 
- long strtol(const char *restrict nptr, char **restrict endptr, int base) {
--  assert(0);
-+  //assert(0);
-+	return 0;
- }
- 
- char *strncat(char *restrict dst, const char *restrict src, size_t sz) {
--  assert(0);
-+  //assert(0);
-+	return NULL;
  }
 diff --git a/bsp/abstract-machine/src/uart.c b/bsp/abstract-machine/src/uart.c
 index e4eb86689..310e56cd1 100644
