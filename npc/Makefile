@@ -15,7 +15,7 @@ INC_PATH ?=
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
-										--timescale "1ns/1ns" --no-timing --trace
+										--timescale "1ns/1ns" --no-timing --trace-fst
 
 WORK_DIR = $(abspath .)
 BUILD_DIR = $(WORK_DIR)/build
