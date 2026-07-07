@@ -35,9 +35,10 @@ SECTIONS {
 		*(.srodata.*)
   } > sdram AT> flash 
 
-  .data : {
+  .data.extra : {
     /* section information for finsh shell */
     . = ALIGN(8);
+    _data_extra_vma_start = .;
 		_data_start = .;
     __fsymtab_start = .;
     KEEP(*(FSymTab))
@@ -64,15 +65,21 @@ SECTIONS {
     *(__am_apps.data*)
     *(__am_apps.sdata*)
     __am_apps_data_end = .;
+    _data_extra_vma_end = .;
     . = ALIGN(8);
-
-    *(.data.*)
-    . = ALIGN(8);
-    *(.sdata.*)
   } > sdram AT> flash
-	data_load_start = LOADADDR(.data);
 
-  .bss : {
+  .data : {
+		. = ALIGN(8);
+		_data_section_vma = .;
+    *(.data.*)
+		. = ALIGN(8);
+		*(.sdata.*)
+  } > sdram AT> flash 
+data_extra_load_start = LOADADDR(.data.extra);
+data_load_start = LOADADDR(.data);
+
+  .bss.extra : {
     . = ALIGN(8);
 		_bss_start = .;
     __am_apps_bss_start = .;
@@ -81,8 +88,10 @@ SECTIONS {
     *(__am_apps.scommon*)
     __am_apps_bss_end = .;
     . = ALIGN(8);
+  } > sdram 
 
-    . = ALIGN(0x8);
+  .bss : {
+		. = ALIGN(0x8);
     *(.bss*)
     *(.sbss*)
     *(.scommon)
