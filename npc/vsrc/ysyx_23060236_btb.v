@@ -64,3 +64,40 @@ module ysyx_23060236_btb(
 	end
 
 endmodule
+
+module ysyx_23060236_btb_blank(
+	clock,
+	reset,
+
+	btb_araddr,
+	btb_rdata,
+	btb_araddr_exu,
+	btb_rdata_exu,
+
+	btb_wvalid,
+	btb_awaddr,
+	btb_wdata
+);
+
+	localparam ADDR_LEN   = 32 - 16;
+	localparam DATA_LEN   = 32;
+	localparam OFFSET_LEN = 2;
+	localparam INDEX_LEN  = 0;
+	localparam TAG_LEN    = ADDR_LEN - OFFSET_LEN - INDEX_LEN;
+
+	input clock;
+	input reset;
+
+	input  [DATA_LEN-1:0] btb_araddr;
+	output [DATA_LEN-1:0] btb_rdata;
+	input  [DATA_LEN-1:0] btb_araddr_exu;
+	output [DATA_LEN-1:0] btb_rdata_exu;
+
+	input  btb_wvalid;
+	input  [ADDR_LEN-1:0] btb_awaddr;
+	input  [DATA_LEN-1:0] btb_wdata;
+
+	assign btb_rdata     = btb_araddr + 4;
+	assign btb_rdata_exu = btb_araddr_exu + 4;
+
+endmodule

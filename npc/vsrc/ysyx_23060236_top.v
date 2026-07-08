@@ -264,7 +264,7 @@ module ysyx_23060236(
 		.inst_fencei(inst_fencei)
 	);
 
-	ysyx_23060236_btb my_btb(
+	ysyx_23060236_btb_blank my_btb(
 		.clock(clock),
 		.reset(reset),
 		.btb_araddr(pc),
