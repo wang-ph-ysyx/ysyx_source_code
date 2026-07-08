@@ -14,8 +14,8 @@ module ysyx_23060236_icache(
 	inst_fencei
 );
 
-	// 此处ADDR_LEN减7与sdram地址范围相匹配
-	localparam ADDR_LEN   = 32 - 7;
+	// 此处ADDR_LEN减7与sdram地址范围相匹配(已去除)
+	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 5;
 	localparam INDEX_LEN  = 1;

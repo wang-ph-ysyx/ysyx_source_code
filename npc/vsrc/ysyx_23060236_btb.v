@@ -13,7 +13,7 @@ module ysyx_23060236_btb(
 	btb_wdata
 );
 
-	localparam ADDR_LEN   = 32 - 7;
+	localparam ADDR_LEN   = 32;
 	localparam DATA_LEN   = 32;
 	localparam OFFSET_LEN = 2;
 	localparam INDEX_LEN  = 0;
