@@ -18,7 +18,7 @@ module ysyx_23060236_exu(
 	input  inst_fencei,
 
 	output reg [3:0]  rd_next,
-	output reg [31:0] pc_next, // 与btb地址位宽一致
+	output reg [15:0] pc_next, // 与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
 	output jump_wrong,
@@ -73,7 +73,7 @@ module ysyx_23060236_exu(
 	wire [3:0]  operator1;
 	wire [3:0]  operator2;
 	wire [3:0]  operator3;
-	wire [62:0] val_sra;
+	wire [31:0] val_sra;
 	wire jump_cond;
 
 	assign btb_wvalid = jump_wrong & need_btb;
@@ -90,7 +90,7 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			jump_addr       <= jump_addr_tmp;
 			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
-			pc_next         <= pc[31:0]; // 与btb地址位宽一致
+			pc_next         <= pc[15:0]; // 与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
 			inst_fencei_tmp <= inst_fencei;
 		end
@@ -145,14 +145,14 @@ module ysyx_23060236_exu(
 	assign op_sum  = loperand + roperand;
 	assign op_less = {(loperand[31] & ~roperand[31]) | ~(loperand[31] ^ roperand[31]) & op_compare[31]};
 	assign op_uless = op_overflow;
-	assign val_sra = {{31{loperand[31]}}, loperand} >> roperand[4:0];
+	assign val_sra = $signed(loperand) >>> roperand[4:0];
 	assign alu_val = (operator == OP_ADD  ) ? op_sum : 
 									 (operator == OP_SUB  ) ? op_compare : 
 									 (operator == OP_AND  ) ? (loperand & roperand) : 
 									 (operator == OP_XOR  ) ? (loperand ^ roperand) :
 									 (operator == OP_OR   ) ? (loperand | roperand) : 
 									 (operator == OP_SRL  ) ? (loperand >> roperand[4:0]) : 
-									 (operator == OP_SRA  ) ? val_sra[31:0] :
+									 (operator == OP_SRA  ) ? val_sra :
 									 (operator == OP_SLL  ) ? (loperand << roperand[4:0]) : 
 									 (operator == OP_LESS ) ? {31'b0, op_less} : 
 									 (operator == OP_ULESS) ? {31'b0, op_uless} : 

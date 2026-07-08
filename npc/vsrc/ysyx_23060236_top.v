@@ -84,7 +84,7 @@ module ysyx_23060236(
 	wire [31:0] exu_dnpc;
 	wire [31:0] ifu_pc;
 	wire [31:0] idu_pc;
-	wire [31:0] exu_pc; //与icache地址位宽一致
+	wire [15:0] exu_pc; //与btb地址位宽一致
 	wire [31:0] jump_addr;
 	wire idu_valid;
 	wire idu_ready;
