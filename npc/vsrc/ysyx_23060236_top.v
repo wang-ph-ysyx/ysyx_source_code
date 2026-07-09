@@ -112,6 +112,7 @@ module ysyx_23060236(
 	wire csr_enable;
 	wire inst_ecall;
 	wire inst_mret;
+	wire inst_fencei_idu;
 	wire inst_fencei;
 	wire btb_wvalid;
 
@@ -331,7 +332,7 @@ module ysyx_23060236(
 		.reg_wen(idu_reg_wen),
 		.inst_ecall(inst_ecall),
 		.inst_mret(inst_mret),
-		.inst_fencei(inst_fencei),
+		.inst_fencei_idu(inst_fencei_idu),
 		.idu_valid(idu_valid),
 		.idu_ready(idu_ready),
 		.exu_valid(exu_valid),
@@ -354,6 +355,7 @@ module ysyx_23060236(
 		.csr_jump(csr_jump),
 		.csr_val(csr_val),
 		.inst_fencei(inst_fencei),
+		.inst_fencei_idu(inst_fencei_idu),
 		.rd_next(exu_rd),
 		.pc_next(exu_pc),
 		.reg_wen_next(exu_reg_wen),

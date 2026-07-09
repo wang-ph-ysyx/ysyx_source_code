@@ -15,12 +15,13 @@ module ysyx_23060236_exu(
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 	input  [31:0] csr_val,
-	input  inst_fencei,
+	input  inst_fencei_idu,
 
 	output reg [3:0]  rd_next,
 	output reg [15:0] pc_next, // 与btb地址位宽一致
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
+	output reg inst_fencei,
 	output jump_wrong,
 	output btb_wvalid,
 
@@ -52,7 +53,6 @@ module ysyx_23060236_exu(
 	wire jal_enable;
 	reg  need_btb;
 	reg  jump_wrong_tmp;
-	reg  inst_fencei_tmp;
 
 	wire [31:0] compare;
 	wire overflow;
@@ -82,7 +82,7 @@ module ysyx_23060236_exu(
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
 	assign lsu_wen = opcode_type[INST_SW];
-	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
+	assign jump_wrong = inst_fencei | jump_wrong_tmp;
 
 	always @(posedge clock) begin
 		if (exu_valid & exu_ready) begin
@@ -92,11 +92,11 @@ module ysyx_23060236_exu(
 			jump_wrong_tmp  <= (jump_addr_tmp != dnpc);
 			pc_next         <= pc[15:0]; // 与btb地址位宽一致
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
-			inst_fencei_tmp <= inst_fencei;
+			inst_fencei     <= inst_fencei_idu;
 		end
 		else begin
 			jump_wrong_tmp  <= 0;
-			inst_fencei_tmp <= 0;
+			inst_fencei <= 0;
 		end
 	end
 

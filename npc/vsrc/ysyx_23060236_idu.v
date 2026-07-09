@@ -26,7 +26,7 @@ module ysyx_23060236_idu(
 	output reg [31:0] imm,
 	output reg funct7_5,
 	output reg reg_wen,
-	output reg inst_fencei,
+	output reg inst_fencei_idu,
 	output reg inst_ecall,
 	output reg inst_mret,
 
@@ -104,7 +104,7 @@ module ysyx_23060236_idu(
 
 	always @(posedge clock) begin
 		if (reset) begin
-			inst_fencei <= 1'b0;
+			inst_fencei_idu <= 1'b0;
 		end
 		else if (idu_valid & idu_ready) begin
 			opcode_type <= opcode_type_tmp;
@@ -113,7 +113,7 @@ module ysyx_23060236_idu(
 			rd          <= rd_tmp;
 			imm         <= imm_tmp;
 			reg_wen     <= reg_wen_tmp;
-			inst_fencei <= inst_fencei_tmp;
+			inst_fencei_idu <= inst_fencei_tmp;
 			inst_ecall  <= inst_ecall_tmp;
 			inst_mret   <= inst_mret_tmp;
 			pc_next     <= pc;

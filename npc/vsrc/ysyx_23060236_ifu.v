@@ -48,25 +48,28 @@ module ysyx_23060236_ifu(
 	reg last;
 	wire jump_wrong_state;
 	wire [31:0] pc_tmp;
+	wire is_sram;
+
+	assign is_sram = (pc[31:24] == 8'h0f);
 
 	assign icache_araddr = pc[31:0]; //与icache地址位宽一致
-	assign ifu_araddr    = {pc[31:5], 5'b0}; //与icache的块大小一致
+	assign ifu_araddr    = is_sram ? pc : {pc[31:5], 5'b0}; //与icache的块大小一致
 	assign ifu_arburst   = 2'b01;
-	assign ifu_arlen     = 4'b0111; //与icache的块大小一致
+	assign ifu_arlen     = is_sram ? 4'b0000 : 4'b0111; //与icache的块大小一致
 	//与icache的块大小一致
-	assign inst_tmp = (ifu_rvalid & ifu_rready & (pc[4:2] == icache_awaddr[4:2])) ? ifu_rdata : 
-		                (icache_rvalid & icache_hit & ifu_ready) ? icache_rdata : 
+	assign inst_tmp = (ifu_rvalid & ifu_rready & (is_sram | (pc[4:2] == icache_awaddr[4:2]))) ? ifu_rdata :
+		                (~is_sram & icache_rvalid & icache_hit & ifu_ready) ? icache_rdata :
 										inst;
-	assign ifu_over = (icache_rvalid & icache_hit & ifu_ready | icache_wvalid & last);
+	assign ifu_over = (~is_sram & icache_rvalid & icache_hit & ifu_ready) | (icache_wvalid & last) | (is_sram & ifu_rvalid & ifu_rready);
 	assign ifu_valid = idu_valid & idu_ready | (jump_wrong | jump_wrong_state) & (idu_valid | ifu_over);
 	assign ifu_ready = ~idu_valid | idu_ready;
 	//与icache的块大小一致
-	assign icache_awaddr_tmp = (icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:5], 5'b0} : 
-														 (icache_wvalid & ~last) ? (icache_awaddr + 4) : 
+	assign icache_awaddr_tmp = (~is_sram & icache_rvalid & ~icache_hit & ifu_ready) ? {pc[31:5], 5'b0} :
+														 (~is_sram & icache_wvalid & ~last) ? (icache_awaddr + 4) :
 														 icache_awaddr;
-	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr : 
-									ifu_over ? dnpc : 
-									pc;
+	assign pc_tmp = ((jump_wrong | jump_wrong_state) & (idu_valid | ifu_over)) ? jump_addr :
+										ifu_over ? dnpc :
+										pc;
 
 	always @(posedge clock) begin
 		if (ifu_rvalid & ifu_rready) last <= ifu_rlast;
@@ -97,7 +100,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_icache_wvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rvalid & ifu_rready),
+		.din(~is_sram & ifu_rvalid & ifu_rready),
 		.dout(icache_wvalid),
 		.wen(1'b1)
 	);
@@ -109,7 +112,7 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(1)) reg_ifu_rready(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_rready & ~ifu_rvalid | icache_wvalid),
+		.din(ifu_rready & ~ifu_rvalid | icache_wvalid | (is_sram & ifu_over)),
 		.dout(ifu_rready),
 		.wen(1'b1)
 	);
@@ -117,13 +120,13 @@ module ysyx_23060236_ifu(
 	ysyx_23060236_Reg #(.WIDTH(1), .RESET_VAL(0)) reg_ifu_arvalid(
 		.clock(clock),
 		.reset(reset),
-		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ~icache_hit & ifu_ready),
+		.din(ifu_arvalid & ~ifu_arready | ~ifu_arvalid & icache_rvalid & ifu_ready & (is_sram | ~icache_hit)),
 		.dout(ifu_arvalid),
 		.wen(1'b1)
 	);
 
 	always @(posedge clock) begin
-		if (ifu_rvalid & ifu_rready) icache_wdata <= ifu_rdata;
+		if (~is_sram & ifu_rvalid & ifu_rready) icache_wdata <= ifu_rdata;
 	end
 
 	always @(posedge clock) begin
