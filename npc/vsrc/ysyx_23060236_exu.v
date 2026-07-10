@@ -16,13 +16,14 @@ module ysyx_23060236_exu(
 	input  csr_jump_en,
 	input  [31:0] csr_jump,
 	input  [31:0] csr_val,
-	input  inst_fencei,
+	input  inst_fencei_idu,
 
 	output reg [2:0]  funct3_reg,
 	output reg [4:0]  rd_next,
 	output reg [31:0] pc_next,
 	output reg reg_wen_next,
 	output reg [31:0] jump_addr,
+	output reg inst_fencei,
 	output jump_wrong,
 	output btb_wvalid,
 
@@ -63,7 +64,6 @@ module ysyx_23060236_exu(
 	wire div_outvalid;
 	reg  need_btb;
 	reg  jump_wrong_tmp;
-	reg  inst_fencei_tmp;
 	reg  exu_ready_reg;
 	wire handshake;
 
@@ -78,7 +78,7 @@ module ysyx_23060236_exu(
 	assign jal_enable = opcode_type[INST_JAL] | opcode_type[INST_JALR];
 	assign lsu_ren = opcode_type[INST_LW];
 	assign lsu_wen = opcode_type[INST_SW];
-	assign jump_wrong = inst_fencei_tmp | jump_wrong_tmp;
+	assign jump_wrong = inst_fencei | jump_wrong_tmp;
 	assign exu_ready = exu_ready_reg & ~jump_wrong;
 	assign muldiv_val = mul_outvalid ? mul_val : 
 											div_outvalid ? div_val : 
@@ -105,10 +105,10 @@ module ysyx_23060236_exu(
 			reg_wen_next    <= reg_wen;
 			pc_next         <= pc[31:0];
 			need_btb        <= opcode_type[INST_BEQ] & imm[31] | opcode_type[INST_JAL];
-			inst_fencei_tmp <= inst_fencei;
+			inst_fencei     <= inst_fencei_idu;
 		end
 		else begin
-			inst_fencei_tmp <= 0;
+			inst_fencei <= 0;
 		end
 
 		if (exu_valid & exu_ready) begin

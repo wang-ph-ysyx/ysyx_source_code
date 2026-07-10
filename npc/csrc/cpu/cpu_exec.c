@@ -1,21 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "verilated.h"
-#include <memory.h>
-#include <config.h>
-#include <nvboard.h>
-#include "verilated_fst_c.h"
-
-#if defined(__PLATFORM_ysyxsoc_)
-#include <VysyxSoCFull___024root.h>
-#include <VysyxSoCFull.h>
-#define signal(s) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
-#elif defined(__PLATFORM_npc_)
-#include <Vnpc___024root.h>
-#include <Vnpc.h>
-#define signal(s) top->rootp->npc__DOT__cpu__DOT__##s
-#endif
+#include <common.h>
 
 #define TOTAL_COUNTER(_) \
 	_(total_cycle) _(total_inst)
@@ -42,6 +25,7 @@
 TOP_NAME *top = NULL;
 VerilatedFstC *tfp = NULL;
 VerilatedContext *contextp = NULL;
+int return_value;
 int trigger_difftest = 0;
 extern int wave_trace;
 
@@ -108,9 +92,9 @@ static void one_cycle() {
 #endif
 }
 
-void reset() {
+void reset(int cycle) {
 	top->reset = 1;
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < cycle; ++i)
 		one_cycle();
 	top->reset = 0;
 }
@@ -146,6 +130,7 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 	if (!inst_ebreak) return;
+	return_value = signal(my_reg__DOT__rf[9]);
 	if (signal(my_reg__DOT__rf[9]))
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");

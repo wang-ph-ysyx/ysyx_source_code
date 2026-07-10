@@ -1,22 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
-#include "verilated.h"
-
-#if defined(__PLATFORM_ysyxsoc_)
-#include <VysyxSoCFull___024root.h>
-#include <VysyxSoCFull.h>
-#define signal(s) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
-#elif defined(__PLATFORM_npc_)
-#include <Vnpc___024root.h>
-#include <Vnpc.h>
-#define signal(s) top->rootp->npc__DOT__cpu__DOT__##s
-#endif
-
-#if defined(__ISA_riscv32_)
-#define TOTAL_REGS 32
-#elif defined(__ISA_riscv32e_)
-#define TOTAL_REGS 16
-#endif
+#include <common.h>
 
 extern TOP_NAME* top;
 
@@ -31,7 +13,7 @@ void reg_display() {
 	uint32_t pc = signal(ifu_pc);
 	printf("pc\t%#x\t%d\n", pc, pc);
 	for (int i = 1; i < TOTAL_REGS; ++i) {
-		uint32_t reg_val = signal(my_reg__DOT__rf[i-1]);
+		uint32_t reg_val = reg(i-1);
 		printf("%2d:%s\t%#x\t%d\n", i, regs[i], reg_val, reg_val);
 	}
 }

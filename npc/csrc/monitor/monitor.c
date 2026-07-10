@@ -1,9 +1,6 @@
+#include <common.h>
 #include <getopt.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <assert.h>
-#include <memory.h>
-#include <config.h>
 
 void init_difftest(char *ref_so_file, long immg_size, int port);
 

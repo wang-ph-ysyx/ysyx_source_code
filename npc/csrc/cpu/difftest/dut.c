@@ -1,26 +1,5 @@
 #include <dlfcn.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <memory.h>
-#include <assert.h>
-#include <config.h>
-
-#if defined(__PLATFORM_ysyxsoc_)
-#include <VysyxSoCFull___024root.h>
-#include <VysyxSoCFull.h>
-#define signal(s) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##s
-#elif defined(__PLATFORM_npc_)
-#include <Vnpc___024root.h>
-#include <Vnpc.h>
-#define signal(s) top->rootp->npc__DOT__cpu__DOT__##s
-#endif
-
-#if defined(__ISA_riscv32_)
-#define TOTAL_REG 32
-#elif defined(__ISA_riscv32e_)
-#define TOTAL_REG 16
-#endif
+#include <common.h>
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 extern TOP_NAME* top;
@@ -63,7 +42,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 #elif defined(__PLATFORM_ysyxsoc_)
   ref_difftest_memcpy(FLASH_BASE, guest2host_flash(0), img_size, DIFFTEST_TO_REF);
 #endif
-  ref_difftest_regcpy(&signal(my_reg__DOT__rf[0]), &signal(pc), DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&reg(0), &signal(pc), DIFFTEST_TO_REF);
 }
 
 void print_difftest_reg (int pc, int i) {
@@ -76,7 +55,7 @@ void print_difftest_reg (int pc, int i) {
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 	for (int i = 0; i < TOTAL_REG - 1; ++i) {
-		if (ref[i] != signal(my_reg__DOT__rf[i])) {
+		if (ref[i] != reg(i)) {
 			trigger_difftest = 1;
 			print_difftest_reg(0, i);
 		}
@@ -93,7 +72,7 @@ void difftest_step() {
 	uint32_t ref_pc;
 
 	if (is_skip_ref) {
-		ref_difftest_regcpy(&signal(my_reg__DOT__rf[0]), &signal(exu_pc), DIFFTEST_TO_REF);
+		ref_difftest_regcpy(&reg(0), &signal(exu_pc), DIFFTEST_TO_REF);
 		is_skip_ref = false;
 		return;
 	}

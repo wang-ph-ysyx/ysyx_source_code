@@ -34,8 +34,18 @@ _ssbl_loader:
 	addi t1, t1, 4
 	blt t1, t2, _text_copy
 
+		la t0, data_extra_load_start
+		la t1, _data_extra_vma_start
+		la t2, _data_extra_vma_end
+  _data_extra_copy:
+		lbu a1, 0(t0)
+		sb a1, 0(t1)
+		addi t0, t0, 1
+		addi t1, t1, 1
+		blt t1, t2, _data_extra_copy
+
 	la t0, data_load_start
-	la t1, _data_start
+	la t1, _data_section_vma
 	la t2, _bss_start
   _data_copy:
 	lbu a1, 0(t0)

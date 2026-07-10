@@ -1,8 +1,5 @@
-#include <memory.h>
-#include <stdio.h>
+#include <common.h>
 #include <time.h>
-#include <config.h>
-#include <assert.h>
 
 #define SERIAL    0xa00003f8
 #define RTC       0xa0000048

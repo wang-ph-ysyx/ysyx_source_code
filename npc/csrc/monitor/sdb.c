@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <string.h>
+#include <common.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <memory.h>
 
 void reg_display();
 void cpu_exec(unsigned long n);
@@ -62,10 +58,11 @@ static int cmd_x(char *args) {
 }
 
 static int cmd_wt(char *args) {
-	if (args == NULL) wave_trace = 1;
+	if (args == NULL) wave_trace = !wave_trace;
 	else if (*args == 'o') wave_trace = 1;
 	else if (*args == 'c') wave_trace = 0;
 	else printf("Usage: 'wt o' to open, 'wt c' to close\n");
+	printf("wave_trace is %s\n", wave_trace ? "ON" : "OFF");
 	return 0;
 }
 
