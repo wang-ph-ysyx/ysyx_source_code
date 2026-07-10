@@ -49,21 +49,24 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			void *va_file_end = va + phdr[i].p_filesz;
 			void *va_end = va + phdr[i].p_memsz;
 			fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
-			void *pa = maped(&pcb->as, va_start);
+			void *pa = lookup_page_map(pcb, va_start);
 			if (pa == NULL) {
 				pa = new_page(1);
 				map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+				record_page_map(pcb, va_start, pa);
 			}
 			fs_read(fd, pa + (va - va_start), PGSIZE - (va - va_start));
 			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
 				pa = new_page(1);
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+				record_page_map(pcb, va, pa);
 				fs_read(fd, pa, PGSIZE);
 			}
-			pa = maped(&pcb->as, va);
+			pa = lookup_page_map(pcb, va);
 			if (pa == NULL) {
 				pa = new_page(1);
 				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+				record_page_map(pcb, va, pa);
 			}
 			if (va_end >= va)
 				fs_read(fd, pa, va_end - va);
@@ -81,6 +84,7 @@ void naive_uload(PCB *pcb, const char *filename) {
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
 	protect(&pcb->as);
+	clear_page_map(pcb);
 	uintptr_t entry = loader(pcb, filename);
 	pcb->cp = ucontext(&pcb->as, (Area) {pcb->stack, pcb->stack + STACK_SIZE}, (void *)entry);
 	void *va_end = pcb->as.area.end;
@@ -89,6 +93,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 	void *pa = stack_start;
 	for (; va < va_end; va += PGSIZE, pa += PGSIZE) {
 		map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+		record_page_map(pcb, va, pa);
 	}
 	char *stack = (char *)stack_start + STACK_SIZE;
 	char *strptr = stack;
