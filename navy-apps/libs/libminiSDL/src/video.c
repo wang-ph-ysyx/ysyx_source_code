@@ -177,7 +177,21 @@ void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     SDL_BlitSurface(src, &rect, dst, dstrect);
   }
   else {
-    assert(0);
+    // Nearest-neighbor stretch for 8-bit paletted surfaces
+    if (dstrect->w <= 0 || dstrect->h <= 0) return;
+    uint8_t *src_pixels = (uint8_t *)src->pixels;
+    uint8_t *dst_pixels = (uint8_t *)dst->pixels;
+    int src_pitch = src->pitch;
+    int dst_pitch = dst->pitch;
+    for (int dy = 0; dy < dstrect->h; dy++) {
+      int sy = y + dy * h / dstrect->h;
+      uint8_t *src_row = src_pixels + sy * src_pitch;
+      uint8_t *dst_row = dst_pixels + (dstrect->y + dy) * dst_pitch;
+      for (int dx = 0; dx < dstrect->w; dx++) {
+        int sx = x + dx * w / dstrect->w;
+        dst_row[dstrect->x + dx] = src_row[sx];
+      }
+    }
   }
 }
 

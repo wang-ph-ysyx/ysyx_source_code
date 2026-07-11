@@ -16,12 +16,15 @@
 #include <sys/ioctl.h>
 
 //#define MODE_800x600
+#define MODE_400x300
 
 #define FPS 60
 #ifdef MODE_800x600
 const int disp_w = 800, disp_h = 600;
-#else
+#elif defined(MODE_400x300)
 const int disp_w = 400, disp_h = 300;
+#else
+const int disp_w = 640, disp_h = 480;
 #endif
 static int pipe_size = 0;
 #define FB_SIZE (disp_w * disp_h * sizeof(uint32_t))
@@ -30,6 +33,7 @@ static FILE *(*glibc_fopen)(const char *path, const char *mode) = NULL;
 static int (*glibc_open)(const char *path, int flags, ...) = NULL;
 static ssize_t (*glibc_read)(int fd, void *buf, size_t count) = NULL;
 static ssize_t (*glibc_write)(int fd, const void *buf, size_t count) = NULL;
+static int (*glibc_close)(int fd) = NULL;
 static int (*glibc_execve)(const char *filename, char *const argv[], char *const envp[]) = NULL;
 
 static SDL_Window *window = NULL;
@@ -60,44 +64,39 @@ static inline void get_fsimg_path(char *newpath, const char *path) {
 #define COND(k) \
   if (scancode == SDL_SCANCODE_##k) name = #k;
 
+#define KEY_QUEUE_LEN 64
+static SDL_Event key_queue[KEY_QUEUE_LEN] = {};
+static int key_f = 0, key_r = 0;
+
+static void poll_events() {
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+      case SDL_QUIT: exit(0); break;
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+        key_queue[key_r] = event;
+        key_r = (key_r + 1) % KEY_QUEUE_LEN;
+        assert(key_r != key_f);
+        break;
+    }
+  }
+}
+
 static void update_screen() {
+  // Throttle to at most ~60 FPS to avoid excessive rendering
+  static uint32_t last_update = 0;
+  uint32_t now = SDL_GetTicks();
+  if (now - last_update < 16) return;  // skip if less than 16ms since last update
+  last_update = now;
+
+  // Poll SDL events from main thread (where OpenGL context is valid)
+  poll_events();
+
   SDL_UpdateTexture(texture, NULL, fb, disp_w * sizeof(Uint32));
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);
-}
-
-#define KEY_QUEUE_LEN 64
-static SDL_Event key_queue[KEY_QUEUE_LEN] = {};
-static int key_f = 0, key_r = 0;
-static SDL_mutex *key_queue_lock = NULL;
-
-static int event_thread(void *args) {
-  SDL_Event event;
-  while (1) {
-    SDL_WaitEvent(&event);
-
-    switch (event.type) {
-      case SDL_QUIT: exit(0); break;
-      case SDL_USEREVENT: update_screen(); break;
-      case SDL_KEYDOWN:
-      case SDL_KEYUP:
-        SDL_LockMutex(key_queue_lock);
-        key_queue[key_r] = event;
-        key_r = (key_r + 1) % KEY_QUEUE_LEN;
-        assert(key_r != key_f);
-        SDL_UnlockMutex(key_queue_lock);
-        break;
-    }
-  }
-  return 0;
-}
-
-static uint32_t timer_handler(uint32_t interval, void *param) {
-  SDL_Event event;
-  event.type = SDL_USEREVENT;
-  SDL_PushEvent(&event);
-  return interval;
 }
 
 static void audio_fill(void *userdata, uint8_t *stream, int len) {
@@ -114,8 +113,7 @@ static void open_display() {
   SDL_CreateWindowAndRenderer(disp_w * 2, disp_h * 2, 0, &window, &renderer);
 #endif
   SDL_SetWindowTitle(window, "Simulated Nanos Application");
-  SDL_CreateThread(event_thread, "event thread", nullptr);
-  SDL_AddTimer(1000 / FPS, timer_handler, NULL);
+  evt_fd = dup(dummy_fd);
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, disp_w, disp_h);
 
   fb_memfd = memfd_create("fb", 0);
@@ -126,11 +124,6 @@ static void open_display() {
   assert(fb != (void *)-1);
   memset(fb, 0, FB_SIZE);
   lseek(fb_memfd, 0, SEEK_SET);
-}
-
-static void open_event() {
-  key_queue_lock = SDL_CreateMutex();
-  evt_fd = dup(dummy_fd);
 }
 
 static void open_audio() {
@@ -153,6 +146,7 @@ extern "C" FILE *fopen(const char *path, const char *mode);
 extern "C" int open(const char *path, int flags, ...);
 extern "C" ssize_t read(int fd, void *buf, size_t count);
 extern "C" ssize_t write(int fd, const void *buf, size_t count);
+extern "C" int close(int fd);
 extern "C" int execve(const char *filename, char *const argv[], char *const envp[]);
 
 FILE *fopen(const char *path, const char *mode) {
@@ -187,15 +181,15 @@ ssize_t read(int fd, void *buf, size_t count) {
     // But it should be enough for real usage. Modify it if necessary.
     return snprintf((char *)buf, count, "WIDTH: %d\nHEIGHT: %d\n", disp_w, disp_h);
   } else if (fd == evt_fd) {
+    // Poll events first to get latest keyboard input
+    poll_events();
     int has_key = 0;
     SDL_Event ev = {};
-    SDL_LockMutex(key_queue_lock);
     if (key_f != key_r) {
       ev = key_queue[key_f];
       key_f = (key_f + 1) % KEY_QUEUE_LEN;
       has_key = 1;
     }
-    SDL_UnlockMutex(key_queue_lock);
 
     if (has_key) {
       SDL_Keysym k = ev.key.keysym;
@@ -204,15 +198,19 @@ ssize_t read(int fd, void *buf, size_t count) {
 
       const char *name = NULL;
       _KEYS(COND);
-      if (name) return snprintf((char *)buf, count, "k%c %s\n", keydown ? 'd' : 'u', name);
+      if (name) return snprintf((char *)buf, count, "k%c %s", keydown ? 'd' : 'u', name);
     }
     return 0;
   } else if (fd == sbctl_fd) {
-    // return the free space of sb_fifo
+    // return the free space of sb_fifo as a binary int
     int used;
     ioctl(sb_fifo[0], FIONREAD, &used);
     int free = pipe_size - used;
-    return snprintf((char *)buf, count, "%d", free);
+    if (count >= sizeof(int)) {
+      *(int *)buf = free;
+      return sizeof(int);
+    }
+    return 0;
   }
   return glibc_read(fd, buf, count);
 }
@@ -233,7 +231,27 @@ ssize_t write(int fd, const void *buf, size_t count) {
     SDL_PauseAudio(0);
     return count;
   }
+  // Write to framebuffer: bypass page cache, write directly to mmap.
+  // Then update the screen synchronously from the main thread
+  // (SDL2's OpenGL context is thread-local, so we can't render from event thread).
+  if (fd == fb_memfd) {
+    off_t off = lseek(fd, 0, SEEK_CUR);
+    if (off >= 0 && off + count <= FB_SIZE) {
+      memcpy((uint8_t *)fb + off, buf, count);
+      update_screen();
+      return count;
+    }
+  }
   return glibc_write(fd, buf, count);
+}
+
+int close(int fd) {
+  // Guard special fds from being closed by NDL (they are shared singletons)
+  if (fd == dummy_fd || fd == dispinfo_fd || fd == fb_memfd ||
+      fd == evt_fd || fd == sb_fifo[0] || fd == sb_fifo[1] || fd == sbctl_fd) {
+    return 0;
+  }
+  return glibc_close(fd);
 }
 
 int execve(const char *filename, char *const argv[], char *const envp[]) {
@@ -252,6 +270,8 @@ struct Init {
     assert(glibc_read != NULL);
     glibc_write = (ssize_t (*)(int fd, const void *buf, size_t count))dlsym(RTLD_NEXT, "write");
     assert(glibc_write != NULL);
+    glibc_close = (int(*)(int))dlsym(RTLD_NEXT, "close");
+    assert(glibc_close != NULL);
     glibc_execve = (int(*)(const char*, char *const [], char *const []))dlsym(RTLD_NEXT, "execve");
     assert(glibc_execve != NULL);
 
@@ -270,7 +290,6 @@ struct Init {
     SDL_Init(0);
     if (!getenv("NWM_APP")) {
       open_display();
-      open_event();
     }
     open_audio();
   }

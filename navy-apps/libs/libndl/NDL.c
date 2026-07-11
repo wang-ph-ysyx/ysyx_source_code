@@ -59,14 +59,29 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-	x += (screen_w - canvas_w) / 2;
-	y += (screen_h - canvas_h) / 2;
+	// Center the canvas on the screen
+	int offset_x = (screen_w - canvas_w) / 2;
+	int offset_y = (screen_h - canvas_h) / 2;
+	if (offset_x < 0) offset_x = 0;
+	if (offset_y < 0) offset_y = 0;
+
+	x += offset_x;
+	y += offset_y;
+
+	// Clip to screen bounds; save original w as source stride
+	int src_stride = w;
+	if (x < 0) { w += x; pixels += (-x); x = 0; }
+	if (y < 0) { h += y; pixels += (-y) * src_stride; y = 0; }
+	if (x + w > screen_w) w = screen_w - x;
+	if (y + h > screen_h) h = screen_h - y;
+	if (w <= 0 || h <= 0) return;
+
 	int fd = open("/dev/fb", 0, 0);
 	size_t offset = 4 * (y * screen_w + x);
 	for (int i = 0; i < h; ++i) {
 		lseek(fd, offset, SEEK_SET);
 		write(fd, pixels, w * 4);
-		pixels += w;
+		pixels += src_stride;
 		offset += screen_w * 4;
 	}
 	close(fd);
@@ -90,8 +105,9 @@ int NDL_PlayAudio(void *buf, int len) {
 int NDL_QueryAudio() {
 	int fd = open("/dev/sbctl", 0, 0);
 	int count;
-	read(fd, &count, sizeof(count));
-  return count;
+	if (read(fd, &count, sizeof(count)) == sizeof(count))
+		return count;
+	return 0;
 }
 
 int NDL_Init(uint32_t flags) {

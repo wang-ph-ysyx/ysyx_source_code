@@ -5,7 +5,8 @@
 static void (*callback)(void *userdata, uint8_t *stream, int len);
 static int audio_pause = 1;
 static uint32_t time_interval = 0;
-static int samples = 0;
+static int samples = 0;       // sample frame count (for timing)
+static int buffer_bytes = 0;  // buffer size in bytes
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
 	if (obtained) {
@@ -19,6 +20,12 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
 	}
 	samples = desired->samples;
 	time_interval = samples * 1000 / desired->freq;
+
+	// Compute the actual buffer size in bytes.
+	// miniSDL format values: AUDIO_U8=8, AUDIO_S16=16 (bits per sample)
+	int sample_bytes = (desired->format == 16) ? 2 : 1;
+	buffer_bytes = samples * desired->channels * sample_bytes;
+
 	NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
 	callback = desired->callback;
   return 0;
@@ -90,11 +97,14 @@ void CallBackHelper() {
 
 	static uint32_t start = 0;
 	uint32_t now = SDL_GetTicks();
-	if (now - start > time_interval && NDL_QueryAudio() > samples) {
+	if (start == 0) start = now;
+	// Fill as many audio buffers as the device can accept
+	while (now - start > time_interval && NDL_QueryAudio() >= buffer_bytes) {
 		start += time_interval;
-		uint8_t *stream = malloc(samples);
-		callback(NULL, stream, samples);
-		NDL_PlayAudio(stream, samples);
+
+		uint8_t *stream = malloc(buffer_bytes);
+		callback(NULL, stream, buffer_bytes);
+		NDL_PlayAudio(stream, buffer_bytes);
 		free(stream);
 	}
 
