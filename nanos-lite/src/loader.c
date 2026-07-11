@@ -49,28 +49,78 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 			void *va_file_end = va + phdr[i].p_filesz;
 			void *va_end = va + phdr[i].p_memsz;
 			fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+
+			// ===== Phase 1: load file data [va, va_file_end) =====
 			void *pa = lookup_page_map(pcb, va_start);
 			if (pa == NULL) {
 				pa = new_page(1);
 				map(&pcb->as, va_start, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
 				record_page_map(pcb, va_start, pa);
 			}
-			fs_read(fd, pa + (va - va_start), PGSIZE - (va - va_start));
-			for (va = va_start + PGSIZE; va + PGSIZE < va_end; va += PGSIZE) {
+			// first page: file data starts at offset (va - va_start)
+			size_t first_file_len = (va_file_end < va_start + PGSIZE)
+				? (va_file_end - va)
+				: (PGSIZE - (va - va_start));
+			fs_read(fd, pa + (va - va_start), first_file_len);
+
+			// middle pages: entirely filled with file data
+			void *va_cur;
+			for (va_cur = va_start + PGSIZE;
+			     va_cur + PGSIZE <= va_file_end;
+			     va_cur += PGSIZE) {
 				pa = new_page(1);
-				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
-				record_page_map(pcb, va, pa);
+				map(&pcb->as, va_cur, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+				record_page_map(pcb, va_cur, pa);
 				fs_read(fd, pa, PGSIZE);
 			}
-			pa = lookup_page_map(pcb, va);
-			if (pa == NULL) {
-				pa = new_page(1);
-				map(&pcb->as, va, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
-				record_page_map(pcb, va, pa);
+			// last page with file data (partial)
+			if (va_cur < va_file_end) {
+				pa = lookup_page_map(pcb, va_cur);
+				if (pa == NULL) {
+					pa = new_page(1);
+					map(&pcb->as, va_cur, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+					record_page_map(pcb, va_cur, pa);
+				}
+				fs_read(fd, pa, va_file_end - va_cur);
 			}
-			if (va_end >= va)
-				fs_read(fd, pa, va_end - va);
-			memset(pa + (va_file_end - va), 0, va_end - va_file_end);
+
+			// ===== Phase 2: zero BSS [va_file_end, va_end) =====
+			if (va_file_end < va_end) {
+				// page that contains va_file_end (may already have file data)
+				void *bss_page = (void *)ROUNDDOWN(va_file_end, PGSIZE);
+				pa = lookup_page_map(pcb, bss_page);
+				if (pa == NULL) {
+					pa = new_page(1);
+					map(&pcb->as, bss_page, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+					record_page_map(pcb, bss_page, pa);
+				}
+				size_t bss_offset = (uintptr_t)va_file_end - (uintptr_t)bss_page;
+				size_t bss_len = ((uintptr_t)va_end < (uintptr_t)bss_page + PGSIZE)
+					? ((uintptr_t)va_end - (uintptr_t)va_file_end)
+					: (PGSIZE - bss_offset);
+				memset(pa + bss_offset, 0, bss_len);
+
+				// middle BSS pages (entire page is BSS)
+				for (va_cur = (void *)ROUNDUP(va_file_end, PGSIZE);
+				     va_cur + PGSIZE <= va_end;
+				     va_cur += PGSIZE) {
+					pa = new_page(1);
+					map(&pcb->as, va_cur, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+					record_page_map(pcb, va_cur, pa);
+					memset(pa, 0, PGSIZE);
+				}
+
+				// last BSS page (partial)
+				if (va_cur < va_end) {
+					pa = lookup_page_map(pcb, va_cur);
+					if (pa == NULL) {
+						pa = new_page(1);
+						map(&pcb->as, va_cur, pa, PROT_EXEC | PROT_READ | PROT_WRITE);
+						record_page_map(pcb, va_cur, pa);
+					}
+					memset(pa, 0, va_end - va_cur);
+				}
+			}
 		}
 	}
   return ehdr.e_entry;
