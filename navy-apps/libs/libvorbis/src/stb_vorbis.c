@@ -826,8 +826,10 @@ static int64_t powi(int x, int y) {
 static int lookup1_values(int entries, int dim)
 {
    int r = fixedpt_toint(fixedpt_floor(fixedpt_exp(fixedpt_divi(fixedpt_ln(fixedpt_fromint(entries)), dim))));
-   if ((int) powi(r+1, dim) <= entries)   // (int) cast for MinGW warning;
-      ++r;                                // floor() to avoid _ftol() when non-CRT
+   while ((int) powi(r+1, dim) <= entries)   // (int) cast for MinGW warning;
+      ++r;                                   // refine up: fixedpt ln/exp may under-estimate
+   while ((int) powi(r, dim) > entries)      // refine down: fixedpt ln/exp may over-estimate
+      --r;
    if (powi(r+1, dim) <= entries)
       return -1;
    if (powi(r, dim) > entries)
