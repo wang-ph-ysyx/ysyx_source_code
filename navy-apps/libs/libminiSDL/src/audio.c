@@ -7,6 +7,7 @@ static int audio_pause = 1;
 static uint32_t time_interval = 0;
 static int samples = 0;       // sample frame count (for timing)
 static int buffer_bytes = 0;  // buffer size in bytes
+static int audio_format = 0;  // AUDIO_U8 or AUDIO_S16
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
 	if (obtained) {
@@ -20,10 +21,9 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
 	}
 	samples = desired->samples;
 	time_interval = samples * 1000 / desired->freq;
+	audio_format = desired->format;
 
-	// Compute the actual buffer size in bytes.
-	// miniSDL format values: AUDIO_U8=8, AUDIO_S16=16 (bits per sample)
-	int sample_bytes = (desired->format == 16) ? 2 : 1;
+	int sample_bytes = (desired->format == AUDIO_S16) ? 2 : 1;
 	buffer_bytes = samples * desired->channels * sample_bytes;
 
 	NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
@@ -40,10 +40,27 @@ void SDL_PauseAudio(int pause_on) {
 }
 
 void SDL_MixAudio(uint8_t *dst, uint8_t *src, uint32_t len, int volume) {
-	for (uint32_t i = 0; i < len; ++i) {
-		uint16_t sum = (uint16_t)dst[i] + (uint16_t)src[i] * (volume / SDL_MIX_MAXVOLUME);
-		if (sum > SDL_MIX_MAXVOLUME) sum = SDL_MIX_MAXVOLUME;
-		dst[i] = (uint8_t)sum;
+	if (volume == 0) return;
+
+	if (audio_format == AUDIO_S16) {
+		// 16-bit signed mixing
+		int16_t *dst16 = (int16_t *)dst;
+		int16_t *src16 = (int16_t *)src;
+		uint32_t samples = len / 2;
+		for (uint32_t i = 0; i < samples; i++) {
+			int32_t sample = (int32_t)dst16[i] + ((int32_t)src16[i] * volume) / SDL_MIX_MAXVOLUME;
+			if (sample > 32767) sample = 32767;
+			else if (sample < -32768) sample = -32768;
+			dst16[i] = (int16_t)sample;
+		}
+	} else {
+		// 8-bit unsigned mixing
+		for (uint32_t i = 0; i < len; i++) {
+			int32_t sum = (int32_t)dst[i] + ((int32_t)src[i] * volume) / SDL_MIX_MAXVOLUME;
+			if (sum > SDL_MIX_MAXVOLUME) sum = SDL_MIX_MAXVOLUME;
+			else if (sum < 0) sum = 0;
+			dst[i] = (uint8_t)sum;
+		}
 	}
 }
 
