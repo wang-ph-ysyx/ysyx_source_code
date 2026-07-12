@@ -40,6 +40,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 	char buf[32];
 	if (read(fd, buf, sizeof(buf)) == 0) {
 		kbd->keycode = 0;
+		kbd->keydown = false;
 		close(fd);
 		return;
 	}
