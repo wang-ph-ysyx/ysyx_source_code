@@ -51,23 +51,34 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 		w = s->w;
 		h = s->h;
 	}
-	if (s->format->BitsPerPixel == 32)
-		NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
-	else if (s->format->BitsPerPixel == 8) {
-		int size = w * h;
-		uint32_t *pixels = malloc(size * sizeof(uint32_t));
+	if (s->format->BitsPerPixel == 32) {
+		int src_stride = s->pitch / 4;
+		uint32_t *src = (uint32_t *)s->pixels + y * src_stride + x;
+		uint32_t *pixels = malloc(w * h * sizeof(uint32_t));
 		assert(pixels);
-		int times = 0;
-		for (int i = 0; i < size; ++i) {
-			uint8_t index = *((uint8_t *)s->pixels + i);
-			SDL_Color *color = s->format->palette->colors + index;
-			++times;
-			pixels[i] = 0;
-			pixels[i] |= (uint32_t)color->a << 24;
-			pixels[i] |= (uint32_t)color->r << 16;
-			pixels[i] |= (uint32_t)color->g << 8;
-			pixels[i] |= (uint32_t)color->b << 0;
-		}	
+		for (int row = 0; row < h; row++) {
+			for (int col = 0; col < w; col++) {
+				pixels[row * w + col] = src[row * src_stride + col];
+			}
+		}
+		NDL_DrawRect(pixels, x, y, w, h);
+		free(pixels);
+	}
+	else if (s->format->BitsPerPixel == 8) {
+		uint32_t *pixels = malloc(w * h * sizeof(uint32_t));
+		assert(pixels);
+		uint8_t *src = (uint8_t *)s->pixels;
+		for (int row = 0; row < h; row++) {
+			for (int col = 0; col < w; col++) {
+				uint8_t index = src[(y + row) * s->pitch + (x + col)];
+				SDL_Color *color = s->format->palette->colors + index;
+				pixels[row * w + col] =
+					((uint32_t)color->a << 24) |
+					((uint32_t)color->r << 16) |
+					((uint32_t)color->g <<  8) |
+					((uint32_t)color->b <<  0);
+			}
+		}
 		NDL_DrawRect(pixels, x, y, w, h);
 		free(pixels);
 	}
